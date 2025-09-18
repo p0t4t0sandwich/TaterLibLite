@@ -6,6 +6,7 @@ plugins {
     id("idea")
     id("eclipse")
     alias(libs.plugins.blossom)
+    alias(libs.plugins.jvmdowngrader)
     alias(libs.plugins.spotless)
 }
 
@@ -20,12 +21,16 @@ val mavenCredentials: PasswordCredentials.() -> Unit = {
 
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "java-library")
     apply(plugin = "maven-publish")
     apply(plugin = "idea")
     apply(plugin = "eclipse")
+    apply(plugin = rootProject.libs.plugins.jvmdowngrader.get().pluginId)
     apply(plugin = rootProject.libs.plugins.spotless.get().pluginId)
 
-    // base {}
+    base {
+        version = rootProject.version
+    }
 
     java {
         withSourcesJar()
@@ -40,6 +45,8 @@ subprojects {
     }
 
     repositories {
+        maven("https://maven.neuralnexus.dev/releases")
+        maven("https://maven.neuralnexus.dev/snapshots")
         maven("https://maven.neuralnexus.dev/mirror")
     }
 
@@ -75,15 +82,51 @@ subprojects {
         }
     }
 
-    publishing.repositories {
-        mavenLocal()
-        maven("https://maven.neuralnexus.dev/releases") {
-            name = "NeuralNexusReleases"
-            credentials(mavenCredentials)
+    tasks.downgradeJar {
+        downgradeTo = JavaVersion.VERSION_1_8
+        archiveClassifier.set("downgraded-8")
+    }
+
+    tasks.shadeDowngradedApi {
+        downgradeTo = JavaVersion.VERSION_1_8
+        shadePath = {
+            it.substringBefore(".")
+                .substringBeforeLast("-")
+                .replace(Regex("[.;\\[/]"), "-")
+                .replace("base", "dev/neuralnexus/taterlib/lite/jvmdg")
         }
-        maven("https://maven.neuralnexus.dev/snapshots") {
-            name = "NeuralNexusSnapshots"
-            credentials(mavenCredentials)
+        archiveClassifier.set("downgraded-8-shaded")
+    }
+
+    tasks.withType<GenerateModuleMetadata> {
+        enabled = false
+    }
+
+    tasks.downgradeJar.get().dependsOn(tasks.spotlessApply)
+    tasks.assemble {
+        dependsOn(tasks.downgradeJar)
+        dependsOn(tasks.shadeDowngradedApi)
+    }
+
+    publishing {
+        repositories {
+            mavenLocal()
+            maven("https://maven.neuralnexus.dev/releases") {
+                name = "NeuralNexusReleases"
+                credentials(mavenCredentials)
+            }
+            maven("https://maven.neuralnexus.dev/snapshots") {
+                name = "NeuralNexusSnapshots"
+                credentials(mavenCredentials)
+            }
+        }
+
+        publications {
+            create<MavenPublication>("maven") {
+                from(components["java"])
+                artifact(tasks.downgradeJar.get())
+                artifact(tasks.shadeDowngradedApi.get())
+            }
         }
     }
 }

@@ -10,4 +10,7 @@ plugins {
 
 rootProject.name = "taterlib_lite"
 
-include(":base")
+include(
+    ":base",
+    ":metadata",
+)
