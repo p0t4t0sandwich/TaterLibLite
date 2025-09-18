@@ -1,0 +1,24 @@
+/**
+ * Copyright (c) 2025 Dylan Sperrer - dylan@neuralnexus.dev
+ * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
+ */
+package dev.neuralnexus.taterapi.muxins.annotations;
+
+import dev.neuralnexus.taterapi.meta.Mappings;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/** Requires the chosen runtime mappings to be present for the mixin to be applied */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface ReqMappings {
+    /**
+     * The required mappings
+     *
+     * @return The required mappings
+     */
+    Mappings value();
+}
