@@ -12,6 +12,7 @@ rootProject.name = "taterlib_lite"
 
 include(
     ":base",
+    ":core",
     ":metadata",
     ":muxins"
 )
