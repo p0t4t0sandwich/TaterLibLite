@@ -1,3 +1,4 @@
+import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 import java.time.Instant
 
 plugins {
@@ -11,7 +12,7 @@ plugins {
 }
 
 base {
-    archivesName = modName
+    archivesName = modId
 }
 
 val mavenCredentials: PasswordCredentials.() -> Unit = {
@@ -89,12 +90,6 @@ subprojects {
 
     tasks.shadeDowngradedApi {
         downgradeTo = JavaVersion.VERSION_1_8
-        shadePath = {
-            it.substringBefore(".")
-                .substringBeforeLast("-")
-                .replace(Regex("[.;\\[/]"), "-")
-                .replace("base", "dev/neuralnexus/taterlib/lite/jvmdg")
-        }
         archiveClassifier.set("downgraded-8-shaded")
     }
 
@@ -172,15 +167,21 @@ tasks.withType<ProcessResources> {
 }
 
 tasks.jar {
+    from(
+        project(":base").sourceSets.main.get().output,
+        project(":core").sourceSets.main.get().output,
+        project(":metadata").sourceSets.main.get().output,
+        project(":muxins").sourceSets.main.get().output
+    )
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(
             mapOf(
                 "Specification-Title" to modName,
                 "Specification-Version" to version,
-                "Specification-Vendor" to "SomeVendor",
+                "Specification-Vendor" to "NeualNexus",
                 "Implementation-Version" to version,
-                "Implementation-Vendor" to "SomeVendor",
+                "Implementation-Vendor" to "NeualNexus",
                 "Implementation-Timestamp" to Instant.now().toString(),
                 "FMLCorePluginContainsFMLMod" to "true",
                 "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker",
@@ -193,7 +194,32 @@ tasks.jar {
     }
 }
 
-tasks.build.get().dependsOn("spotlessApply")
+tasks.downgradeJar {
+    downgradeTo = JavaVersion.VERSION_1_8
+    archiveClassifier.set("downgraded-8")
+}
+
+tasks.shadeDowngradedApi {
+    downgradeTo = JavaVersion.VERSION_1_8
+    shadePath = {
+        it.substringBefore(".")
+            .substringBeforeLast("-")
+            .replace(Regex("[.;\\[/]"), "-")
+            .replace(modId, "dev/neuralnexus/taterlib/lite/jvmdg")
+    }
+    archiveClassifier.set("downgraded-8-shaded")
+}
+
+tasks.withType<GenerateModuleMetadata> {
+    enabled = false
+}
+
+tasks.build.get().dependsOn(tasks.spotlessApply)
+tasks.downgradeJar.get().dependsOn(tasks.spotlessApply)
+tasks.assemble {
+    dependsOn(tasks.downgradeJar)
+    dependsOn(tasks.shadeDowngradedApi)
+}
 
 publishing {
     repositories {

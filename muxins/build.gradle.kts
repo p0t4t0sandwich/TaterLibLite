@@ -1,3 +1,4 @@
+import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 import java.time.Instant
 
 base {
@@ -24,5 +25,14 @@ tasks.jar {
                 "Implementation-Timestamp" to Instant.now().toString()
             )
         )
+    }
+}
+
+tasks.withType<ShadeJar> {
+    shadePath = {
+        it.substringBefore(".")
+            .substringBeforeLast("-")
+            .replace(Regex("[.;\\[/]"), "-")
+            .replace("muxins", "dev/neuralnexus/taterlib/lite/jvmdg")
     }
 }

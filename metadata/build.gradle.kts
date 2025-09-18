@@ -1,3 +1,4 @@
+import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 import java.time.Instant
 
 base {
@@ -41,3 +42,12 @@ tasks.jar {
     }
 }
 tasks.build.get().dependsOn(tasks.test)
+
+tasks.withType<ShadeJar> {
+    shadePath = {
+        it.substringBefore(".")
+            .substringBeforeLast("-")
+            .replace(Regex("[.;\\[/]"), "-")
+            .replace("metadata", "dev/neuralnexus/taterlib/lite/jvmdg")
+    }
+}
