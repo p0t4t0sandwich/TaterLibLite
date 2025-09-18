@@ -1,0 +1,12 @@
+{
+  "compatibilityLevel": "JAVA_8",
+  "required": false,
+  "minVersion": "0.8",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "package": "dev.neuralnexus.taterlib.mixin",
+  "mixins": [],
+  "client": [],
+  "server": []
+}

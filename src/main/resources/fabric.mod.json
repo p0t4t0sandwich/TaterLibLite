@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${description}",
+  "authors": [
+    "${author}"
+  ],
+  "contact": {
+    "repo": "${source_url}"
+  },
+  "license": "${license}",
+  "icon": "${mod_name}.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.neuralnexus.taterlib.lite.platforms.TLLFabric"
+    ],
+    "client": [
+      "dev.neuralnexus.taterlib.lite.platforms.TLLFabricDelegate"
+    ],
+    "server": [
+      "dev.neuralnexus.taterlib.lite.platforms.TLLFabricDelegate"
+    ]
+  },
+  "mixins": [
+    "${mod_id}.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.9.0",
+    "fabric-api": "*",
+    "minecraft": "*",
+    "java": ">=8"
+  }
+}

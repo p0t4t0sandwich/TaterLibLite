@@ -1,0 +1,12 @@
+name: '${mod_name}'
+version: '${version}'
+main: 'dev.neuralnexus.taterlib.lite.platforms.TLLBukkit'
+description: '${description}'
+author: '${author}'
+website: '${homepage_url}'
+api-version: '${minecraft_version}'
+depend: [ ]
+depends: [ ]
+softdepend: [ ]
+softdepends: [ ]
+folia-supported: true

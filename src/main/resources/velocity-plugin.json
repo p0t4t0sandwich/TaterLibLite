@@ -1,0 +1,12 @@
+{
+  "id": "${mod_id}",
+  "name": "${mod_name}",
+  "version": "${version}",
+  "description": "${description}",
+  "url": "${homepage_url}",
+  "authors": [
+    "${author}"
+  ],
+  "dependencies": [],
+  "main": "dev.neuralnexus.taterlib.lite.platforms.TLLVelocity"
+}

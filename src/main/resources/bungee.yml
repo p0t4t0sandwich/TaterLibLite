@@ -1,0 +1,8 @@
+name: '${mod_name}'
+version: '${version}'
+author: '${author}'
+description: '${description}'
+website: '${homepage_url}'
+main: 'dev.neuralnexus.taterlib.lite.platforms.TLLBungeeCord'
+depends: [ ]
+softdepends: [ ]
