@@ -43,6 +43,10 @@ subprojects {
         maven("https://maven.neuralnexus.dev/mirror")
     }
 
+    dependencies {
+        compileOnly(rootProject.libs.annotations)
+    }
+
     spotless {
         format("misc") {
             target("*.gradle.kts", ".gitattributes", ".gitignore")

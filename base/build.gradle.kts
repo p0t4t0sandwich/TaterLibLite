@@ -8,7 +8,7 @@ plugins {
 
 base {
     archivesName = "base"
-    version = properties["version"].toString()
+    version = version
 }
 
 dependencies {
@@ -20,19 +20,15 @@ java {
     withSourcesJar()
     withJavadocJar()
     toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
-    sourceCompatibility = JavaVersion.toVersion(javaVersion)
+    //sourceCompatibility = JavaVersion.toVersion(javaVersion)
     targetCompatibility = JavaVersion.toVersion(javaVersion)
-}
-
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
 }
 
 tasks.jar {
     manifest {
         attributes(
             mapOf(
-                "Specification-Title" to "TaterLib ModLib Base",
+                "Specification-Title" to "TaterLibLite Base",
                 "Specification-Version" to version,
                 "Specification-Vendor" to "NeualNexus",
                 "Implementation-Version" to version,
@@ -54,7 +50,7 @@ tasks.shadeDowngradedApi {
         it.substringBefore(".")
             .substringBeforeLast("-")
             .replace(Regex("[.;\\[/]"), "-")
-            .replace("base", "dev/neuralnexus/taterapi/base/jvmdg")
+            .replace("base", "dev/neuralnexus/taterlib/base/jvmdg")
     }
     archiveClassifier.set("downgraded-8-shaded")
 }
@@ -63,7 +59,7 @@ tasks.withType<GenerateModuleMetadata> {
     enabled = false
 }
 
-//tasks.downgradeJar.get().dependsOn(tasks.spotlessApply)
+tasks.downgradeJar.get().dependsOn(tasks.spotlessApply)
 tasks.assemble {
     dependsOn(tasks.downgradeJar)
     dependsOn(tasks.shadeDowngradedApi)
