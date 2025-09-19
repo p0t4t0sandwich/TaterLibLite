@@ -292,6 +292,12 @@ public final class MetaAPIImpl implements MetaAPI {
                     mappings = Mappings.SEARGE;
                 } else if (api.isModLoaded(Platforms.NEOFORGE, "connector")) {
                     mappings = Mappings.MOJANG;
+                    // It's only FFAPI at this point, check Neo/Forge again
+                    // TODO: Add areModsLoaded for multiple mods
+                } else if (api.isModLoaded(Platforms.FORGE, "fabric_api")) {
+                    mappings = Mappings.SEARGE;
+                } else if (api.isModLoaded(Platforms.NEOFORGE, "fabric_api")) {
+                    mappings = Mappings.MOJANG;
                 }
                 // Check NeoForge
             } else if (api.isPlatformPresent(Platforms.NEOFORGE)) {
