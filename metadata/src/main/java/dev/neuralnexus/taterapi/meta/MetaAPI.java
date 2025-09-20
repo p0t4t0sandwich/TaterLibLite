@@ -173,7 +173,7 @@ public interface MetaAPI {
      * @param nameOrId The name of the plugin or modId of the mod
      * @return True if the mod is loaded, false otherwise
      */
-    boolean isModLoaded(@NotNull String nameOrId);
+    boolean isModLoaded(@NotNull String... nameOrId);
 
     /**
      * Get if a mod is loaded <br>
@@ -184,7 +184,28 @@ public interface MetaAPI {
      * @param nameOrId The name of the plugin or modId of the mod
      * @return True if the mod is loaded, false otherwise
      */
-    boolean isModLoaded(@NotNull Platform platform, @NotNull String nameOrId);
+    boolean isModLoaded(@NotNull Platform platform, @NotNull String... nameOrId);
+
+    /**
+     * Get if all mods are loaded <br>
+     * Note: Unless you need to check at a specific time, it's best to run this check after the
+     * server has started
+     *
+     * @param nameOrId The name of the plugin or modId of the mod
+     * @return True if all mods are loaded, false otherwise
+     */
+    boolean areModsLoaded(@NotNull String... nameOrId);
+
+    /**
+     * Get if all mods are loaded <br>
+     * Note: Unless you need to check at a specific time, it's best to run this check after the
+     * server has started
+     *
+     * @param platform The platform
+     * @param nameOrId The name of the plugin or modId of the mod
+     * @return True if all mods are loaded, false otherwise
+     */
+    boolean areModsLoaded(@NotNull Platform platform, @NotNull String... nameOrId);
 
     /**
      * Get the runtime mappings

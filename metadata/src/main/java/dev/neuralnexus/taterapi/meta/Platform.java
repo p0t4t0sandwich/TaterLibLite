@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public interface Platform {
     /**
@@ -201,13 +202,41 @@ public interface Platform {
          * @param nameOrId The name of the plugin or modId of the mod
          * @return True if the mod is loaded, false otherwise
          */
-        default boolean isModLoaded(@NotNull String nameOrId) {
+        default boolean isModLoaded(@NotNull String... nameOrId) {
             Objects.requireNonNull(nameOrId, "Mod name or ID cannot be null");
-            return this.mods().stream()
-                    .anyMatch(
-                            modInfo ->
-                                    modInfo.id().equalsIgnoreCase(nameOrId)
-                                            || modInfo.name().equalsIgnoreCase(nameOrId));
+            for (ModInfo mod : this.mods()) {
+                for (String s : nameOrId) {
+                    if (mod.id().equalsIgnoreCase(s) || mod.name().equalsIgnoreCase(s)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Check if all mods are loaded <br>
+         * Note: Unless you need to check at a specific time, it's best to run this check after the
+         * server has started
+         *
+         * @param nameOrId The name of the plugin or modId of the mod
+         * @return True if all mods are loaded, false otherwise
+         */
+        default boolean areModsLoaded(@NotNull String... nameOrId) {
+            Objects.requireNonNull(nameOrId, "Mod name or ID cannot be null");
+            for (ModInfo mod : this.mods()) {
+                boolean found = false;
+                for (String s : nameOrId) {
+                    if (mod.id().equalsIgnoreCase(s) || mod.name().equalsIgnoreCase(s)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         /**

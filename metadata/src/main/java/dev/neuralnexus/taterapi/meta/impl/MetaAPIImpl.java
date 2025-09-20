@@ -261,13 +261,27 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public boolean isModLoaded(@NotNull String nameOrId) throws NullPointerException {
+    public boolean isModLoaded(@NotNull String... nameOrId) throws NullPointerException {
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
         return lookupAll().stream().anyMatch(meta -> meta.isModLoaded(nameOrId));
     }
 
     @Override
-    public boolean isModLoaded(@NotNull Platform platform, @NotNull String nameOrId)
+    public boolean isModLoaded(@NotNull Platform platform, @NotNull String... nameOrId)
+            throws NullPointerException {
+        Objects.requireNonNull(platform, "Platform cannot be null");
+        Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
+        return lookup(platform).map(meta -> meta.isModLoaded(nameOrId)).orElse(false);
+    }
+
+    @Override
+    public boolean areModsLoaded(@NotNull String... nameOrId) throws NullPointerException {
+        Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
+        return lookupAll().stream().allMatch(meta -> meta.isModLoaded(nameOrId));
+    }
+
+    @Override
+    public boolean areModsLoaded(@NotNull Platform platform, @NotNull String... nameOrId)
             throws NullPointerException {
         Objects.requireNonNull(platform, "Platform cannot be null");
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
@@ -284,21 +298,16 @@ public final class MetaAPIImpl implements MetaAPI {
             // Check for proxy
             if (api.isProxy()) {
                 mappings = Mappings.NONE;
-                // Check for connector and kilt
-            } else if (api.isMixedForgeFabric() || api.isMixedNeoForgeFabric()) {
+                // Check for FFAPI, Connector, and Kilt
+            } else if (api.isMixedForgeFabric()) {
                 if (api.isModLoaded(Platforms.FABRIC, "kilt")) {
                     mappings = Mappings.YARN_INTERMEDIARY;
-                } else if (api.isModLoaded(Platforms.FORGE, "connector")) {
+                } else if (api.isModLoaded(Platforms.FORGE, "fabric_api", "connector")) {
                     mappings = Mappings.SEARGE;
-                } else if (api.isModLoaded(Platforms.NEOFORGE, "connector")) {
-                    mappings = Mappings.MOJANG;
-                    // It's only FFAPI at this point, check Neo/Forge again
-                    // TODO: Add areModsLoaded for multiple mods
-                } else if (api.isModLoaded(Platforms.FORGE, "fabric_api")) {
-                    mappings = Mappings.SEARGE;
-                } else if (api.isModLoaded(Platforms.NEOFORGE, "fabric_api")) {
-                    mappings = Mappings.MOJANG;
                 }
+            } else if (api.isMixedNeoForgeFabric()
+                    && api.isModLoaded(Platforms.NEOFORGE, "fabric_api", "connector")) {
+                    mappings = Mappings.MOJANG;
                 // Check NeoForge
             } else if (api.isPlatformPresent(Platforms.NEOFORGE)) {
                 if (this.version().is(MinecraftVersions.V20_1)) {
@@ -349,7 +358,7 @@ public final class MetaAPIImpl implements MetaAPI {
                 mappings = Mappings.OFFICIAL;
             }
         }
-        return mappings;
+        return Objects.requireNonNull(mappings, "Mappings are null after initialization");
     }
 
     @Override
