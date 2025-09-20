@@ -307,7 +307,7 @@ public final class MetaAPIImpl implements MetaAPI {
                 }
             } else if (api.isMixedNeoForgeFabric()
                     && api.isModLoaded(Platforms.NEOFORGE, "fabric_api", "connector")) {
-                    mappings = Mappings.MOJANG;
+                mappings = Mappings.MOJANG;
                 // Check NeoForge
             } else if (api.isPlatformPresent(Platforms.NEOFORGE)) {
                 if (this.version().is(MinecraftVersions.V20_1)) {
