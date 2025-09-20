@@ -15,21 +15,22 @@ import dev.neuralnexus.taterapi.meta.impl.platform.Sponge;
 import dev.neuralnexus.taterapi.meta.impl.platform.Vanilla;
 import dev.neuralnexus.taterapi.meta.impl.platform.Velocity;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** A class that provides information about the platforms that are available */
 public final class Platforms
         implements Bukkit, BungeeCord, Fabric, Forge, Hybrid, Misc, Sponge, Vanilla, Velocity {
     public static final Platform UNKNOWN = new PlatformImpl("Unknown");
-    private static final List<Platform> platforms = new ArrayList<>();
+    private static final Set<Platform> platforms = new HashSet<>();
 
     /**
      * Returns all platforms that are available.
      *
      * @return An array of all available platforms
      */
-    public static List<Platform> get() {
+    public static Set<Platform> get() {
         if (platforms.isEmpty()) {
             detectPlatforms(true);
         }
