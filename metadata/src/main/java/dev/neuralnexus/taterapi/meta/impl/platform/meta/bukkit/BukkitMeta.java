@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Stores data about the Bukkit platform */
-public final class BukkitMeta implements Platform.Meta {
+public class BukkitMeta implements Platform.Meta {
     @Override
     public @NotNull Object server() {
         return Bukkit.getServer();
