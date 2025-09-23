@@ -45,7 +45,8 @@ def encode_release_type(rtype: str) -> str:
             return "0b000"
 
 def encode_meta_version(num: str) -> str:
-    return hex(int(num))
+    # TODO: Convert meta holder to float
+    return hex(int(float(num)))
 
 def convert_to_binary(lst: list[str]) -> (str, list[str]):
     key: str = lst[1]

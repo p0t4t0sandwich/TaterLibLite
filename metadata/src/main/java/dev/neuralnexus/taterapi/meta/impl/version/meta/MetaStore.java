@@ -1033,6 +1033,42 @@ public final class MetaStore {
         dataCache.put("25w09b", new Integer[] {0x400000ed, 0b11, 0b001, 0x10de, 0x35, 0x45});
         dataCache.put("25w10a", new Integer[] {0x400000ee, 0b11, 0b001, 0x10df, 0x36, 0x46});
         dataCache.put("1.21.5-pre1", new Integer[] {0x400000ef, 0b11, 0b011, 0x10e0, 0x37, 0x46});
+        dataCache.put("1.21.5-pre2", new Integer[] {0x400000f0, 0b11, 0b011, 0x10e1, 0x37, 0x47});
+        dataCache.put("1.21.5-pre3", new Integer[] {0x400000f1, 0b11, 0b011, 0x10e1, 0x37, 0x47});
+        dataCache.put("1.21.5-rc1", new Integer[] {0x400000f2, 0b11, 0b100, 0x10e3, 0x37, 0x47});
+        dataCache.put("1.21.5-rc2", new Integer[] {0x400000f3, 0b11, 0b100, 0x10e4, 0x37, 0x47});
+        dataCache.put("1.21.5", new Integer[] {0x302, 0b11, 0b101, 0x10e5, 0x37, 0x47});
+        dataCache.put("25w15a", new Integer[] {0x400000f5, 0b11, 0b001, 0x1146, 0x38, 0x48});
+        dataCache.put("25w16a", new Integer[] {0x400000f6, 0b11, 0b001, 0x1147, 0x39, 0x49});
+        dataCache.put("25w17a", new Integer[] {0x400000f7, 0b11, 0b001, 0x1149, 0x3a, 0x4a});
+        dataCache.put("25w18a", new Integer[] {0x400000f8, 0b11, 0b001, 0x114a, 0x3b, 0x4b});
+        dataCache.put("25w19a", new Integer[] {0x400000f9, 0b11, 0b001, 0x114b, 0x3c, 0x4c});
+        dataCache.put("25w20a", new Integer[] {0x400000fa, 0b11, 0b001, 0x114c, 0x3d, 0x4d});
+        dataCache.put("25w21a", new Integer[] {0x400000fb, 0b11, 0b001, 0x114d, 0x3e, 0x4e});
+        dataCache.put("1.21.6-pre1", new Integer[] {0x400000fc, 0b11, 0b011, 0x114e, 0x3f, 0x4f});
+        dataCache.put("1.21.6-pre2", new Integer[] {0x400000fd, 0b11, 0b011, 0x114f, 0x3f, 0x4f});
+        dataCache.put("1.21.6-pre3", new Integer[] {0x400000fe, 0b11, 0b011, 0x1150, 0x3f, 0x50});
+        dataCache.put("1.21.6-pre4", new Integer[] {0x400000ff, 0b11, 0b011, 0x1151, 0x3f, 0x50});
+        dataCache.put("1.21.6-rc1", new Integer[] {0x40000100, 0b11, 0b100, 0x1152, 0x3f, 0x50});
+        dataCache.put("1.21.6", new Integer[] {0x303, 0b11, 0b101, 0x1153, 0x3f, 0x50});
+        dataCache.put("1.21.7-rc1", new Integer[] {0x40000101, 0b11, 0b100, 0x1154, 0x3f, 0x50});
+        dataCache.put("1.21.7-rc2", new Integer[] {0x40000102, 0b11, 0b100, 0x1155, 0x40, 0x51});
+        dataCache.put("1.21.7", new Integer[] {0x304, 0b11, 0b101, 0x1156, 0x40, 0x51});
+        dataCache.put("1.21.8-rc1", new Integer[] {0x40000103, 0b11, 0b100, 0x1157, 0x40, 0x51});
+        dataCache.put("1.21.8", new Integer[] {0x304, 0b11, 0b101, 0x1158, 0x40, 0x51});
+        dataCache.put("25w31a", new Integer[] {0x40000104, 0b11, 0b001, 0x11b6, 0x41, 0x52});
+        dataCache.put("25w32a", new Integer[] {0x40000105, 0b11, 0b001, 0x11b8, 0x41, 0x53});
+        dataCache.put("25w33a", new Integer[] {0x40000106, 0b11, 0b001, 0x11ba, 0x41, 0x53});
+        dataCache.put("25w34a", new Integer[] {0x40000107, 0b11, 0b001, 0x11bb, 0x42, 0x54});
+        dataCache.put("25w34b", new Integer[] {0x40000108, 0b11, 0b001, 0x11bc, 0x42, 0x54});
+        dataCache.put("25w35a", new Integer[] {0x40000109, 0b11, 0b001, 0x11be, 0x43, 0x55});
+        dataCache.put("25w36a", new Integer[] {0x4000010a, 0b11, 0b001, 0x11c1, 0x44, 0x56});
+        dataCache.put("25w36b", new Integer[] {0x4000010b, 0b11, 0b001, 0x11c2, 0x44, 0x56});
+        dataCache.put("25w37a", new Integer[] {0x4000010c, 0b11, 0b001, 0x11c3, 0x45, 0x57});
+        dataCache.put("1.21.9-pre1", new Integer[] {0x4000010d, 0b11, 0b011, 0x11c4, 0x45, 0x57});
+        dataCache.put("1.21.9-pre2", new Integer[] {0x4000010e, 0b11, 0b011, 0x11c6, 0x45, 0x58});
+        dataCache.put("1.21.9-pre3", new Integer[] {0x4000010f, 0b11, 0b011, 0x11c6, 0x45, 0x58});
+        dataCache.put("1.21.9", new Integer[] {0x0, 0b11, 0b101, 0x0, 0x0, 0x0});
     }
 
     /**
