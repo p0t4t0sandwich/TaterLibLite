@@ -112,7 +112,11 @@ public enum MinecraftVersion {
     V21_2(MinecraftVersions.V21_2),
     V21_3(MinecraftVersions.V21_3),
     V21_4(MinecraftVersions.V21_4),
-    V21_5(MinecraftVersions.V21_5);
+    V21_5(MinecraftVersions.V21_5),
+    V21_6(MinecraftVersions.V21_6),
+    V21_7(MinecraftVersions.V21_7),
+    V21_8(MinecraftVersions.V21_8),
+    V21_9(MinecraftVersions.V21_9);
 
     private final dev.neuralnexus.taterapi.meta.MinecraftVersion ref;
 
