@@ -3,6 +3,7 @@
  * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
  */
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
@@ -13,8 +14,9 @@ import org.junit.jupiter.api.Test;
 /** Tests for the MinecraftVersion abstraction. */
 public class MinecraftVersionTest {
     private static final String REGULAR_VERSION_STRING = "1.16.5";
-    private static final String PREFIXED_VERSION_STRING = "someprefix1.20";
-    private static final String SUFFIXED_VERSION_STRING = "b1.8somesuffix";
+    private static final String SHORT_VERSION_STRING = "1.20";
+    private static final String ZERO_SUFFIXED_VERSION_STRING = "1.20.0";
+    private static final String PREFIXED_VERSION_STRING = "b1.8";
     private static final String PROJECT_POSIDON_STRING = "1.1.8 (MC: 1.7.3)";
     private static final String REGULAR_RANGE_STRING = "(1.17,1.20]";
     private static final String OPEN_START_RANGE_STRING = "(,1.20]";
@@ -23,8 +25,9 @@ public class MinecraftVersionTest {
     @Test
     public void testFromString() {
         assertEquals(MinecraftVersions.V16_5, MinecraftVersion.of(REGULAR_VERSION_STRING));
-        assertEquals(MinecraftVersions.V20, MinecraftVersion.of(PREFIXED_VERSION_STRING));
-        assertEquals(MinecraftVersions.B1_8, MinecraftVersion.of(SUFFIXED_VERSION_STRING));
+        assertEquals(MinecraftVersions.V20, MinecraftVersion.of(SHORT_VERSION_STRING));
+        assertNotEquals(MinecraftVersions.V20, MinecraftVersion.of(ZERO_SUFFIXED_VERSION_STRING));
+        assertEquals(MinecraftVersions.B1_8, MinecraftVersion.of(PREFIXED_VERSION_STRING));
         assertEquals(MinecraftVersions.B1_7_3, MinecraftVersion.of(PROJECT_POSIDON_STRING));
     }
 

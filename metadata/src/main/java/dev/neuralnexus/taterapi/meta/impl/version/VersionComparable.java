@@ -25,6 +25,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
 
     @Override
     default int compareTo(@NotNull T o) {
+        Objects.requireNonNull(o, "version cannot be null");
         return compare(this.version(), o.version());
     }
 
