@@ -48,7 +48,9 @@ public enum Platform {
 
     VANILLA(Platforms.VANILLA),
 
-    VELOCITY(Platforms.VELOCITY);
+    VELOCITY(Platforms.VELOCITY),
+
+    IGNITE(Platforms.IGNITE);
 
     private final dev.neuralnexus.taterapi.meta.Platform ref;
 
