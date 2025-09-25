@@ -26,7 +26,9 @@ public interface Forge {
     Platform CRUCIBLE = new PlatformImpl("Crucible", "io.github.crucible.CrucibleConfig");
     Platform MOHIST =
             new PlatformImpl("Mohist", "com.mohistmc.MohistMC", "com.mohistmc.MohistMCStart");
-    Platform CATSERVER = new PlatformImpl("CatServer", "catserver.server.CatServerLaunch", "org.foxserver.FoxServer");
+    Platform CATSERVER =
+            new PlatformImpl(
+                    "CatServer", "catserver.server.CatServerLaunch", "org.foxserver.FoxServer");
     Platform MAGMA =
             new PlatformImpl(
                     "Magma",
