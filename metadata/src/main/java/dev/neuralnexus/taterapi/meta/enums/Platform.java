@@ -37,6 +37,7 @@ public enum Platform {
     THERMOS(Platforms.THERMOS),
     CRUCIBLE(Platforms.CRUCIBLE),
     MOHIST(Platforms.MOHIST),
+    CATSERVER(Platforms.CATSERVER),
     MAGMA(Platforms.MAGMA),
     KETTING(Platforms.KETTING),
 

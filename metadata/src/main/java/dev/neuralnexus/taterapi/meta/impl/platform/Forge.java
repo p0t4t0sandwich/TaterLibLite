@@ -26,6 +26,7 @@ public interface Forge {
     Platform CRUCIBLE = new PlatformImpl("Crucible", "io.github.crucible.CrucibleConfig");
     Platform MOHIST =
             new PlatformImpl("Mohist", "com.mohistmc.MohistMC", "com.mohistmc.MohistMCStart");
+    Platform CATSERVER = new PlatformImpl("CatServer", "catserver.server.CatServerLaunch", "org.foxserver.FoxServer");
     Platform MAGMA =
             new PlatformImpl(
                     "Magma",
@@ -34,5 +35,5 @@ public interface Forge {
     Platform KETTING = new PlatformImpl("Ketting", "org.kettingpowered.ketting.core.Ketting");
 
     // Forge+NeoForge Hybrids
-    Platform YOUER = new PlatformImpl("Youer"); // TODO: Update when released
+    Platform YOUER = new PlatformImpl("Youer", "com.mohistmc.launcher.youer.Main");
 }

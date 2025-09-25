@@ -66,6 +66,8 @@ public final class Platforms
             platforms.addAll(List.of(CRUCIBLE, FORGE));
         } else if (MOHIST.detect(force)) {
             platforms.addAll(List.of(MOHIST, FORGE));
+        } else if (CATSERVER.detect(force)) {
+            platforms.addAll(List.of(CATSERVER, FORGE));
         } else if (MAGMA.detect(force)) {
             platforms.addAll(List.of(MAGMA, FORGE));
         } else if (KETTING.detect(force)) {
