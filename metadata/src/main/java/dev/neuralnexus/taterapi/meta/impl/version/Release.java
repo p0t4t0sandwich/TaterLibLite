@@ -877,7 +877,10 @@ public interface Release {
     MinecraftVersion S25W37A = MinecraftVersionImpl.of("25w37a");
     MinecraftVersion V21_9_PRE1 = MinecraftVersionImpl.of("1.21.9-pre1");
     MinecraftVersion V21_9_PRE2 = MinecraftVersionImpl.of("1.21.9-pre2");
-
-    // TODO 1.21.9 other Pre and RC versions when they release
+    MinecraftVersion V21_9_PRE3 = MinecraftVersionImpl.of("1.21.9-pre3");
+    MinecraftVersion V21_9_PRE4 = MinecraftVersionImpl.of("1.21.9-pre4");
+    MinecraftVersion V21_9_RC1 = MinecraftVersionImpl.of("1.21.9-rc1");
     MinecraftVersion V21_9 = MinecraftVersionImpl.of("1.21.9");
+    MinecraftVersion V21_10_RC1 = MinecraftVersionImpl.of("1.21.10-rc1");
+    MinecraftVersion V21_10 = MinecraftVersionImpl.of("1.21.10");
 }
