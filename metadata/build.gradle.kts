@@ -19,7 +19,7 @@ dependencies {
     compileOnly(project(":base"))
 
     // TODO: Replace with proper source sets
-    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.26")
+    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.27")
 }
 
 tasks.test {

@@ -12,9 +12,9 @@ import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
+import dev.neuralnexus.taterapi.meta.impl.platform.meta.neoforge.NeoForgeData;
 
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
@@ -53,22 +53,22 @@ public final class NeoForgeMeta implements Platform.Meta {
 
     @Override
     public boolean isClient() {
-        return FMLLoader.getDist().isClient();
+        return NeoForgeData.dist().isClient();
     }
 
     @Override
     public @NotNull MinecraftVersion minecraftVersion() {
-        return MinecraftVersion.of(FMLLoader.versionInfo().mcVersion());
+        return MinecraftVersion.of(NeoForgeData.versionInfo().mcVersion());
     }
 
     @Override
     public @NotNull String loaderVersion() {
-        return FMLLoader.versionInfo().fmlVersion();
+        return NeoForgeData.versionInfo().fmlVersion();
     }
 
     @Override
     public @NotNull String apiVersion() {
-        return FMLLoader.versionInfo().neoForgeVersion();
+        return NeoForgeData.versionInfo().neoForgeVersion();
     }
 
     @Override
