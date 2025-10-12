@@ -18,20 +18,20 @@ import java.util.ServiceLoader;
  * utilizes Java's {@link ServiceLoader} to discover and load entrypoints at runtime. It also checks
  * for constraints specified via annotations to determine if an entrypoints should be loaded.
  *
- * @param <T> The type of the plugin, which must extend {@link Entrypoint}.
+ * @param <T> The type of entrypoint, which must extend {@link Entrypoint}.
  */
 public final class EntrypointLoader<T extends Entrypoint> {
     private final ServiceLoader<T> loader;
     private final List<T> entrypoints = new ArrayList<>();
 
     /**
-     * Constructs a new EntrypointLoader for the specified plugin class.
+     * Constructs a new EntrypointLoader for the specified entrypoint class.
      *
-     * @param pluginClass The interface of the entrypoint to load, which must extend {@link
+     * @param entrypointClass The interface of the entrypoint to load, which must extend {@link
      *     Entrypoint}.
      */
-    public EntrypointLoader(Class<T> pluginClass) {
-        loader = ServiceLoader.load(pluginClass);
+    public EntrypointLoader(Class<T> entrypointClass) {
+        loader = ServiceLoader.load(entrypointClass);
     }
 
     /**
