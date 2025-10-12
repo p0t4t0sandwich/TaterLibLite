@@ -6,11 +6,6 @@ package dev.neuralnexus.taterapi.plugin;
 
 import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.Constraints;
-import dev.neuralnexus.taterapi.meta.Mappings;
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.Platform;
-import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.AConstraints;
 

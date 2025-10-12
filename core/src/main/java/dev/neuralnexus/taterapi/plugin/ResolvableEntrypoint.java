@@ -4,12 +4,11 @@
  */
 package dev.neuralnexus.taterapi.plugin;
 
-/** Note: When TaterLib is loaded, all instances of this interface will be initialized */
-// TODO: Make "dependency", "version(s)", "notVersion"
-// TODO: Convert this all to annotations, just using the service loader to locate classes
+/**
+ * An entrypoint interface for use with {@link PluginLoader}, usage requires this interface to be
+ * extended to avoid potential conflicts.
+ */
 public interface ResolvableEntrypoint {
-    // TODO: Consider adding a primaryPlatform() method
-
     /** Called when the plugin is initialized, equivalent to running code in the constructor */
     void onInit();
 
