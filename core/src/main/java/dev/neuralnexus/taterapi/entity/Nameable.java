@@ -4,8 +4,8 @@
  */
 package dev.neuralnexus.taterapi.entity;
 
-import dev.neuralnexus.taterapi.meta.annotations.Range;
-import dev.neuralnexus.taterapi.meta.annotations.VersionFeature;
+import dev.neuralnexus.taterapi.meta.anno.Range;
+import dev.neuralnexus.taterapi.meta.anno.VersionFeature;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import java.util.Optional;

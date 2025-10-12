@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Dylan Sperrer - dylan@neuralnexus.dev
  * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
  */
-package dev.neuralnexus.taterapi.meta.annotations;
+package dev.neuralnexus.taterapi.meta.anno;
 
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
@@ -21,13 +21,6 @@ public @interface Range {
      * @return The required Minecraft version
      */
     MinecraftVersion value() default MinecraftVersion.UNKNOWN;
-
-    /**
-     * The required Minecraft versions
-     *
-     * @return The required Minecraft versions
-     */
-    MinecraftVersion[] values() default {};
 
     /**
      * The minimum required Minecraft version (inclusive)
