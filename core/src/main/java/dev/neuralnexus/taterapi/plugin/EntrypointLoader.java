@@ -27,17 +27,18 @@ public final class EntrypointLoader<T extends Entrypoint> {
     /**
      * Constructs a new EntrypointLoader for the specified plugin class.
      *
-     * @param pluginClass The interface of the entrypoint to load, which must extend {@link Entrypoint}.
+     * @param pluginClass The interface of the entrypoint to load, which must extend {@link
+     *     Entrypoint}.
      */
     public EntrypointLoader(Class<T> pluginClass) {
         loader = ServiceLoader.load(pluginClass);
     }
 
     /**
-     * Loads all entrypoints that meet the specified constraints.
-     * This method iterates through all discovered entrypoints and checks for
-     * {@link AConstraints} and {@link AConstraint} annotations. If the constraints are met,
-     * the entrypoint is added to the list of loaded entrypoints.
+     * Loads all entrypoints that meet the specified constraints. This method iterates through all
+     * discovered entrypoints and checks for {@link AConstraints} and {@link AConstraint}
+     * annotations. If the constraints are met, the entrypoint is added to the list of loaded
+     * entrypoints.
      */
     public void load() {
         for (T entrypoint : loader) {

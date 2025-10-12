@@ -5,8 +5,8 @@
 package dev.neuralnexus.taterapi.plugin;
 
 /**
- * An entrypoint interface for use with {@link EntrypointLoader}, usage requires this interface to be
- * extended to avoid potential conflicts.
+ * An entrypoint interface for use with {@link EntrypointLoader}, usage requires this interface to
+ * be extended to avoid potential conflicts.
  */
 public interface Entrypoint {
     /** Called when the plugin is initialized, equivalent to running code in the constructor */
