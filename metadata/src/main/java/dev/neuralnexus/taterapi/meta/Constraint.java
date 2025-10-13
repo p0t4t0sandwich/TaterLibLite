@@ -4,8 +4,11 @@
  */
 package dev.neuralnexus.taterapi.meta;
 
+import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Dependency;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -78,6 +81,36 @@ public record Constraint(
                 .build();
     }
 
+    @Override
+    public @NotNull String toString() {
+        return "Constraint{"
+                + "deps="
+                + deps
+                + ", notDeps="
+                + notDeps
+                + ", mappings="
+                + mappings
+                + ", platform="
+                + platform
+                + ", notPlatform="
+                + notPlatform
+                + ", side="
+                + side
+                + ", version="
+                + version
+                + ", min="
+                + min
+                + ", max="
+                + max
+                + ", notVersion="
+                + notVersion
+                + ", notMin="
+                + notMin
+                + ", notMax="
+                + notMax
+                + '}';
+    }
+
     /** Creates a new {@link Builder} instance for constructing a {@link Constraint}. */
     public static Builder builder() {
         return new Builder();
@@ -95,8 +128,8 @@ public record Constraint(
         private MinecraftVersion min = MinecraftVersions.UNKNOWN;
         private MinecraftVersion max = MinecraftVersions.UNKNOWN;
         private final Set<MinecraftVersion> notVersion = new HashSet<>();
-        private final MinecraftVersion notMin = MinecraftVersions.UNKNOWN;
-        private final MinecraftVersion notMax = MinecraftVersions.UNKNOWN;
+        private MinecraftVersion notMin = MinecraftVersions.UNKNOWN;
+        private MinecraftVersion notMax = MinecraftVersions.UNKNOWN;
 
         private Builder() {}
 
@@ -288,12 +321,12 @@ public record Constraint(
          * @return the current {@link Builder} instance
          */
         public Builder notMin(MinecraftVersion notMin) {
-            this.min = notMin;
+            this.notMin = notMin;
             return this;
         }
 
         public Builder notMax(MinecraftVersion notMax) {
-            this.max = notMax;
+            this.notMax = notMax;
             return this;
         }
 
@@ -328,6 +361,9 @@ public record Constraint(
         private static final Mappings MAPPINGS = META.mappings();
         private static final MinecraftVersion version = META.version();
 
+        public static boolean DEBUG = false;
+        private static final Logger logger = Logger.create("taterliblite-meta-constraint");
+
         private Evaluator() {}
 
         /**
@@ -337,10 +373,28 @@ public record Constraint(
          * @return true if the dependency constraints are satisfied, false otherwise
          */
         public static boolean evalDeps(Constraint constraint) {
-            if (!META.isModLoaded(constraint.deps.toArray(String[]::new))) {
+            if (!constraint.deps.isEmpty()
+                    && !META.isModLoaded(constraint.deps.toArray(String[]::new))) {
+                if (DEBUG) {
+                    logger.debug(
+                            "Dependency constraint failed. Required deps not found: "
+                                    + constraint.deps);
+                }
                 return false;
             }
-            return !META.isModLoaded(constraint.notDeps.toArray(String[]::new));
+            if (!constraint.notDeps.isEmpty()
+                    && META.isModLoaded(constraint.notDeps.toArray(String[]::new))) {
+                if (DEBUG) {
+                    logger.debug(
+                            "Dependency constraint failed. Forbidden deps found: "
+                                    + constraint.notDeps);
+                }
+                return false;
+            }
+            if (DEBUG) {
+                logger.debug("Dependency constraint passed.");
+            }
+            return true;
         }
 
         /**
@@ -350,7 +404,27 @@ public record Constraint(
          * @return true if the mappings constraints are satisfied, false otherwise
          */
         public static boolean evalMappings(Constraint constraint) {
-            return constraint.mappings == Mappings.NONE || MAPPINGS == constraint.mappings;
+            if (constraint.mappings == Mappings.NONE) {
+                return true;
+            }
+            if (MAPPINGS != constraint.mappings) {
+                if (DEBUG) {
+                    logger.debug(
+                            "Mappings constraint failed. Required: "
+                                    + constraint.mappings
+                                    + ", Found: "
+                                    + MAPPINGS);
+                }
+                return false;
+            }
+            if (DEBUG) {
+                logger.debug(
+                        "Mappings constraint passed. Expected: "
+                                + constraint.mappings
+                                + ", Found: "
+                                + MAPPINGS);
+            }
+            return true;
         }
 
         /**
@@ -360,10 +434,28 @@ public record Constraint(
          * @return true if the platform constraints are satisfied, false otherwise
          */
         public static boolean evalPlatform(Constraint constraint) {
-            if (!META.isPlatformPresent(constraint.platform.toArray(Platform[]::new))) {
+            if (!constraint.platform.isEmpty()
+                    && !META.isPlatformPresent(constraint.platform.toArray(Platform[]::new))) {
+                if (DEBUG) {
+                    logger.debug(
+                            "Platform constraint failed. Required platforms not found: "
+                                    + constraint.platform);
+                }
                 return false;
             }
-            return !META.isPlatformPresent(constraint.platform.toArray(Platform[]::new));
+            if (!constraint.notPlatform.isEmpty()
+                    && META.isPlatformPresent(constraint.platform.toArray(Platform[]::new))) {
+                if (DEBUG) {
+                    logger.debug(
+                            "Platform constraint failed. Forbidden platforms found: "
+                                    + constraint.notPlatform);
+                }
+                return false;
+            }
+            if (DEBUG) {
+                logger.debug("Platform constraint passed. Expected: " + constraint.platform);
+            }
+            return true;
         }
 
         /**
@@ -373,7 +465,24 @@ public record Constraint(
          * @return true if the side constraints are satisfied, false otherwise
          */
         public static boolean evalSide(Constraint constraint) {
-            return constraint.side.isEmpty() || constraint.side.contains(META.side());
+            if (constraint.side.isEmpty()) {
+                return true;
+            }
+            if (!constraint.side.contains(META.side())) {
+                if (DEBUG) {
+                    logger.debug(
+                            "Side constraint failed. Required sides not found: " + constraint.side);
+                }
+                return false;
+            }
+            if (DEBUG) {
+                logger.debug(
+                        "Side constraint passed. Expected: "
+                                + constraint.side
+                                + ", Found: "
+                                + META.side());
+            }
+            return true;
         }
 
         /**
@@ -384,15 +493,65 @@ public record Constraint(
          */
         public static boolean evalVersion(Constraint constraint) {
             if (!constraint.version.isEmpty() && !constraint.version.contains(version)) {
+                if (DEBUG) {
+                    logger.debug(
+                            "Version constraint failed. Required versions not found: "
+                                    + constraint.version
+                                    + ", Found: "
+                                    + version);
+                }
                 return false;
             }
-            if (!version.isInRange(constraint.min, constraint.max)) {
+            if (constraint.min != MinecraftVersions.UNKNOWN
+                    && constraint.max != MinecraftVersions.UNKNOWN
+                    && !version.isInRange(constraint.min, constraint.max)) {
+                if (DEBUG) {
+                    logger.debug(
+                            "Version constraint failed. Required range not satisfied: "
+                                    + constraint.min
+                                    + " - "
+                                    + constraint.max
+                                    + ", Found: "
+                                    + version);
+                }
                 return false;
             }
             if (!constraint.notVersion.isEmpty() && constraint.notVersion.contains(version)) {
+                if (DEBUG) {
+                    logger.debug(
+                            "Version constraint failed. Forbidden versions found: "
+                                    + constraint.notVersion
+                                    + ", Found: "
+                                    + version);
+                }
                 return false;
             }
-            return !version.isInRange(constraint.notMin, constraint.notMax);
+            if (constraint.notMin != MinecraftVersions.UNKNOWN
+                    && constraint.notMax != MinecraftVersions.UNKNOWN
+                    && version.isInRange(constraint.notMin, constraint.notMax)) {
+                if (DEBUG) {
+                    logger.debug(
+                            "Version constraint failed. Forbidden range satisfied: "
+                                    + constraint.notMin
+                                    + " - "
+                                    + constraint.notMax
+                                    + ", Found: "
+                                    + version);
+                }
+                return false;
+            }
+            if (DEBUG) {
+                logger.debug(
+                        "Version constraint passed. Expected: "
+                                + constraint.version
+                                + ", "
+                                + constraint.min
+                                + "-"
+                                + constraint.max
+                                + ", Found: "
+                                + version);
+            }
+            return true;
         }
 
         /**
@@ -405,6 +564,9 @@ public record Constraint(
         public static boolean evaluate(Constraint constraint) {
             if (CACHE.containsKey(constraint)) {
                 return CACHE.get(constraint);
+            }
+            if (DEBUG) {
+                logger.debug("Evaluating constraint: " + constraint);
             }
             boolean result =
                     evalDeps(constraint)

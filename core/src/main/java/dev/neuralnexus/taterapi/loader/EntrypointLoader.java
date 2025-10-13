@@ -4,6 +4,7 @@
  */
 package dev.neuralnexus.taterapi.loader;
 
+import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.Constraints;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
@@ -22,6 +23,7 @@ import java.util.ServiceLoader;
  */
 public final class EntrypointLoader<T extends Entrypoint> {
     private final ServiceLoader<T> loader;
+    private final Logger logger;
     private final List<T> entrypoints = new ArrayList<>();
 
     /**
@@ -30,8 +32,9 @@ public final class EntrypointLoader<T extends Entrypoint> {
      * @param entrypointClass The interface of the entrypoint to load, which must extend {@link
      *     Entrypoint}.
      */
-    public EntrypointLoader(Class<T> entrypointClass) {
-        loader = ServiceLoader.load(entrypointClass);
+    public EntrypointLoader(Class<T> entrypointClass, Logger logger) {
+        this.loader = ServiceLoader.load(entrypointClass);
+        this.logger = logger;
     }
 
     /**
@@ -41,36 +44,49 @@ public final class EntrypointLoader<T extends Entrypoint> {
      * entrypoints.
      */
     public void load() {
-        for (T entrypoint : loader) {
-            AConstraints constraints = entrypoint.getClass().getAnnotation(AConstraints.class);
-            if (constraints != null && !Constraints.from(constraints).result()) {
+        for (T entrypoint : this.loader) {
+            Class<?> clazz = entrypoint.getClass();
+            String name = clazz.getName();
+            this.logger.debug("Resolving Entrypoint: " + name);
+
+            AConstraints constraints = clazz.getAnnotation(AConstraints.class);
+            if (constraints == null) {
+                this.logger.debug(
+                        "Entrypoint " + name + " does not contain an AConstraints annotation");
+            } else if (!Constraints.from(constraints).result()) {
+                this.logger.debug("Skipping Entrypoint: " + name);
                 continue;
             }
-            AConstraint constraint = entrypoint.getClass().getAnnotation(AConstraint.class);
-            if (constraint != null && !Constraint.from(constraint).result()) {
+            AConstraint constraint = clazz.getAnnotation(AConstraint.class);
+            if (constraint == null) {
+                this.logger.debug(
+                        "Entrypoint " + name + " does not contain an AConstraint annotation");
+            } else if (!Constraint.from(constraint).result()) {
+                this.logger.debug("Skipping Entrypoint: " + name);
                 continue;
             }
-            entrypoints.add(entrypoint);
+            this.logger.debug("Loading Entrypoint: " + name);
+            this.entrypoints.add(entrypoint);
         }
     }
 
     /** Calls the onInit method of all loaded entrypoints. */
     public void onInit() {
-        for (T entrypoint : entrypoints) {
+        for (T entrypoint : this.entrypoints) {
             entrypoint.onInit();
         }
     }
 
     /** Calls the onEnable method of all loaded entrypoints. */
     public void onEnable() {
-        for (T entrypoint : entrypoints) {
+        for (T entrypoint : this.entrypoints) {
             entrypoint.onEnable();
         }
     }
 
     /** Calls the onDisable method of all loaded entrypoints. */
     public void onDisable() {
-        for (T entrypoint : entrypoints) {
+        for (T entrypoint : this.entrypoints) {
             entrypoint.onDisable();
         }
     }

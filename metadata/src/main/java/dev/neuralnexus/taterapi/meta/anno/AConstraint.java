@@ -36,20 +36,19 @@ public @interface AConstraint {
      * The platform this constraint is valid for. Default returns `Platforms.UNKNOWN` to indicate no
      * constraint.
      */
-    Platform[] platform() default Platform.UNKNOWN;
+    Platform[] platform() default {};
 
     /**
      * The platform this constraint is NOT valid for. Default returns `Platforms.UNKNOWN` to
      * indicate no constraint.
      */
-    Platform[] notPlatform() default Platform.UNKNOWN;
+    Platform[] notPlatform() default {};
 
     /**
      * The side(s) the plugin is supposed to run on. Normally you only use one, but there are case
-     * where abstract code can run in many environments. Default returns `Side.INTEGRATED` to
-     * indicate no constraint.
+     * where abstract code can run in many environments.
      */
-    Side[] side() default Side.INTEGRATED;
+    Side[] side() default {};
 
     /** Minecraft versions this constraint is valid for. */
     Versions version() default @Versions;
