@@ -221,6 +221,27 @@ tasks.assemble {
     dependsOn(tasks.shadeDowngradedApi)
 }
 
+tasks.register("publishAllToMavenLocal") {
+    group = "publishing"
+    description = "Publishes all publications to Maven Local"
+    dependsOn(subprojects.map { it.tasks.named("publishAllPublicationsToMavenLocalRepository") })
+    dependsOn(tasks.named("publishAllPublicationsToMavenLocalRepository"))
+}
+
+tasks.register("publishAllToNeuralNexusSnapshots") {
+    group = "publishing"
+    description = "Publishes all publications to NeuralNexus Snapshots"
+    dependsOn(subprojects.map { it.tasks.named("publishAllPublicationsToNeuralNexusSnapshotsRepository") })
+    dependsOn(tasks.named("publishAllPublicationsToNeuralNexusSnapshotsRepository"))
+}
+
+tasks.register("publishAllToNeuralNexusReleases") {
+    group = "publishing"
+    description = "Publishes all publications to NeuralNexus Releases"
+    dependsOn(subprojects.map { it.tasks.named("publishAllPublicationsToNeuralNexusReleasesRepository") })
+    dependsOn(tasks.named("publishAllPublicationsToNeuralNexusReleasesRepository"))
+}
+
 publishing {
     repositories {
         mavenLocal()
