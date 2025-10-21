@@ -21,7 +21,6 @@ import dev.neuralnexus.taterapi.meta.impl.platform.meta.IgniteMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.NeoForgeMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.VanillaMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.VelocityMeta;
-import dev.neuralnexus.taterapi.meta.impl.platform.meta.bukkit.BukkitHybridMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.bukkit.BukkitMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.forge.ForgeData;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.sponge.SpongeData;
@@ -387,10 +386,6 @@ public final class MetaAPIImpl implements MetaAPI {
         } else if (platform == Platforms.SPONGE) {
             return Optional.ofNullable(SpongeData.create());
         } else if (MetaAPI.isBukkitBased(platform)) {
-            if (MetaAPI.instance()
-                    .isPlatformPresent(Platforms.FORGE, Platforms.NEOFORGE, Platforms.FABRIC)) {
-                return Optional.of(new BukkitHybridMeta());
-            }
             return Optional.of(new BukkitMeta());
         } else if (MetaAPI.isBungeeCordBased(platform)) {
             return Optional.of(new BungeeCordMeta());

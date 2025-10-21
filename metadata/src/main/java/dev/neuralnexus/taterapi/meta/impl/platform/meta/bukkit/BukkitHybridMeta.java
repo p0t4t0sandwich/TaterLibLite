@@ -17,42 +17,38 @@ import org.jetbrains.annotations.NotNull;
 
 /** Stores data about the Bukkit platform */
 // TODO: See if there's a better way around this for hybrids
-public final class BukkitHybridMeta extends BukkitMeta {
-    @Override
-    public @NotNull MinecraftVersion minecraftVersion() {
-        if (org.bukkit.Bukkit.getServer() == null) {
-            if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
-                Platform.Meta forge = ForgeData.create();
-                if (forge != null) {
-                    return forge.minecraftVersion();
-                }
-            } else if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE)) {
-                Platform.Meta neoForge = new NeoForgeMeta();
-                return neoForge.minecraftVersion();
-            } else if (MetaAPI.instance().isPlatformPresent(Platforms.FABRIC)) {
-                Platform.Meta fabric = new FabricMeta();
-                return fabric.minecraftVersion();
+final class BukkitHybridMeta {
+    private BukkitHybridMeta() {}
+
+    static @NotNull MinecraftVersion minecraftVersion() {
+        if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
+            Platform.Meta forge = ForgeData.create();
+            if (forge != null) {
+                return forge.minecraftVersion();
             }
+        } else if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE)) {
+            Platform.Meta neoForge = new NeoForgeMeta();
+            return neoForge.minecraftVersion();
+        } else if (MetaAPI.instance().isPlatformPresent(Platforms.FABRIC)) {
+            Platform.Meta fabric = new FabricMeta();
+            return fabric.minecraftVersion();
         }
-        return super.minecraftVersion();
+        throw new IllegalStateException("No hybrid platform detected");
     }
 
-    @Override
-    public @NotNull Logger logger(@NotNull String modId) {
-        if (org.bukkit.Bukkit.getServer() == null) {
-            if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
-                Platform.Meta forge = ForgeData.create();
-                if (forge != null) {
-                    return forge.logger(modId);
-                }
-            } else if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE)) {
-                Platform.Meta neoForge = new NeoForgeMeta();
-                return neoForge.logger(modId);
-            } else if (MetaAPI.instance().isPlatformPresent(Platforms.FABRIC)) {
-                Platform.Meta fabric = new FabricMeta();
-                return fabric.logger(modId);
+    static @NotNull Logger logger(@NotNull String modId) {
+        if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
+            Platform.Meta forge = ForgeData.create();
+            if (forge != null) {
+                return forge.logger(modId);
             }
+        } else if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE)) {
+            Platform.Meta neoForge = new NeoForgeMeta();
+            return neoForge.logger(modId);
+        } else if (MetaAPI.instance().isPlatformPresent(Platforms.FABRIC)) {
+            Platform.Meta fabric = new FabricMeta();
+            return fabric.logger(modId);
         }
-        return super.logger(modId);
+        throw new IllegalStateException("No hybrid platform detected");
     }
 }

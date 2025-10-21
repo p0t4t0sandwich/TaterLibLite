@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Stores data about the Bukkit platform */
-public class BukkitMeta implements Platform.Meta {
+public final class BukkitMeta implements Platform.Meta {
     @Override
     public @NotNull Object server() {
         return Bukkit.getServer();
@@ -67,6 +67,9 @@ public class BukkitMeta implements Platform.Meta {
 
     @Override
     public @NotNull MinecraftVersion minecraftVersion() {
+        if (MetaAPI.instance().isHybrid()) {
+            return BukkitHybridMeta.minecraftVersion();
+        }
         String version = Bukkit.getVersion();
         if (MetaAPI.instance().isPlatformPresent(Platforms.PAPER)
                 && checkForMethod("org.bukkit.Bukkit", "getMinecraftVersion")) {
@@ -100,6 +103,9 @@ public class BukkitMeta implements Platform.Meta {
 
     @Override
     public @NotNull Logger logger(@NotNull String modId) {
+        if (MetaAPI.instance().isHybrid()) {
+            return BukkitHybridMeta.logger(modId);
+        }
         return new JavaLogger(modId, Bukkit.getLogger());
     }
 
