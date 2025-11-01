@@ -10,7 +10,7 @@ import static dev.neuralnexus.taterapi.util.PathUtils.getModsFolder;
 import dev.neuralnexus.taterapi.logger.Logger;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -124,7 +124,7 @@ public interface Platform {
          *
          * @return The server instance
          */
-        @NotNull Object server();
+        @NonNull Object server();
 
         /**
          * Get the client instance. Not available in server-only environments. <br>
@@ -134,7 +134,7 @@ public interface Platform {
          *
          * @return The client instance
          */
-        @NotNull Object client();
+        @NonNull Object client();
 
         /**
          * Get an instance of the {@link net.minecraft.server.MinecraftServer}. Not available on
@@ -142,14 +142,14 @@ public interface Platform {
          *
          * @return The MinecraftServer instance
          */
-        @NotNull Object minecraft();
+        @NonNull Object minecraft();
 
         /**
          * Get the "side" the current environment is running on
          *
          * @return The side
          */
-        @NotNull Side side();
+        @NonNull Side side();
 
         /**
          * A quick check to see if the current environment is client-based
@@ -163,35 +163,35 @@ public interface Platform {
          *
          * @return The running Minecraft asString
          */
-        @NotNull MinecraftVersion minecraftVersion();
+        @NonNull MinecraftVersion minecraftVersion();
 
         /**
          * Get the modloader asString
          *
          * @return the modloader asString
          */
-        @NotNull String loaderVersion();
+        @NonNull String loaderVersion();
 
         /**
          * Get the modloader API asString
          *
          * @return the modloader API asString
          */
-        @NotNull String apiVersion();
+        @NonNull String apiVersion();
 
         /**
          * Get the mod list
          *
          * @return The mod list
          */
-        @NotNull List<ModInfo> mods();
+        @NonNull List<ModInfo> mods();
 
         /**
          * Get the Logger
          *
          * @return The Logger
          */
-        @NotNull Logger logger(@NotNull String pluginId);
+        @NonNull Logger logger(@NonNull String pluginId);
 
         /**
          * Get if a mod is loaded <br>
@@ -201,7 +201,7 @@ public interface Platform {
          * @param nameOrId The name of the plugin or modId of the mod
          * @return True if the mod is loaded, false otherwise
          */
-        default boolean isModLoaded(@NotNull String... nameOrId) {
+        default boolean isModLoaded(@NonNull String... nameOrId) {
             Objects.requireNonNull(nameOrId, "Mod name or ID cannot be null");
             for (ModInfo mod : this.mods()) {
                 for (String s : nameOrId) {
@@ -221,7 +221,7 @@ public interface Platform {
          * @param nameOrId The name of the plugin or modId of the mod
          * @return True if all mods are loaded, false otherwise
          */
-        default boolean areModsLoaded(@NotNull String... nameOrId) {
+        default boolean areModsLoaded(@NonNull String... nameOrId) {
             Objects.requireNonNull(nameOrId, "Mod name or ID cannot be null");
             for (ModInfo mod : this.mods()) {
                 boolean found = false;
@@ -243,7 +243,7 @@ public interface Platform {
          *
          * @return The path to the mod/plugin folder
          */
-        default @NotNull Path modsFolder() {
+        default @NonNull Path modsFolder() {
             return getModsFolder();
         }
 
@@ -252,7 +252,7 @@ public interface Platform {
          *
          * @return The path to the config folder
          */
-        default @NotNull Path configFolder() {
+        default @NonNull Path configFolder() {
             return getConfigFolder();
         }
     }

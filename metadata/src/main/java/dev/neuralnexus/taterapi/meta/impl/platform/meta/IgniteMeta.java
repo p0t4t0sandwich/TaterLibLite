@@ -12,7 +12,7 @@ import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import space.vectrix.ignite.Ignite;
 
@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class IgniteMeta implements Platform.Meta {
-    private @NotNull Platform.Meta underlyingPlatform() {
+    private Platform.@NonNull Meta underlyingPlatform() {
         final MetaAPI api = MetaAPI.instance();
         Optional<Platform.Meta> meta = Optional.empty();
         if (api.isPlatformPresent(Platforms.VELOCITY)) {
@@ -42,22 +42,22 @@ public final class IgniteMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Object server() {
+    public @NonNull Object server() {
         return this.underlyingPlatform().server();
     }
 
     @Override
-    public @NotNull Object client() {
+    public @NonNull Object client() {
         return this.underlyingPlatform().client();
     }
 
     @Override
-    public @NotNull Object minecraft() {
+    public @NonNull Object minecraft() {
         return this.underlyingPlatform().minecraft();
     }
 
     @Override
-    public @NotNull Side side() {
+    public @NonNull Side side() {
         return this.underlyingPlatform().side();
     }
 
@@ -67,22 +67,22 @@ public final class IgniteMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull MinecraftVersion minecraftVersion() {
+    public @NonNull MinecraftVersion minecraftVersion() {
         return this.underlyingPlatform().minecraftVersion();
     }
 
     @Override
-    public @NotNull String loaderVersion() {
+    public @NonNull String loaderVersion() {
         return "0.0.0";
     }
 
     @Override
-    public @NotNull String apiVersion() {
+    public @NonNull String apiVersion() {
         return "0.0.0";
     }
 
     @Override
-    public @NotNull List<ModInfo> mods() {
+    public @NonNull List<ModInfo> mods() {
         return Ignite.mods().containers().stream()
                 .map(
                         modContainer ->
@@ -95,7 +95,7 @@ public final class IgniteMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Logger logger(@NotNull String pluginId) {
+    public @NonNull Logger logger(@NonNull String pluginId) {
         return this.underlyingPlatform().logger(pluginId);
     }
 }

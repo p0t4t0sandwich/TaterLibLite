@@ -18,7 +18,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 /** Stores data about the NeoForge platform */
 public final class NeoForgeMeta implements Platform.Meta {
     @Override
-    public @NotNull Object server() {
+    public @NonNull Object server() {
         if (this.side().isServer()) {
             return this.minecraft();
         }
@@ -34,12 +34,12 @@ public final class NeoForgeMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Object client() {
+    public @NonNull Object client() {
         return WMinecraft.getInstance();
     }
 
     @Override
-    public @NotNull Object minecraft() {
+    public @NonNull Object minecraft() {
         if (this.side().isClient() && WMinecraft.hasServer()) {
             return WMinecraft.getServer();
         }
@@ -47,7 +47,7 @@ public final class NeoForgeMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Side side() {
+    public @NonNull Side side() {
         return WMinecraft.determineSide(this.isClient());
     }
 
@@ -57,22 +57,22 @@ public final class NeoForgeMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull MinecraftVersion minecraftVersion() {
+    public @NonNull MinecraftVersion minecraftVersion() {
         return MinecraftVersion.of(NeoForgeData.versionInfo().mcVersion());
     }
 
     @Override
-    public @NotNull String loaderVersion() {
+    public @NonNull String loaderVersion() {
         return NeoForgeData.versionInfo().fmlVersion();
     }
 
     @Override
-    public @NotNull String apiVersion() {
+    public @NonNull String apiVersion() {
         return NeoForgeData.versionInfo().neoForgeVersion();
     }
 
     @Override
-    public @NotNull List<ModInfo> mods() {
+    public @NonNull List<ModInfo> mods() {
         List<net.neoforged.fml.loading.moddiscovery.ModInfo> mods = null;
         if (ModList.get() != null) {
             mods = ModList.get().getMods();
@@ -92,7 +92,7 @@ public final class NeoForgeMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Logger logger(@NotNull String modId) {
+    public @NonNull Logger logger(@NonNull String modId) {
         return new Slf4jLogger(modId);
     }
 }

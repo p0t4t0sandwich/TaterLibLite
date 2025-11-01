@@ -6,7 +6,7 @@ package dev.neuralnexus.taterapi.meta.impl.version;
 
 import static dev.neuralnexus.taterapi.util.FlexVerComparator.compare;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
@@ -24,7 +24,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
     String version();
 
     @Override
-    default int compareTo(@NotNull T o) {
+    default int compareTo(@NonNull T o) {
         Objects.requireNonNull(o, "version cannot be null");
         return compare(this.version(), o.version());
     }
@@ -35,7 +35,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param version The version to compare
      * @return True if the versions are equal
      */
-    default boolean is(@NotNull String version) {
+    default boolean is(@NonNull String version) {
         Objects.requireNonNull(version, "version cannot be null");
         return compare(this.version(), version) == 0;
     }
@@ -46,7 +46,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param version The version to compare
      * @return True if the versions are equal
      */
-    default boolean is(@NotNull T version) {
+    default boolean is(@NonNull T version) {
         Objects.requireNonNull(version, "version cannot be null");
         return this.compareTo(version) == 0;
     }
@@ -62,9 +62,9 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      */
     default boolean isInRange(
             boolean startInclusive,
-            @NotNull String start,
+            @NonNull String start,
             boolean endInclusive,
-            @NotNull String end) {
+            @NonNull String end) {
         Objects.requireNonNull(start, "start cannot be null");
         Objects.requireNonNull(end, "end cannot be null");
 
@@ -91,7 +91,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @return True if the version is in the range
      */
     default boolean isInRange(
-            boolean startInclusive, @NotNull T start, boolean endInclusive, @NotNull T end) {
+            boolean startInclusive, @NonNull T start, boolean endInclusive, @NonNull T end) {
         Objects.requireNonNull(start, "start cannot be null");
         Objects.requireNonNull(end, "end cannot be null");
 
@@ -115,7 +115,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param end The end version
      * @return True if the version is in the range
      */
-    default boolean isInRange(@NotNull String start, @NotNull String end) {
+    default boolean isInRange(@NonNull String start, @NonNull String end) {
         Objects.requireNonNull(start, "start cannot be null");
         Objects.requireNonNull(end, "end cannot be null");
 
@@ -138,7 +138,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param end The end version
      * @return True if the version is in the range
      */
-    default boolean isInRange(@NotNull T start, @NotNull T end) {
+    default boolean isInRange(@NonNull T start, @NonNull T end) {
         Objects.requireNonNull(start, "start cannot be null");
         Objects.requireNonNull(end, "end cannot be null");
         // If start or end is unknown, treat as an unbounded range
@@ -160,7 +160,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param rangeString The range to check
      * @return If The version of Minecraft the server is running is within the defined range
      */
-    boolean parseRange(@NotNull String rangeString);
+    boolean parseRange(@NonNull String rangeString);
 
     /**
      * Check if the version is newer than another version
@@ -168,7 +168,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param version The version to compare
      * @return True if the version is newer
      */
-    default boolean isNewerThan(@NotNull String version) {
+    default boolean isNewerThan(@NonNull String version) {
         Objects.requireNonNull(version, "version cannot be null");
         return compare(this.version(), version) > 0;
     }
@@ -179,7 +179,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param version The version to compare
      * @return True if the version is newer
      */
-    default boolean isNewerThan(@NotNull T version) {
+    default boolean isNewerThan(@NonNull T version) {
         Objects.requireNonNull(version, "version cannot be null");
         return this.compareTo(version) > 0;
     }
@@ -190,7 +190,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param version The version to compare
      * @return True if the version is at least
      */
-    default boolean isAtLeast(@NotNull String version) {
+    default boolean isAtLeast(@NonNull String version) {
         Objects.requireNonNull(version, "version cannot be null");
         return compare(this.version(), version) >= 0;
     }
@@ -201,7 +201,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param version The version to compare
      * @return True if the version is at least
      */
-    default boolean isAtLeast(@NotNull T version) {
+    default boolean isAtLeast(@NonNull T version) {
         Objects.requireNonNull(version, "version cannot be null");
         return this.compareTo(version) >= 0;
     }
@@ -212,7 +212,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param version The version to compare
      * @return True if the version is older
      */
-    default boolean isOlderThan(@NotNull String version) {
+    default boolean isOlderThan(@NonNull String version) {
         Objects.requireNonNull(version, "version cannot be null");
         return compare(this.version(), version) < 0;
     }
@@ -223,7 +223,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param version The version to compare
      * @return True if the version is older
      */
-    default boolean isOlderThan(@NotNull T version) {
+    default boolean isOlderThan(@NonNull T version) {
         Objects.requireNonNull(version, "version cannot be null");
         return this.compareTo(version) < 0;
     }
@@ -234,7 +234,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param version The version to compare
      * @return True if the version is at most
      */
-    default boolean isAtMost(@NotNull String version) {
+    default boolean isAtMost(@NonNull String version) {
         Objects.requireNonNull(version, "version cannot be null");
         return compare(this.version(), version) <= 0;
     }
@@ -245,7 +245,7 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
      * @param version The version to compare
      * @return True if the version is at most
      */
-    default boolean isAtMost(@NotNull T version) {
+    default boolean isAtMost(@NonNull T version) {
         Objects.requireNonNull(version, "version cannot be null");
         return this.compareTo(version) <= 0;
     }

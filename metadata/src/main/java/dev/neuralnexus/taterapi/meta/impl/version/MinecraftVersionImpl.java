@@ -8,7 +8,7 @@ import static dev.neuralnexus.taterapi.util.FlexVerComparator.compare;
 
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /** Implementation of {@link MinecraftVersion} */
 public record MinecraftVersionImpl(String version) implements MinecraftVersion {
@@ -25,7 +25,7 @@ public record MinecraftVersionImpl(String version) implements MinecraftVersion {
     }
 
     @Override
-    public @NotNull String toString() {
+    public @NonNull String toString() {
         return this.version;
     }
 }

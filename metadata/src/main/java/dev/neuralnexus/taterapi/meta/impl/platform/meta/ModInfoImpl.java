@@ -8,8 +8,8 @@ import dev.neuralnexus.taterapi.meta.ModInfo;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.util.VersionUtil;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -24,9 +24,9 @@ import java.util.Objects;
 public record ModInfoImpl(String id, String name, String version, Platform platform)
         implements ModInfo {
     @Override
-    public boolean parseRange(@NotNull String rangeString) {
+    public boolean parseRange(@NonNull String rangeString) {
         Objects.requireNonNull(rangeString, "Range string cannot be null");
-        @Nullable VersionUtil.Range range = VersionUtil.Range.parse(rangeString);
+        VersionUtil.@Nullable Range range = VersionUtil.Range.parse(rangeString);
         if (range == null) {
             return this.is(rangeString);
         }

@@ -18,7 +18,7 @@ import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -29,22 +29,22 @@ public final class VelocityMeta implements Platform.Meta {
     @Inject private ProxyServer proxyServer;
 
     @Override
-    public @NotNull Object server() {
+    public @NonNull Object server() {
         return proxyServer;
     }
 
     @Override
-    public @NotNull Object client() {
+    public @NonNull Object client() {
         throw new UnsupportedOperationException("Velocity does not run on the client");
     }
 
     @Override
-    public @NotNull Object minecraft() {
+    public @NonNull Object minecraft() {
         throw new UnsupportedOperationException("Velocity does not have a MinecraftServer");
     }
 
     @Override
-    public @NotNull Side side() {
+    public @NonNull Side side() {
         return Side.PROXY;
     }
 
@@ -54,22 +54,22 @@ public final class VelocityMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull MinecraftVersion minecraftVersion() {
+    public @NonNull MinecraftVersion minecraftVersion() {
         return MinecraftVersion.of(ProtocolVersion.MAXIMUM_VERSION.toString());
     }
 
     @Override
-    public @NotNull String loaderVersion() {
+    public @NonNull String loaderVersion() {
         return proxyServer.getVersion().getVersion();
     }
 
     @Override
-    public @NotNull String apiVersion() {
+    public @NonNull String apiVersion() {
         return proxyServer.getVersion().getVersion();
     }
 
     @Override
-    public @NotNull List<ModInfo> mods() {
+    public @NonNull List<ModInfo> mods() {
         return proxyServer.getPluginManager().getPlugins().stream()
                 .map(
                         plugin ->
@@ -82,17 +82,17 @@ public final class VelocityMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Logger logger(@NotNull String modId) {
+    public @NonNull Logger logger(@NonNull String modId) {
         return new Slf4jLogger(modId);
     }
 
     @Override
-    public @NotNull Path modsFolder() {
+    public @NonNull Path modsFolder() {
         return getPluginsFolder();
     }
 
     @Override
-    public @NotNull Path configFolder() {
+    public @NonNull Path configFolder() {
         return getPluginsFolder();
     }
 }

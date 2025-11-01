@@ -10,7 +10,7 @@ import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -26,7 +26,7 @@ public record MappingEntry(
     private static final Mappings ENVIRONMENT = MetaAPI.instance().mappings();
     private static final MinecraftVersion VERSION = MetaAPI.instance().version();
 
-    public static Builder builder(@NotNull String name) {
+    public static Builder builder(@NonNull String name) {
         return new Builder(name);
     }
 
@@ -38,7 +38,7 @@ public record MappingEntry(
         private MinecraftVersion minVersion = MinecraftVersions.UNKNOWN;
         private MinecraftVersion maxVersion = MinecraftVersions.UNKNOWN;
 
-        private Builder(@NotNull String name) {
+        private Builder(@NonNull String name) {
             this.name = Objects.requireNonNull(name, "name cannot be null");
         }
 
@@ -49,7 +49,7 @@ public record MappingEntry(
          * @param parent The parent entry
          * @return The builder
          */
-        public Builder parentEntry(@NotNull String parent) {
+        public Builder parentEntry(@NonNull String parent) {
             this.parentEntry = Objects.requireNonNull(parent, "parentEntry cannot be null");
             return this;
         }
@@ -61,7 +61,7 @@ public record MappingEntry(
          * @param parent The parent entry
          * @return The builder
          */
-        public Builder parentEntry(@NotNull MappingEntry parent) {
+        public Builder parentEntry(@NonNull MappingEntry parent) {
             this.parentEntry = Objects.requireNonNull(parent.name(), "parentEntry cannot be null");
             return this;
         }
@@ -73,7 +73,7 @@ public record MappingEntry(
          * @param parent The parent entry
          * @return The builder
          */
-        public Builder parentEntry(@NotNull Builder parent) {
+        public Builder parentEntry(@NonNull Builder parent) {
             this.parentEntry =
                     Objects.requireNonNull(parent.build().name(), "parentEntry cannot be null");
             return this;
@@ -85,7 +85,7 @@ public record MappingEntry(
          * @param version The version
          * @return The builder
          */
-        public Builder version(@NotNull MinecraftVersion version) {
+        public Builder version(@NonNull MinecraftVersion version) {
             this.version = Objects.requireNonNull(version, "version cannot be null");
             return this;
         }
@@ -100,7 +100,7 @@ public record MappingEntry(
          * @return The builder
          */
         public Builder versionRange(
-                @NotNull MinecraftVersion minVersion, @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion, @NonNull MinecraftVersion maxVersion) {
             this.minVersion =
                     Objects.requireNonNull(
                             minVersion,
@@ -119,7 +119,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder official(String mappings, @NotNull MinecraftVersion version) {
+        public Builder official(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.OFFICIAL && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -128,8 +128,8 @@ public record MappingEntry(
 
         public Builder official(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.OFFICIAL && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
             }
@@ -143,7 +143,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder mojang(String mappings, @NotNull MinecraftVersion version) {
+        public Builder mojang(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.MOJANG && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -152,8 +152,8 @@ public record MappingEntry(
 
         public Builder mojang(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.MOJANG && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
             }
@@ -167,7 +167,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder spigot(String mappings, @NotNull MinecraftVersion version) {
+        public Builder spigot(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.SPIGOT && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -176,8 +176,8 @@ public record MappingEntry(
 
         public Builder spigot(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.SPIGOT && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
             }
@@ -191,7 +191,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder legacySpigot(String mappings, @NotNull MinecraftVersion version) {
+        public Builder legacySpigot(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.LEGACY_SPIGOT && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -200,8 +200,8 @@ public record MappingEntry(
 
         public Builder legacySpigot(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.LEGACY_SPIGOT
                     && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
@@ -216,7 +216,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder searge(String mappings, @NotNull MinecraftVersion version) {
+        public Builder searge(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.SEARGE && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -225,8 +225,8 @@ public record MappingEntry(
 
         public Builder searge(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.SEARGE && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
             }
@@ -240,7 +240,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder legacySearge(String mappings, @NotNull MinecraftVersion version) {
+        public Builder legacySearge(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.LEGACY_SEARGE && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -249,8 +249,8 @@ public record MappingEntry(
 
         public Builder legacySearge(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.LEGACY_SEARGE
                     && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
@@ -265,7 +265,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder mcp(String mappings, @NotNull MinecraftVersion version) {
+        public Builder mcp(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.MCP && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -274,8 +274,8 @@ public record MappingEntry(
 
         public Builder mcp(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.MCP && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
             }
@@ -289,7 +289,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder yarn(String mappings, @NotNull MinecraftVersion version) {
+        public Builder yarn(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.YARN && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -298,8 +298,8 @@ public record MappingEntry(
 
         public Builder yarn(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.YARN && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
             }
@@ -313,7 +313,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder yarnIntermediary(String mappings, @NotNull MinecraftVersion version) {
+        public Builder yarnIntermediary(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.YARN_INTERMEDIARY && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -322,8 +322,8 @@ public record MappingEntry(
 
         public Builder yarnIntermediary(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.YARN_INTERMEDIARY
                     && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
@@ -338,7 +338,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder legacyIntermediary(String mappings, @NotNull MinecraftVersion version) {
+        public Builder legacyIntermediary(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.LEGACY_INTERMEDIARY && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -347,8 +347,8 @@ public record MappingEntry(
 
         public Builder legacyIntermediary(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.LEGACY_INTERMEDIARY
                     && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
@@ -363,7 +363,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder babricIntermediary(String mappings, @NotNull MinecraftVersion version) {
+        public Builder babricIntermediary(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.BABRIC_INTERMEDIARY && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -372,8 +372,8 @@ public record MappingEntry(
 
         public Builder babricIntermediary(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.BABRIC_INTERMEDIARY
                     && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
@@ -388,7 +388,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder calamus(String mappings, @NotNull MinecraftVersion version) {
+        public Builder calamus(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.CALAMUS && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -397,8 +397,8 @@ public record MappingEntry(
 
         public Builder calamus(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.CALAMUS && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
             }
@@ -412,7 +412,7 @@ public record MappingEntry(
             return this;
         }
 
-        public Builder hashed(String mappings, @NotNull MinecraftVersion version) {
+        public Builder hashed(String mappings, @NonNull MinecraftVersion version) {
             if (ENVIRONMENT == Mappings.HASHED && VERSION.is(version)) {
                 this.mappings = mappings;
             }
@@ -421,8 +421,8 @@ public record MappingEntry(
 
         public Builder hashed(
                 String mappings,
-                @NotNull MinecraftVersion minVersion,
-                @NotNull MinecraftVersion maxVersion) {
+                @NonNull MinecraftVersion minVersion,
+                @NonNull MinecraftVersion maxVersion) {
             if (ENVIRONMENT == Mappings.HASHED && VERSION.isInRange(minVersion, maxVersion)) {
                 this.mappings = mappings;
             }

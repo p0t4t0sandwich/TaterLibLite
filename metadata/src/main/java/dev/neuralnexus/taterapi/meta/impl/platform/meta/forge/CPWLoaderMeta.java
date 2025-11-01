@@ -17,7 +17,7 @@ import dev.neuralnexus.taterapi.meta.Side;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModInfoImpl;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 /** Stores data about the CPW Loader platform */
 final class CPWLoaderMeta implements Platform.Meta {
     @Override
-    public @NotNull Object server() {
+    public @NonNull Object server() {
         if (this.side().isServer()) {
             return this.minecraft();
         }
@@ -33,12 +33,12 @@ final class CPWLoaderMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Object client() {
+    public @NonNull Object client() {
         return WMinecraft.getInstance();
     }
 
     @Override
-    public @NotNull Object minecraft() {
+    public @NonNull Object minecraft() {
         if (this.side().isClient() && WMinecraft.hasServer()) {
             return WMinecraft.getServer();
         }
@@ -46,7 +46,7 @@ final class CPWLoaderMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Side side() {
+    public @NonNull Side side() {
         return WMinecraft.determineSide(this.isClient());
     }
 
@@ -56,7 +56,7 @@ final class CPWLoaderMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull MinecraftVersion minecraftVersion() {
+    public @NonNull MinecraftVersion minecraftVersion() {
         String version = "Unknown";
         try {
             // Reflect to get cpw.mods.fml.common.Loader.MC_VERSION
@@ -67,17 +67,17 @@ final class CPWLoaderMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull String loaderVersion() {
+    public @NonNull String loaderVersion() {
         return ForgeVersion_7_12.forgeVersion();
     }
 
     @Override
-    public @NotNull String apiVersion() {
+    public @NonNull String apiVersion() {
         return ForgeVersion_7_12.forgeVersion();
     }
 
     @Override
-    public @NotNull List<ModInfo> mods() {
+    public @NonNull List<ModInfo> mods() {
         return Loader.instance().getModList().stream()
                 .map(
                         modContainer ->
@@ -90,7 +90,7 @@ final class CPWLoaderMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Logger logger(@NotNull String modId) {
+    public @NonNull Logger logger(@NonNull String modId) {
         return new ApacheLogger(modId);
     }
 }

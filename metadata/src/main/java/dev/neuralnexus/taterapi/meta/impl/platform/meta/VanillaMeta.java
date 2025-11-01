@@ -15,7 +15,7 @@ import dev.neuralnexus.taterapi.meta.impl.WMinecraftServer;
 import dev.neuralnexus.taterapi.util.MixinServiceUtil;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -36,7 +36,7 @@ public final class VanillaMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Object server() {
+    public @NonNull Object server() {
         if (this.side().isServer()) {
             return this.minecraft();
         }
@@ -44,12 +44,12 @@ public final class VanillaMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Object client() {
+    public @NonNull Object client() {
         return WMinecraft.getInstance();
     }
 
     @Override
-    public @NotNull Object minecraft() {
+    public @NonNull Object minecraft() {
         if (this.side().isClient() && WMinecraft.hasServer()) {
             return WMinecraft.getServer();
         }
@@ -60,7 +60,7 @@ public final class VanillaMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Side side() {
+    public @NonNull Side side() {
         if (server == null) {
             return Side.CLIENT;
         }
@@ -73,7 +73,7 @@ public final class VanillaMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull MinecraftVersion minecraftVersion() {
+    public @NonNull MinecraftVersion minecraftVersion() {
         String version = "Unknown";
         try {
             version = MixinServiceUtil.mcVersion();
@@ -83,22 +83,22 @@ public final class VanillaMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull String loaderVersion() {
+    public @NonNull String loaderVersion() {
         return minecraftVersion().toString();
     }
 
     @Override
-    public @NotNull String apiVersion() {
+    public @NonNull String apiVersion() {
         return minecraftVersion().toString();
     }
 
     @Override
-    public @NotNull List<ModInfo> mods() {
+    public @NonNull List<ModInfo> mods() {
         return Collections.emptyList();
     }
 
     @Override
-    public @NotNull Logger logger(@NotNull String modId) {
+    public @NonNull Logger logger(@NonNull String modId) {
         // TODO: Do some version parsing and grab the vanilla logger factory
         return new SystemLogger(modId);
     }

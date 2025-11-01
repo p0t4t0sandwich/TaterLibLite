@@ -10,8 +10,8 @@ import dev.neuralnexus.taterapi.meta.impl.version.meta.MinecraftVersionMetaImpl;
 import dev.neuralnexus.taterapi.util.VersionUtil;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -49,9 +49,9 @@ public interface MinecraftVersion extends VersionComparable<MinecraftVersion> {
     }
 
     @Override
-    default boolean parseRange(@NotNull String rangeString) {
+    default boolean parseRange(@NonNull String rangeString) {
         Objects.requireNonNull(rangeString, "Range string cannot be null");
-        @Nullable VersionUtil.Range range = VersionUtil.Range.parse(rangeString);
+        VersionUtil.@Nullable Range range = VersionUtil.Range.parse(rangeString);
         if (range == null) {
             return this.is(rangeString);
         }

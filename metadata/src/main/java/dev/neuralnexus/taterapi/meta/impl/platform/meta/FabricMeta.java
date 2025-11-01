@@ -19,7 +19,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 /** Stores data about the Fabric platform */
 public final class FabricMeta implements Platform.Meta {
     @Override
-    public @NotNull Object server() {
+    public @NonNull Object server() {
         if (this.side().isServer()) {
             return this.minecraft();
         }
@@ -36,13 +36,13 @@ public final class FabricMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Object client() {
+    public @NonNull Object client() {
         return WMinecraft.getInstance();
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public @NotNull Object minecraft() {
+    public @NonNull Object minecraft() {
         if (this.side().isClient() && WMinecraft.hasServer()) {
             return WMinecraft.getServer();
         }
@@ -50,7 +50,7 @@ public final class FabricMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Side side() {
+    public @NonNull Side side() {
         return WMinecraft.determineSide(this.isClient());
     }
 
@@ -61,7 +61,7 @@ public final class FabricMeta implements Platform.Meta {
 
     @Override
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    public @NotNull MinecraftVersion minecraftVersion() {
+    public @NonNull MinecraftVersion minecraftVersion() {
         return MinecraftVersion.of(
                 FabricLoader.getInstance()
                         .getModContainer("minecraft")
@@ -72,7 +72,7 @@ public final class FabricMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull String loaderVersion() {
+    public @NonNull String loaderVersion() {
         Optional<ModContainer> container =
                 FabricLoader.getInstance().getModContainer("fabric-loader");
         if (container.isPresent()) {
@@ -83,7 +83,7 @@ public final class FabricMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull String apiVersion() {
+    public @NonNull String apiVersion() {
         Optional<ModContainer> container =
                 FabricLoader.getInstance().getModContainer("fabric-api-base");
         if (container.isPresent()) {
@@ -94,7 +94,7 @@ public final class FabricMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull List<ModInfo> mods() {
+    public @NonNull List<ModInfo> mods() {
         return FabricLoader.getInstance().getAllMods().stream()
                 .map(
                         modContainer ->
@@ -107,7 +107,7 @@ public final class FabricMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Logger logger(@NotNull String modId) {
+    public @NonNull Logger logger(@NonNull String modId) {
         MinecraftVersion version = minecraftVersion();
         if (version.isOlderThan(MinecraftVersions.V18)) {
             return new ApacheLogger(modId);

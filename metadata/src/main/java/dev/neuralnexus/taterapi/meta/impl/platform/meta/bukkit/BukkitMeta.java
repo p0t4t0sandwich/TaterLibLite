@@ -18,7 +18,7 @@ import dev.neuralnexus.taterapi.meta.Side;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModInfoImpl;
 
 import org.bukkit.Bukkit;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -29,12 +29,12 @@ import java.util.stream.Collectors;
 /** Stores data about the Bukkit platform */
 public final class BukkitMeta implements Platform.Meta {
     @Override
-    public @NotNull Object server() {
+    public @NonNull Object server() {
         return Bukkit.getServer();
     }
 
     @Override
-    public @NotNull Object client() {
+    public @NonNull Object client() {
         throw new UnsupportedOperationException("Bukkit does not run on the client");
     }
 
@@ -42,7 +42,7 @@ public final class BukkitMeta implements Platform.Meta {
     // Consider making a common utils subproject and add Bukkit reflection stuffs, as it's used in
     // TaterLib
     @Override
-    public @NotNull Object minecraft() {
+    public @NonNull Object minecraft() {
         try {
             String clazz = Bukkit.getServer().getClass().getPackage().getName() + ".CraftServer";
             Class<?> craftServer = Class.forName(clazz);
@@ -56,7 +56,7 @@ public final class BukkitMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Side side() {
+    public @NonNull Side side() {
         return Side.SERVER;
     }
 
@@ -66,7 +66,7 @@ public final class BukkitMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull MinecraftVersion minecraftVersion() {
+    public @NonNull MinecraftVersion minecraftVersion() {
         if (MetaAPI.instance().isHybrid()) {
             return BukkitHybridMeta.minecraftVersion();
         }
@@ -79,17 +79,17 @@ public final class BukkitMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull String loaderVersion() {
+    public @NonNull String loaderVersion() {
         return Bukkit.getBukkitVersion();
     }
 
     @Override
-    public @NotNull String apiVersion() {
+    public @NonNull String apiVersion() {
         return Bukkit.getBukkitVersion();
     }
 
     @Override
-    public @NotNull List<ModInfo> mods() {
+    public @NonNull List<ModInfo> mods() {
         return Arrays.stream(Bukkit.getServer().getPluginManager().getPlugins())
                 .map(
                         plugin ->
@@ -102,7 +102,7 @@ public final class BukkitMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Logger logger(@NotNull String modId) {
+    public @NonNull Logger logger(@NonNull String modId) {
         if (MetaAPI.instance().isHybrid()) {
             return BukkitHybridMeta.logger(modId);
         }
@@ -110,12 +110,12 @@ public final class BukkitMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Path modsFolder() {
+    public @NonNull Path modsFolder() {
         return getPluginsFolder();
     }
 
     @Override
-    public @NotNull Path configFolder() {
+    public @NonNull Path configFolder() {
         return getPluginsFolder();
     }
 }

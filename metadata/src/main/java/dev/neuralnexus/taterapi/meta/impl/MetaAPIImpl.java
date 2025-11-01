@@ -27,7 +27,7 @@ import dev.neuralnexus.taterapi.meta.impl.platform.meta.sponge.SpongeData;
 import dev.neuralnexus.taterapi.reflecto.MappingEntry;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -151,7 +151,7 @@ public final class MetaAPIImpl implements MetaAPI {
     private Platform primaryPlatform;
 
     @Override
-    public @NotNull Platform primaryPlatform() throws NoPrimaryPlatformException {
+    public @NonNull Platform primaryPlatform() throws NoPrimaryPlatformException {
         if (this.primaryPlatform == null) {
             throw new NoPrimaryPlatformException();
         }
@@ -159,7 +159,7 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public void setPrimaryPlatform(@NotNull Platform platform)
+    public void setPrimaryPlatform(@NonNull Platform platform)
             throws RedefinePrimaryPlatformException, NullPointerException {
         Objects.requireNonNull(platform, "Platform cannot be null");
         if (this.primaryPlatform != null && !this.primaryPlatform.equals(platform)) {
@@ -169,14 +169,14 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public boolean isPrimaryPlatform(@NotNull Platform platform)
+    public boolean isPrimaryPlatform(@NonNull Platform platform)
             throws NoPrimaryPlatformException, NullPointerException {
         Objects.requireNonNull(platform, "Platform cannot be null");
         return this.primaryPlatform() == platform;
     }
 
     @Override
-    public @NotNull Platform platform() throws NoPlatformException {
+    public @NonNull Platform platform() throws NoPlatformException {
         if (this.primaryPlatform == null) {
             return Platforms.get().stream().findFirst().orElseThrow(NoPlatformException::new);
         }
@@ -184,19 +184,19 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public boolean isPlatformPresent(@NotNull Platform platform) throws NullPointerException {
+    public boolean isPlatformPresent(@NonNull Platform platform) throws NullPointerException {
         Objects.requireNonNull(platform, "Platform cannot be null");
         return Platforms.get().contains(platform);
     }
 
     @Override
-    public @NotNull Platform.Meta meta() throws NoPlatformException, NoPlatformMetaException {
+    public Platform.@NonNull Meta meta() throws NoPlatformException, NoPlatformMetaException {
         return lookup(this.platform())
                 .orElseThrow(() -> new NoPlatformMetaException(this.platform()));
     }
 
     @Override
-    public Optional<Platform.Meta> meta(@NotNull Platform platform) throws NullPointerException {
+    public Optional<Platform.Meta> meta(@NonNull Platform platform) throws NullPointerException {
         Objects.requireNonNull(platform, "Platform cannot be null");
         return lookup(platform);
     }
@@ -204,7 +204,7 @@ public final class MetaAPIImpl implements MetaAPI {
     // ----------------------------- Platform.Meta Getters -----------------------------
 
     @Override
-    public @NotNull Object server() {
+    public @NonNull Object server() {
         if (store == null) {
             this.initReflection();
         }
@@ -215,7 +215,7 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public @NotNull Object client() {
+    public @NonNull Object client() {
         if (store == null) {
             this.initReflection();
         }
@@ -226,7 +226,7 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public @NotNull Object minecraft() {
+    public @NonNull Object minecraft() {
         if (store == null) {
             this.initReflection();
         }
@@ -237,7 +237,7 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public @NotNull Side side() {
+    public @NonNull Side side() {
         if (store == null) {
             this.initReflection();
         }
@@ -253,7 +253,7 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public @NotNull MinecraftVersion version() {
+    public @NonNull MinecraftVersion version() {
         return lookupAll().stream()
                 .map(Platform.Meta::minecraftVersion)
                 .findFirst()
@@ -261,13 +261,13 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public boolean isModLoaded(@NotNull String... nameOrId) throws NullPointerException {
+    public boolean isModLoaded(@NonNull String... nameOrId) throws NullPointerException {
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
         return lookupAll().stream().anyMatch(meta -> meta.isModLoaded(nameOrId));
     }
 
     @Override
-    public boolean isModLoaded(@NotNull Platform platform, @NotNull String... nameOrId)
+    public boolean isModLoaded(@NonNull Platform platform, @NonNull String... nameOrId)
             throws NullPointerException {
         Objects.requireNonNull(platform, "Platform cannot be null");
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
@@ -275,13 +275,13 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public boolean areModsLoaded(@NotNull String... nameOrId) throws NullPointerException {
+    public boolean areModsLoaded(@NonNull String... nameOrId) throws NullPointerException {
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
         return lookupAll().stream().allMatch(meta -> meta.isModLoaded(nameOrId));
     }
 
     @Override
-    public boolean areModsLoaded(@NotNull Platform platform, @NotNull String... nameOrId)
+    public boolean areModsLoaded(@NonNull Platform platform, @NonNull String... nameOrId)
             throws NullPointerException {
         Objects.requireNonNull(platform, "Platform cannot be null");
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
@@ -292,7 +292,7 @@ public final class MetaAPIImpl implements MetaAPI {
     // Would allow for more accurate mappings detection, rather than assumptions inflexible to
     // future changes
     @Override
-    public @NotNull Mappings mappings() {
+    public @NonNull Mappings mappings() {
         if (mappings == null) {
             MetaAPI api = MetaAPI.instance();
             // Check for proxy
@@ -362,7 +362,7 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public @NotNull Logger logger(@NotNull String modId) throws NullPointerException {
+    public @NonNull Logger logger(@NonNull String modId) throws NullPointerException {
         Objects.requireNonNull(modId, "Mod ID cannot be null");
         return lookupAll().stream()
                 .map(meta -> meta.logger(modId))

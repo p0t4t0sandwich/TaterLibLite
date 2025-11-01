@@ -6,8 +6,8 @@ package dev.neuralnexus.taterapi.util;
 
 import static dev.neuralnexus.taterapi.util.FlexVerComparator.compare;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -32,7 +32,7 @@ public final class VersionUtil {
          * @param rangeString The range string
          * @return The parsed range
          */
-        public static @Nullable VersionUtil.Range parse(@NotNull String rangeString) {
+        public static @Nullable Range parse(@NonNull String rangeString) {
             Objects.requireNonNull(rangeString, "Range string cannot be null");
             rangeString = rangeString.trim();
             boolean startInclusive;
@@ -77,7 +77,7 @@ public final class VersionUtil {
          * @param version The version to check
          * @return True if the version is in the range
          */
-        public boolean resolve(@NotNull String version) {
+        public boolean resolve(@NonNull String version) {
             Objects.requireNonNull(version, "version cannot be null");
             Objects.requireNonNull(start, "start cannot be null");
             Objects.requireNonNull(end, "end cannot be null");

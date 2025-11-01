@@ -10,8 +10,8 @@ import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -49,7 +49,7 @@ public final class Reflecto {
      * @param clazz The class to register the mapping store with
      * @return The mapping store
      */
-    public MappingStore getStore(@NotNull Class<?> clazz) {
+    public MappingStore getStore(@NonNull Class<?> clazz) {
         Objects.requireNonNull(clazz, "Class cannot be null");
         if (!mappingStores.containsKey(clazz)) {
             mappingStores.put(clazz, new MappingStore());
@@ -64,7 +64,7 @@ public final class Reflecto {
      * @param instance The instance to register the mapping store with
      * @return The mapping store
      */
-    public MappingStore getStore(@NotNull Object instance) {
+    public MappingStore getStore(@NonNull Object instance) {
         Objects.requireNonNull(instance, "Instance cannot be null");
         return this.getStore(instance.getClass());
     }
@@ -84,7 +84,7 @@ public final class Reflecto {
          * @throws ClassRegistrationFailedException If the class registration fails
          * @throws NullPointerException If the entry is null
          */
-        public MappingStore registerClass(@NotNull MappingEntry entry)
+        public MappingStore registerClass(@NonNull MappingEntry entry)
                 throws ClassRegistrationFailedException, NullPointerException {
             Objects.requireNonNull(entry, "Class entry cannot be null");
 
@@ -137,7 +137,7 @@ public final class Reflecto {
          * @throws ClassRegistrationFailedException If the class registration fails
          * @throws NullPointerException If the entry is null
          */
-        public MappingStore registerClass(@NotNull MappingEntry.Builder entry)
+        public MappingStore registerClass(MappingEntry.@NonNull Builder entry)
                 throws ClassRegistrationFailedException, NullPointerException {
             return this.registerClass(entry.build());
         }
@@ -150,7 +150,7 @@ public final class Reflecto {
          * @throws FieldRegistrationFailedException If the field registration fails
          * @throws NullPointerException If the entry is null
          */
-        public MappingStore registerField(@NotNull MappingEntry entry)
+        public MappingStore registerField(@NonNull MappingEntry entry)
                 throws FieldRegistrationFailedException, NullPointerException {
             Objects.requireNonNull(entry, "Field entry cannot be null");
 
@@ -216,7 +216,7 @@ public final class Reflecto {
          * @throws FieldRegistrationFailedException If the field registration fails
          * @throws NullPointerException If the entry is null
          */
-        public MappingStore registerField(@NotNull MappingEntry.Builder entry)
+        public MappingStore registerField(MappingEntry.@NonNull Builder entry)
                 throws FieldRegistrationFailedException, NullPointerException {
             return this.registerField(entry.build());
         }
@@ -231,7 +231,7 @@ public final class Reflecto {
          * @throws NullPointerException If the entry is null
          */
         public MappingStore registerMethod(
-                @NotNull MappingEntry entry, @Nullable Class<?>... parameterTypes)
+                @NonNull MappingEntry entry, @Nullable Class<?>... parameterTypes)
                 throws MethodRegistrationFailedException, NullPointerException {
             Objects.requireNonNull(entry, "Method entry cannot be null");
             if (parameterTypes == null) {
@@ -312,7 +312,7 @@ public final class Reflecto {
          * @throws NullPointerException If the entry is null
          */
         public MappingStore registerMethod(
-                @NotNull MappingEntry.Builder entry, @Nullable Class<?>... parameterTypes)
+                MappingEntry.@NonNull Builder entry, @Nullable Class<?>... parameterTypes)
                 throws MethodRegistrationFailedException, NullPointerException {
             return this.registerMethod(entry.build(), parameterTypes);
         }
@@ -326,7 +326,7 @@ public final class Reflecto {
          * @throws NullPointerException If the entry name is null
          */
         @SuppressWarnings("unchecked")
-        public <T> Class<T> getClass(@NotNull String entryName)
+        public <T> Class<T> getClass(@NonNull String entryName)
                 throws ClassNotRegisteredException, NullPointerException {
             Objects.requireNonNull(entryName, "Entry name cannot be null");
             if (!classMappings.containsKey(entryName)) {
@@ -347,7 +347,7 @@ public final class Reflecto {
          */
         @SuppressWarnings("unchecked")
         public <T> T getField(
-                @NotNull String parentEntry, @NotNull String entryName, @Nullable Object instance)
+                @NonNull String parentEntry, @NonNull String entryName, @Nullable Object instance)
                 throws FieldNotAccessableException,
                         FieldNotRegisteredException,
                         NullPointerException {
@@ -379,7 +379,7 @@ public final class Reflecto {
          * @throws FieldNotAccessableException If the field is not accessible
          * @throws NullPointerException If the parent entry or entry name is null
          */
-        public <T> T getStaticField(@NotNull String parentEntry, @NotNull String entryName)
+        public <T> T getStaticField(@NonNull String parentEntry, @NonNull String entryName)
                 throws FieldNotAccessableException,
                         FieldNotRegisteredException,
                         NullPointerException {
@@ -400,8 +400,8 @@ public final class Reflecto {
          */
         @SuppressWarnings("unchecked")
         public <T> T invokeMethod(
-                @NotNull String parentEntry,
-                @NotNull String entryName,
+                @NonNull String parentEntry,
+                @NonNull String entryName,
                 @Nullable Object instance,
                 @Nullable Object... args)
                 throws NullPointerException,
@@ -436,7 +436,7 @@ public final class Reflecto {
          * @throws NullPointerException If the parent entry, entry name, or return type is null
          */
         public <T> T invokeStaticMethod(
-                @NotNull String parentEntry, @NotNull String entryName, @Nullable Object... args)
+                @NonNull String parentEntry, @NonNull String entryName, @Nullable Object... args)
                 throws NullPointerException,
                         MethodNotAccessableException,
                         MethodNotRegisteredException {

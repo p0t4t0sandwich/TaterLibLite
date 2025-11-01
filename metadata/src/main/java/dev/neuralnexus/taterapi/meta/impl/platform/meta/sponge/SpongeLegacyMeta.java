@@ -15,7 +15,7 @@ import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraftServer;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModInfoImpl;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 /** Stores data about the Sponge platform */
 final class SpongeLegacyMeta implements Platform.Meta {
     @Override
-    public @NotNull Object server() {
+    public @NonNull Object server() {
         if (this.side().isServer()) {
             return Sponge.getServer();
         }
@@ -34,12 +34,12 @@ final class SpongeLegacyMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Object client() {
+    public @NonNull Object client() {
         return WMinecraft.getInstance();
     }
 
     @Override
-    public @NotNull Object minecraft() {
+    public @NonNull Object minecraft() {
         if (this.side().isClient() && WMinecraft.hasServer()) {
             return WMinecraft.getServer();
         }
@@ -47,7 +47,7 @@ final class SpongeLegacyMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Side side() {
+    public @NonNull Side side() {
         if (Sponge.getServer() == null) {
             return Side.CLIENT;
         }
@@ -62,12 +62,12 @@ final class SpongeLegacyMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull MinecraftVersion minecraftVersion() {
+    public @NonNull MinecraftVersion minecraftVersion() {
         return MinecraftVersion.of(Sponge.getPlatform().getMinecraftVersion().getName());
     }
 
     @Override
-    public @NotNull String loaderVersion() {
+    public @NonNull String loaderVersion() {
         Optional<PluginContainer> container = Sponge.getPluginManager().getPlugin("sponge");
         if (container.isPresent()) {
             return container.get().getVersion().toString();
@@ -77,7 +77,7 @@ final class SpongeLegacyMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull String apiVersion() {
+    public @NonNull String apiVersion() {
         Optional<PluginContainer> container = Sponge.getPluginManager().getPlugin("sponge-api");
         if (container.isPresent()) {
             return container.get().getVersion().toString();
@@ -87,7 +87,7 @@ final class SpongeLegacyMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull List<ModInfo> mods() {
+    public @NonNull List<ModInfo> mods() {
         return Sponge.getPluginManager().getPlugins().stream()
                 .map(
                         pluginContainer ->
@@ -100,7 +100,7 @@ final class SpongeLegacyMeta implements Platform.Meta {
     }
 
     @Override
-    public @NotNull Logger logger(@NotNull String modId) {
+    public @NonNull Logger logger(@NonNull String modId) {
         return new Slf4jLogger(modId);
     }
 }

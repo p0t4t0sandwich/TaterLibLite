@@ -13,14 +13,14 @@ import dev.neuralnexus.taterapi.meta.impl.platform.meta.FabricMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.NeoForgeMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.forge.ForgeData;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /** Stores data about the Bukkit platform */
 // TODO: See if there's a better way around this for hybrids
 final class BukkitHybridMeta {
     private BukkitHybridMeta() {}
 
-    static @NotNull MinecraftVersion minecraftVersion() {
+    static @NonNull MinecraftVersion minecraftVersion() {
         if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
             Platform.Meta forge = ForgeData.create();
             if (forge != null) {
@@ -36,7 +36,7 @@ final class BukkitHybridMeta {
         throw new IllegalStateException("No hybrid platform detected");
     }
 
-    static @NotNull Logger logger(@NotNull String modId) {
+    static @NonNull Logger logger(@NonNull String modId) {
         if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
             Platform.Meta forge = ForgeData.create();
             if (forge != null) {

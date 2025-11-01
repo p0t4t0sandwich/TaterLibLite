@@ -53,6 +53,7 @@ subprojects {
 
     dependencies {
         compileOnly(rootProject.libs.annotations)
+        compileOnly(rootProject.libs.jspecify)
     }
 
     spotless {

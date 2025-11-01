@@ -11,7 +11,7 @@ import dev.neuralnexus.taterapi.util.ReflectionUtil;
 import net.minecraft.server.MinecraftServer;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
@@ -30,7 +30,7 @@ public interface MetaAPI {
      * @return The platform
      * @throws NoPrimaryPlatformException if the primary platform is not detected
      */
-    @NotNull Platform primaryPlatform() throws NoPrimaryPlatformException;
+    @NonNull Platform primaryPlatform() throws NoPrimaryPlatformException;
 
     /**
      * Set the primary platform that the environment is running
@@ -39,7 +39,7 @@ public interface MetaAPI {
      * @throws RedefinePrimaryPlatformException if the primary platform is already defined
      */
     @ApiStatus.Internal
-    void setPrimaryPlatform(@NotNull Platform platform) throws RedefinePrimaryPlatformException;
+    void setPrimaryPlatform(@NonNull Platform platform) throws RedefinePrimaryPlatformException;
 
     /**
      * Check if a platform is the same as the one identified as the primary platform
@@ -48,7 +48,7 @@ public interface MetaAPI {
      * @return True, if they match, false otherwise
      * @throws NoPrimaryPlatformException if the primary platform is not detected
      */
-    boolean isPrimaryPlatform(@NotNull Platform platform) throws NoPrimaryPlatformException;
+    boolean isPrimaryPlatform(@NonNull Platform platform) throws NoPrimaryPlatformException;
 
     /**
      * Get the platform the environment is running, returns the primary platform, or the first
@@ -58,7 +58,7 @@ public interface MetaAPI {
      * @return The platform
      * @throws NoPlatformException if there is no platform detected
      */
-    @NotNull Platform platform() throws NoPlatformException;
+    @NonNull Platform platform() throws NoPlatformException;
 
     /**
      * Check if a platform is present
@@ -66,7 +66,7 @@ public interface MetaAPI {
      * @param platform The platform
      * @return True if the platform is present, false otherwise
      */
-    boolean isPlatformPresent(@NotNull Platform platform);
+    boolean isPlatformPresent(@NonNull Platform platform);
 
     /**
      * Check if any of the given platforms are present
@@ -74,7 +74,7 @@ public interface MetaAPI {
      * @param platform The platforms
      * @return True if any platform is present, false otherwise
      */
-    default boolean isPlatformPresent(@NotNull Platform... platform) {
+    default boolean isPlatformPresent(@NonNull Platform... platform) {
         for (Platform p : platform) {
             if (this.isPlatformPresent(p)) {
                 return true;
@@ -89,7 +89,7 @@ public interface MetaAPI {
      * @param platform The platforms
      * @return True if all platforms are present, false otherwise
      */
-    default boolean allPlatformsPresent(@NotNull Platform... platform) {
+    default boolean allPlatformsPresent(@NonNull Platform... platform) {
         for (Platform p : platform) {
             if (!this.isPlatformPresent(p)) {
                 return false;
@@ -105,7 +105,7 @@ public interface MetaAPI {
      * @throws NoPlatformException if the primary platform is not detected
      * @throws NoPlatformMetaException if there's no metadata for the platform
      */
-    @NotNull Platform.Meta meta() throws NoPlatformException, NoPlatformMetaException;
+    Platform.@NonNull Meta meta() throws NoPlatformException, NoPlatformMetaException;
 
     /**
      * Get the metadata for the specified platform
@@ -113,7 +113,7 @@ public interface MetaAPI {
      * @param platform The Platform
      * @return The Platform's metadata
      */
-    Optional<Platform.Meta> meta(@NotNull Platform platform);
+    Optional<Platform.Meta> meta(@NonNull Platform platform);
 
     // ----------------------------- Platform.Meta Getters -----------------------------
 
@@ -124,7 +124,7 @@ public interface MetaAPI {
      *
      * @return The server instance
      */
-    @NotNull Object server();
+    @NonNull Object server();
 
     /**
      * Get the client instance. Not available in server-only environments. <br>
@@ -134,7 +134,7 @@ public interface MetaAPI {
      *
      * @return The client instance
      */
-    @NotNull Object client();
+    @NonNull Object client();
 
     /**
      * Get an instance of the {@link MinecraftServer}. Not available on proxies or in client-only
@@ -142,14 +142,14 @@ public interface MetaAPI {
      *
      * @return The MinecraftServer instance
      */
-    @NotNull Object minecraft();
+    @NonNull Object minecraft();
 
     /**
      * Get the "side" the current environment is running on
      *
      * @return The side
      */
-    @NotNull Side side();
+    @NonNull Side side();
 
     /**
      * A quick check to see if the current environment is client-based
@@ -163,7 +163,7 @@ public interface MetaAPI {
      *
      * @return The current Minecraft version
      */
-    @NotNull MinecraftVersion version();
+    @NonNull MinecraftVersion version();
 
     /**
      * Get if a mod is loaded <br>
@@ -173,7 +173,7 @@ public interface MetaAPI {
      * @param nameOrId The name of the plugin or modId of the mod
      * @return True if the mod is loaded, false otherwise
      */
-    boolean isModLoaded(@NotNull String... nameOrId);
+    boolean isModLoaded(@NonNull String... nameOrId);
 
     /**
      * Get if a mod is loaded <br>
@@ -184,7 +184,7 @@ public interface MetaAPI {
      * @param nameOrId The name of the plugin or modId of the mod
      * @return True if the mod is loaded, false otherwise
      */
-    boolean isModLoaded(@NotNull Platform platform, @NotNull String... nameOrId);
+    boolean isModLoaded(@NonNull Platform platform, @NonNull String... nameOrId);
 
     /**
      * Get if all mods are loaded <br>
@@ -194,7 +194,7 @@ public interface MetaAPI {
      * @param nameOrId The name of the plugin or modId of the mod
      * @return True if all mods are loaded, false otherwise
      */
-    boolean areModsLoaded(@NotNull String... nameOrId);
+    boolean areModsLoaded(@NonNull String... nameOrId);
 
     /**
      * Get if all mods are loaded <br>
@@ -205,14 +205,14 @@ public interface MetaAPI {
      * @param nameOrId The name of the plugin or modId of the mod
      * @return True if all mods are loaded, false otherwise
      */
-    boolean areModsLoaded(@NotNull Platform platform, @NotNull String... nameOrId);
+    boolean areModsLoaded(@NonNull Platform platform, @NonNull String... nameOrId);
 
     /**
      * Get the runtime mappings
      *
      * @return The runtime mappings
      */
-    @NotNull Mappings mappings();
+    @NonNull Mappings mappings();
 
     /**
      * Get a new logger for the specified modId
@@ -220,7 +220,7 @@ public interface MetaAPI {
      * @param modId The mod id
      * @return A new Logger
      */
-    @NotNull Logger logger(@NotNull String modId);
+    @NonNull Logger logger(@NonNull String modId);
 
     // ----------------------------- Platform Checks -----------------------------
 

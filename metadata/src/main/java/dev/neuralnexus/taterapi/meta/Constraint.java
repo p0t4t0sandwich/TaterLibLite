@@ -8,7 +8,7 @@ import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Dependency;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -82,7 +82,7 @@ public record Constraint(
     }
 
     @Override
-    public @NotNull String toString() {
+    public @NonNull String toString() {
         return "Constraint{"
                 + "deps="
                 + deps
