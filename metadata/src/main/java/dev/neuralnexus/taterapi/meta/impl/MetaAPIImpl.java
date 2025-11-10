@@ -284,7 +284,8 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public boolean areModsLoaded(final @NonNull Platform platform, final @NonNull String... nameOrId)
+    public boolean areModsLoaded(
+            final @NonNull Platform platform, final @NonNull String... nameOrId)
             throws NullPointerException {
         Objects.requireNonNull(platform, "Platform cannot be null");
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
@@ -367,9 +368,7 @@ public final class MetaAPIImpl implements MetaAPI {
     @Override
     public @NonNull Collection<ModContainer<Object>> mods(final @NonNull Platform platform) {
         Objects.requireNonNull(platform, "Platform cannot be null");
-        return lookup(platform)
-                .map(Platform.Meta::mods)
-                .orElse(Collections.emptyList());
+        return lookup(platform).map(Platform.Meta::mods).orElse(Collections.emptyList());
     }
 
     @Override
@@ -383,7 +382,8 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull Platform platform, final @NonNull String modId) {
+    public @NonNull <T> Optional<ModContainer<T>> mod(
+            final @NonNull Platform platform, final @NonNull String modId) {
         Objects.requireNonNull(platform, "Platform cannot be null");
         Objects.requireNonNull(modId, "Mod ID cannot be null");
         return lookup(platform).flatMap(meta -> meta.mod(modId));

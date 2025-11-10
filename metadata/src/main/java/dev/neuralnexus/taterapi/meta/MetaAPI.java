@@ -238,7 +238,8 @@ public interface MetaAPI {
      * @param modId The modId of the mod
      * @return The mod container
      */
-    @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull Platform platform, final @NonNull String modId);
+    @NonNull <T> Optional<ModContainer<T>> mod(
+            final @NonNull Platform platform, final @NonNull String modId);
 
     /**
      * Get a new logger for the specified modId
