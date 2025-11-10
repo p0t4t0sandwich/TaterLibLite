@@ -12,6 +12,7 @@ import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
@@ -29,6 +30,8 @@ import dev.neuralnexus.taterapi.reflecto.Reflecto;
 
 import org.jspecify.annotations.NonNull;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -261,13 +264,13 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public boolean isModLoaded(@NonNull String... nameOrId) throws NullPointerException {
+    public boolean isModLoaded(final @NonNull String... nameOrId) throws NullPointerException {
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
         return lookupAll().stream().anyMatch(meta -> meta.isModLoaded(nameOrId));
     }
 
     @Override
-    public boolean isModLoaded(@NonNull Platform platform, @NonNull String... nameOrId)
+    public boolean isModLoaded(final @NonNull Platform platform, final @NonNull String... nameOrId)
             throws NullPointerException {
         Objects.requireNonNull(platform, "Platform cannot be null");
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
@@ -275,13 +278,13 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public boolean areModsLoaded(@NonNull String... nameOrId) throws NullPointerException {
+    public boolean areModsLoaded(final @NonNull String... nameOrId) throws NullPointerException {
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
         return lookupAll().stream().allMatch(meta -> meta.isModLoaded(nameOrId));
     }
 
     @Override
-    public boolean areModsLoaded(@NonNull Platform platform, @NonNull String... nameOrId)
+    public boolean areModsLoaded(final @NonNull Platform platform, final @NonNull String... nameOrId)
             throws NullPointerException {
         Objects.requireNonNull(platform, "Platform cannot be null");
         Objects.requireNonNull(nameOrId, "Name or ID cannot be null");
@@ -362,7 +365,32 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public @NonNull Logger logger(@NonNull String modId) throws NullPointerException {
+    public @NonNull Collection<ModContainer<Object>> mods(final @NonNull Platform platform) {
+        Objects.requireNonNull(platform, "Platform cannot be null");
+        return lookup(platform)
+                .map(Platform.Meta::mods)
+                .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public @NonNull Collection<ModContainer<Object>> mod(final @NonNull String modId) {
+        Objects.requireNonNull(modId, "Mod ID cannot be null");
+        return lookupAll().stream()
+                .map(meta -> meta.mod(modId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
+
+    @Override
+    public @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull Platform platform, final @NonNull String modId) {
+        Objects.requireNonNull(platform, "Platform cannot be null");
+        Objects.requireNonNull(modId, "Mod ID cannot be null");
+        return lookup(platform).flatMap(meta -> meta.mod(modId));
+    }
+
+    @Override
+    public @NonNull Logger logger(final @NonNull String modId) throws NullPointerException {
         Objects.requireNonNull(modId, "Mod ID cannot be null");
         return lookupAll().stream()
                 .map(meta -> meta.logger(modId))
@@ -376,7 +404,7 @@ public final class MetaAPIImpl implements MetaAPI {
      * @param platform The Platform
      * @return The Platform's metadata
      */
-    public static Optional<Platform.Meta> lookup(Platform platform) {
+    public static Optional<Platform.Meta> lookup(final Platform platform) {
         if (MetaAPI.isNeoForgeBased(platform)) {
             return Optional.of(new NeoForgeMeta());
         } else if (MetaAPI.isForgeBased(platform)) {

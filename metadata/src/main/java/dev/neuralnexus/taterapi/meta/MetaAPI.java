@@ -13,6 +13,7 @@ import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /** Interface for accessing the metadata cache and other useful shortcuts. */
@@ -173,7 +174,7 @@ public interface MetaAPI {
      * @param nameOrId The name of the plugin or modId of the mod
      * @return True if the mod is loaded, false otherwise
      */
-    boolean isModLoaded(@NonNull String... nameOrId);
+    boolean isModLoaded(final @NonNull String... nameOrId);
 
     /**
      * Get if a mod is loaded <br>
@@ -184,7 +185,7 @@ public interface MetaAPI {
      * @param nameOrId The name of the plugin or modId of the mod
      * @return True if the mod is loaded, false otherwise
      */
-    boolean isModLoaded(@NonNull Platform platform, @NonNull String... nameOrId);
+    boolean isModLoaded(final @NonNull Platform platform, final @NonNull String... nameOrId);
 
     /**
      * Get if all mods are loaded <br>
@@ -194,7 +195,7 @@ public interface MetaAPI {
      * @param nameOrId The name of the plugin or modId of the mod
      * @return True if all mods are loaded, false otherwise
      */
-    boolean areModsLoaded(@NonNull String... nameOrId);
+    boolean areModsLoaded(final @NonNull String... nameOrId);
 
     /**
      * Get if all mods are loaded <br>
@@ -205,7 +206,7 @@ public interface MetaAPI {
      * @param nameOrId The name of the plugin or modId of the mod
      * @return True if all mods are loaded, false otherwise
      */
-    boolean areModsLoaded(@NonNull Platform platform, @NonNull String... nameOrId);
+    boolean areModsLoaded(final @NonNull Platform platform, final @NonNull String... nameOrId);
 
     /**
      * Get the runtime mappings
@@ -215,12 +216,37 @@ public interface MetaAPI {
     @NonNull Mappings mappings();
 
     /**
+     * Get the mod list for a specific platform
+     *
+     * @param platform The platform
+     * @return The mod list
+     */
+    @NonNull Collection<ModContainer<Object>> mods(final @NonNull Platform platform);
+
+    /**
+     * Get a specific mod by its modId
+     *
+     * @param modId The modId of the mod
+     * @return The mod container
+     */
+    @NonNull Collection<ModContainer<Object>> mod(final @NonNull String modId);
+
+    /**
+     * Get a specific mod by its modId
+     *
+     * @param platform The platform
+     * @param modId The modId of the mod
+     * @return The mod container
+     */
+    @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull Platform platform, final @NonNull String modId);
+
+    /**
      * Get a new logger for the specified modId
      *
      * @param modId The mod id
      * @return A new Logger
      */
-    @NonNull Logger logger(@NonNull String modId);
+    @NonNull Logger logger(final @NonNull String modId);
 
     // ----------------------------- Platform Checks -----------------------------
 
