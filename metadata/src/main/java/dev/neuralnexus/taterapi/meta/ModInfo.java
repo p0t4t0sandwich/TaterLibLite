@@ -4,7 +4,7 @@
  */
 package dev.neuralnexus.taterapi.meta;
 
-import dev.neuralnexus.taterapi.meta.impl.version.VersionComparable;
+import dev.neuralnexus.taterapi.meta.version.VersionComparable;
 
 public interface ModInfo extends VersionComparable<ModInfo> {
     /**
@@ -22,9 +22,9 @@ public interface ModInfo extends VersionComparable<ModInfo> {
     String name();
 
     /**
-     * Get the mod asString
+     * Get the mod version
      *
-     * @return The mod asString
+     * @return The mod version
      */
     String version();
 

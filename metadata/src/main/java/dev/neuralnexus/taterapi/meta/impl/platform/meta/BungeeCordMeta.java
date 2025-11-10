@@ -9,17 +9,21 @@ import static dev.neuralnexus.taterapi.util.PathUtils.getPluginsFolder;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.JavaLogger;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.ModInfo;
+import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
 
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.plugin.Plugin;
 
+import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Stores data about the BungeeCord platform */
@@ -49,6 +53,7 @@ public final class BungeeCordMeta implements Platform.Meta {
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public @NonNull MinecraftVersion minecraftVersion() {
         return MinecraftVersion.of(ProxyServer.getInstance().getGameVersion());
@@ -64,22 +69,56 @@ public final class BungeeCordMeta implements Platform.Meta {
         return ProxyServer.getInstance().getVersion();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull List<ModInfo> mods() {
+    public @NonNull <T> Collection<ModContainer<T>> mods() {
         return ProxyServer.getInstance().getPluginManager().getPlugins().stream()
-                .map(
-                        plugin ->
-                                new ModInfoImpl(
-                                        plugin.getDescription().getName(),
-                                        plugin.getDescription().getName(),
-                                        plugin.getDescription().getVersion(),
-                                        Platforms.BUNGEECORD))
+                .map(p -> (ModContainer<T>) this.toContainer(p))
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Logger logger(@NonNull String modId) {
+    public @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull String modId) {
+        @UnknownNullability
+        Plugin plugin = ProxyServer.getInstance().getPluginManager().getPlugin("pluginName");
+        if (plugin != null) {
+            return Optional.of((ModContainer<T>) this.toContainer(plugin));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public @NonNull Logger logger(final @NonNull String modId) {
         return new JavaLogger(modId, ProxyServer.getInstance().getLogger());
+    }
+
+    @Override
+    public boolean isModLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (ProxyServer.getInstance().getPluginManager().getPlugin(id) != null
+                    || ProxyServer.getInstance()
+                                    .getPluginManager()
+                                    .getPlugin(id.toLowerCase(Locale.ROOT))
+                            != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean areModsLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (ProxyServer.getInstance().getPluginManager().getPlugin(id) == null
+                    && ProxyServer.getInstance()
+                                    .getPluginManager()
+                                    .getPlugin(id.toLowerCase(Locale.ROOT))
+                            == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -90,5 +129,16 @@ public final class BungeeCordMeta implements Platform.Meta {
     @Override
     public @NonNull Path configFolder() {
         return getPluginsFolder();
+    }
+
+    private @NonNull ModContainer<Plugin> toContainer(final @NonNull Plugin plugin) {
+        return new ModContainerImpl<>(
+                plugin,
+                new ModInfoImpl(
+                        plugin.getDescription().getName(),
+                        plugin.getDescription().getName(),
+                        plugin.getDescription().getVersion(),
+                        Platforms.BUNGEECORD),
+                new ModResourceImpl(() -> plugin.getFile().toPath()));
     }
 }

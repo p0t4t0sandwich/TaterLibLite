@@ -13,8 +13,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Objects;
+import java.util.Collection;
+import java.util.Optional;
 
 public interface Platform {
     /**
@@ -184,59 +184,42 @@ public interface Platform {
          *
          * @return The mod list
          */
-        @NonNull List<ModInfo> mods();
+        @NonNull <T> Collection<ModContainer<T>> mods();
+
+        /**
+         * Get a specific mod by its modId
+         *
+         * @param modId The modId of the mod
+         * @return The mod container
+         */
+        @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull String modId);
 
         /**
          * Get the Logger
          *
          * @return The Logger
          */
-        @NonNull Logger logger(@NonNull String pluginId);
+        @NonNull Logger logger(final @NonNull String pluginId);
 
         /**
          * Get if a mod is loaded <br>
          * Note: Unless you need to check at a specific time, it's best to run this check after the
          * server has started
          *
-         * @param nameOrId The name of the plugin or modId of the mod
+         * @param modId The name of the plugin or modId of the mod
          * @return True if the mod is loaded, false otherwise
          */
-        default boolean isModLoaded(@NonNull String... nameOrId) {
-            Objects.requireNonNull(nameOrId, "Mod name or ID cannot be null");
-            for (ModInfo mod : this.mods()) {
-                for (String s : nameOrId) {
-                    if (mod.id().equalsIgnoreCase(s) || mod.name().equalsIgnoreCase(s)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
+        boolean isModLoaded(final @NonNull String... modId);
 
         /**
          * Check if all mods are loaded <br>
          * Note: Unless you need to check at a specific time, it's best to run this check after the
          * server has started
          *
-         * @param nameOrId The name of the plugin or modId of the mod
+         * @param modId The name of the plugin or modId of the mod
          * @return True if all mods are loaded, false otherwise
          */
-        default boolean areModsLoaded(@NonNull String... nameOrId) {
-            Objects.requireNonNull(nameOrId, "Mod name or ID cannot be null");
-            for (ModInfo mod : this.mods()) {
-                boolean found = false;
-                for (String s : nameOrId) {
-                    if (mod.id().equalsIgnoreCase(s) || mod.name().equalsIgnoreCase(s)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    return false;
-                }
-            }
-            return true;
-        }
+        boolean areModsLoaded(final @NonNull String... modId);
 
         /**
          * Get the path to the mods/plugin folder

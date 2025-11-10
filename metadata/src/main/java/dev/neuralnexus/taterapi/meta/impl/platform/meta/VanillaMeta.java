@@ -7,7 +7,7 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.SystemLogger;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.ModInfo;
+import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Side;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
@@ -15,11 +15,13 @@ import dev.neuralnexus.taterapi.meta.impl.WMinecraftServer;
 import dev.neuralnexus.taterapi.util.MixinServiceUtil;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 
 /** Stores information about the vanilla platform */
 public final class VanillaMeta implements Platform.Meta {
@@ -93,13 +95,28 @@ public final class VanillaMeta implements Platform.Meta {
     }
 
     @Override
-    public @NonNull List<ModInfo> mods() {
+    public @NonNull <T> Collection<ModContainer<T>> mods() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public @NonNull <T> Optional<ModContainer<T>> mod(@NonNull String modId) {
+        return Optional.empty();
     }
 
     @Override
     public @NonNull Logger logger(@NonNull String modId) {
         // TODO: Do some version parsing and grab the vanilla logger factory
         return new SystemLogger(modId);
+    }
+
+    @Override
+    public boolean isModLoaded(@NotNull @NonNull String... modId) {
+        return false;
+    }
+
+    @Override
+    public boolean areModsLoaded(@NotNull @NonNull String... modId) {
+        return false;
     }
 }

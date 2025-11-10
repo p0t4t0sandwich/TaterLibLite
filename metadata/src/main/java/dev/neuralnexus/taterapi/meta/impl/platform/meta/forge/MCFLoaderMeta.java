@@ -7,19 +7,23 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta.forge;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.ApacheLogger;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.ModInfo;
+import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
+import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModContainerImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModInfoImpl;
+import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModResourceImpl;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 
 import org.jspecify.annotations.NonNull;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Stores data about the MCF Loader platform */
@@ -76,21 +80,63 @@ final class MCFLoaderMeta implements Platform.Meta {
         return ForgeVersion_7_12.forgeVersion();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull List<ModInfo> mods() {
+    public @NonNull <T> Collection<ModContainer<T>> mods() {
         return Loader.instance().getModList().stream()
-                .map(
-                        modContainer ->
-                                new ModInfoImpl(
-                                        modContainer.getModId(),
-                                        modContainer.getName(),
-                                        modContainer.getVersion(),
-                                        Platforms.FORGE))
+                .map(mc -> (ModContainer<T>) this.toContainer(mc))
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Logger logger(@NonNull String modId) {
+    public @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull String modId) {
+        if (Loader.isModLoaded(modId)) {
+            return Loader.instance().getModList().stream()
+                    .filter(
+                            m ->
+                                    m.getModId().equals(modId)
+                                            || m.getModId().equals(modId.toLowerCase(Locale.ROOT)))
+                    .findFirst()
+                    .map(mc -> (ModContainer<T>) this.toContainer(mc));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public @NonNull Logger logger(final @NonNull String modId) {
         return new ApacheLogger(modId);
+    }
+
+    @Override
+    public boolean isModLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (Loader.isModLoaded(id) || Loader.isModLoaded(id.toLowerCase(Locale.ROOT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean areModsLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (!Loader.isModLoaded(id) && !Loader.isModLoaded(id.toLowerCase(Locale.ROOT))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private ModContainer<net.minecraftforge.fml.common.ModContainer> toContainer(
+            final net.minecraftforge.fml.common.@NonNull ModContainer container) {
+        return new ModContainerImpl<>(
+                container,
+                new ModInfoImpl(
+                        container.getModId(),
+                        container.getName(),
+                        container.getVersion(),
+                        Platforms.FORGE),
+                new ModResourceImpl(() -> container.getSource().toPath()));
     }
 }

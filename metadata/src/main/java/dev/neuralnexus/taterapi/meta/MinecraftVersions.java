@@ -4,14 +4,14 @@
  */
 package dev.neuralnexus.taterapi.meta;
 
-import dev.neuralnexus.taterapi.meta.impl.version.Alpha;
-import dev.neuralnexus.taterapi.meta.impl.version.Beta;
-import dev.neuralnexus.taterapi.meta.impl.version.Classic;
-import dev.neuralnexus.taterapi.meta.impl.version.Indev;
-import dev.neuralnexus.taterapi.meta.impl.version.Infdev;
 import dev.neuralnexus.taterapi.meta.impl.version.MinecraftVersionImpl;
-import dev.neuralnexus.taterapi.meta.impl.version.PreClassic;
-import dev.neuralnexus.taterapi.meta.impl.version.Release;
+import dev.neuralnexus.taterapi.meta.version.Alpha;
+import dev.neuralnexus.taterapi.meta.version.Beta;
+import dev.neuralnexus.taterapi.meta.version.Classic;
+import dev.neuralnexus.taterapi.meta.version.Indev;
+import dev.neuralnexus.taterapi.meta.version.Infdev;
+import dev.neuralnexus.taterapi.meta.version.PreClassic;
+import dev.neuralnexus.taterapi.meta.version.Release;
 
 public final class MinecraftVersions
         implements PreClassic, Classic, Indev, Infdev, Alpha, Beta, Release {

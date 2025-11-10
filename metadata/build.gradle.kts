@@ -14,12 +14,12 @@ dependencies {
     compileOnly(libs.mixin)
     compileOnly(libs.asm.tree)
 
-    compileOnly("space.vectrix.ignite:ignite-api:1.1.0")
+    compileOnly(libs.ignite.api)
 
     compileOnly(project(":base"))
 
     // TODO: Replace with proper source sets
-    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.27")
+    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.28")
 }
 
 tasks.test {

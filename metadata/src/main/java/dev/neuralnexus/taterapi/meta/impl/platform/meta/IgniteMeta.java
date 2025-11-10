@@ -7,16 +7,19 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.ModInfo;
+import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
 
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import space.vectrix.ignite.Ignite;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -81,21 +84,57 @@ public final class IgniteMeta implements Platform.Meta {
         return "0.0.0";
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull List<ModInfo> mods() {
+    public @NonNull <T> Collection<ModContainer<T>> mods() {
         return Ignite.mods().containers().stream()
-                .map(
-                        modContainer ->
-                                new ModInfoImpl(
-                                        modContainer.id(),
-                                        modContainer.id(),
-                                        modContainer.version(),
-                                        Platforms.IGNITE))
+                .map(mc -> (ModContainer<T>) this.toContainer(mc))
                 .collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public @NonNull <T> Optional<ModContainer<T>> mod(@NonNull String modId) {
+        Optional<space.vectrix.ignite.mod.ModContainer> container = Ignite.mods().container(modId);
+        if (container.isEmpty()) {
+            container = Ignite.mods().container(modId.toLowerCase(Locale.ROOT));
+        }
+        return container.map(mc -> (ModContainer<T>) this.toContainer(mc));
     }
 
     @Override
     public @NonNull Logger logger(@NonNull String pluginId) {
         return this.underlyingPlatform().logger(pluginId);
+    }
+
+    @Override
+    public boolean isModLoaded(@NotNull @NonNull String... modId) {
+        for (final String id : modId) {
+            if (Ignite.mods().container(id).isPresent()
+                    || Ignite.mods().container(id.toLowerCase(Locale.ROOT)).isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean areModsLoaded(@NotNull @NonNull String... modId) {
+        final List<String> ids = List.of(modId);
+        for (final String id : ids) {
+            if (Ignite.mods().container(id).isEmpty()
+                    && Ignite.mods().container(id.toLowerCase(Locale.ROOT)).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private @NonNull ModContainer<space.vectrix.ignite.mod.ModContainer> toContainer(
+            final space.vectrix.ignite.mod.@NonNull ModContainer mc) {
+        return new ModContainerImpl<>(
+                mc,
+                new ModInfoImpl(mc.id(), mc.id(), mc.version(), Platforms.IGNITE),
+                new ModResourceImpl(() -> mc.resource().path()));
     }
 }

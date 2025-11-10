@@ -4,9 +4,14 @@
  */
 package dev.neuralnexus.taterapi.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 /** Utility class for path operations */
 public final class PathUtils {
@@ -28,5 +33,29 @@ public final class PathUtils {
     /** Get the path to the plugins folder. */
     public static Path getPluginsFolder() {
         return getCurrentWorkingDirectory().resolve("plugins");
+    }
+
+    /** Get the path of the JAR file containing the specified class. */
+    public static @NotNull Path getPathFromClass(final @NotNull Class<?> cls) {
+        try {
+            String path =
+                    URLDecoder.decode(
+                            cls.getProtectionDomain().getCodeSource().getLocation().getPath(),
+                            StandardCharsets.UTF_8);
+            if (path.contains(".jar!/")) {
+                path = path.substring(0, path.indexOf(".jar!/") + 4);
+            } else if (!path.endsWith(".jar")) {
+                throw new UnsupportedOperationException(
+                        "Class " + cls.getName() + " is not loaded from a JAR, but from: " + path);
+            }
+            if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")
+                    && path.startsWith("/")) {
+                path = path.substring(1);
+            }
+            return Paths.get(path).toAbsolutePath().normalize();
+        } catch (Exception e) {
+            throw new UnsupportedOperationException(
+                    "Unable to determine JAR path for class: " + cls.getName(), e);
+        }
     }
 }

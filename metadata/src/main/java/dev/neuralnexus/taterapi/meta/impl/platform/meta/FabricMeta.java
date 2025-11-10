@@ -9,7 +9,7 @@ import dev.neuralnexus.taterapi.logger.impl.ApacheLogger;
 import dev.neuralnexus.taterapi.logger.impl.Slf4jLogger;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-import dev.neuralnexus.taterapi.meta.ModInfo;
+import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
@@ -17,11 +17,12 @@ import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -73,7 +74,7 @@ public final class FabricMeta implements Platform.Meta {
 
     @Override
     public @NonNull String loaderVersion() {
-        Optional<ModContainer> container =
+        Optional<net.fabricmc.loader.api.ModContainer> container =
                 FabricLoader.getInstance().getModContainer("fabric-loader");
         if (container.isPresent()) {
             return container.get().getMetadata().getVersion().getFriendlyString();
@@ -84,7 +85,7 @@ public final class FabricMeta implements Platform.Meta {
 
     @Override
     public @NonNull String apiVersion() {
-        Optional<ModContainer> container =
+        Optional<net.fabricmc.loader.api.ModContainer> container =
                 FabricLoader.getInstance().getModContainer("fabric-api-base");
         if (container.isPresent()) {
             return container.get().getMetadata().getVersion().getFriendlyString();
@@ -93,25 +94,62 @@ public final class FabricMeta implements Platform.Meta {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull List<ModInfo> mods() {
+    public @NonNull <T> Collection<ModContainer<T>> mods() {
         return FabricLoader.getInstance().getAllMods().stream()
-                .map(
-                        modContainer ->
-                                new ModInfoImpl(
-                                        modContainer.getMetadata().getId(),
-                                        modContainer.getMetadata().getName(),
-                                        modContainer.getMetadata().getVersion().getFriendlyString(),
-                                        Platforms.FABRIC))
+                .map(mc -> (ModContainer<T>) this.toContainer(mc))
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Logger logger(@NonNull String modId) {
-        MinecraftVersion version = minecraftVersion();
+    public @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull String modId) {
+        return FabricLoader.getInstance()
+                .getModContainer(modId)
+                .map(mc -> (ModContainer<T>) this.toContainer(mc));
+    }
+
+    @Override
+    public @NonNull Logger logger(final @NonNull String modId) {
+        final MinecraftVersion version = this.minecraftVersion();
         if (version.isOlderThan(MinecraftVersions.V18)) {
             return new ApacheLogger(modId);
         }
         return new Slf4jLogger(modId);
+    }
+
+    @Override
+    public boolean isModLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (FabricLoader.getInstance().isModLoaded(id)
+                    || FabricLoader.getInstance().isModLoaded(id.toLowerCase(Locale.ROOT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean areModsLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (!FabricLoader.getInstance().isModLoaded(id)
+                    && !FabricLoader.getInstance().isModLoaded(id.toLowerCase(Locale.ROOT))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private @NonNull ModContainer<net.fabricmc.loader.api.ModContainer> toContainer(
+            @NotNull net.fabricmc.loader.api.ModContainer container) {
+        return new ModContainerImpl<>(
+                container,
+                new ModInfoImpl(
+                        container.getMetadata().getId(),
+                        container.getMetadata().getName(),
+                        container.getMetadata().getVersion().getFriendlyString(),
+                        Platforms.FABRIC),
+                new ModResourceImpl(() -> container.getRootPaths().getFirst()));
     }
 }

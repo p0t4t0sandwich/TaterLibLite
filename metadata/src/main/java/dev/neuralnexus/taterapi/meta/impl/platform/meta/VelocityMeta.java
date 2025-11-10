@@ -8,12 +8,13 @@ import static dev.neuralnexus.taterapi.util.PathUtils.getPluginsFolder;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.network.ProtocolVersion;
+import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.Slf4jLogger;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.ModInfo;
+import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
@@ -21,7 +22,9 @@ import dev.neuralnexus.taterapi.meta.Side;
 import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Stores data about the Velocity platform. */
@@ -68,22 +71,49 @@ public final class VelocityMeta implements Platform.Meta {
         return proxyServer.getVersion().getVersion();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull List<ModInfo> mods() {
+    public @NonNull <T> Collection<ModContainer<T>> mods() {
         return proxyServer.getPluginManager().getPlugins().stream()
-                .map(
-                        plugin ->
-                                new ModInfoImpl(
-                                        plugin.getDescription().getId(),
-                                        plugin.getDescription().getName().orElse("Unknown"),
-                                        plugin.getDescription().getVersion().orElse("Unknown"),
-                                        Platforms.VELOCITY))
+                .map(p -> (ModContainer<T>) this.toContainer(p))
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Logger logger(@NonNull String modId) {
+    public @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull String modId) {
+        Optional<PluginContainer> plugin = proxyServer.getPluginManager().getPlugin(modId);
+        if (plugin.isEmpty()) {
+            plugin = proxyServer.getPluginManager().getPlugin(modId.toLowerCase(Locale.ROOT));
+        }
+        return plugin.map(p -> (ModContainer<T>) this.toContainer(p));
+    }
+
+    @Override
+    public @NonNull Logger logger(final @NonNull String modId) {
         return new Slf4jLogger(modId);
+    }
+
+    @Override
+    public boolean isModLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (proxyServer.getPluginManager().isLoaded(id)
+                    || proxyServer.getPluginManager().isLoaded(id.toLowerCase(Locale.ROOT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean areModsLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (!proxyServer.getPluginManager().isLoaded(id)
+                    && !proxyServer.getPluginManager().isLoaded(id.toLowerCase(Locale.ROOT))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -94,5 +124,28 @@ public final class VelocityMeta implements Platform.Meta {
     @Override
     public @NonNull Path configFolder() {
         return getPluginsFolder();
+    }
+
+    private @NonNull ModContainer<PluginContainer> toContainer(
+            final @NonNull PluginContainer container) {
+        return new ModContainerImpl<>(
+                container,
+                new ModInfoImpl(
+                        container.getDescription().getId(),
+                        container.getDescription().getName().orElse("Unknown"),
+                        container.getDescription().getVersion().orElse("Unknown"),
+                        Platforms.VELOCITY),
+                new ModResourceImpl(
+                        () ->
+                                container
+                                        .getDescription()
+                                        .getSource()
+                                        .orElseThrow(
+                                                () ->
+                                                        new IllegalStateException(
+                                                                "Plugin source not available for "
+                                                                        + container
+                                                                                .getDescription()
+                                                                                .getId()))));
     }
 }

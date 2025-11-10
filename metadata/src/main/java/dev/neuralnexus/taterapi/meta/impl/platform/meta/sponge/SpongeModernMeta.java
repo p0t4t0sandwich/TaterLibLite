@@ -7,19 +7,23 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta.sponge;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.ApacheLogger;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.ModInfo;
+import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraftServer;
+import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModContainerImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModInfoImpl;
+import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModResourceImpl;
+import dev.neuralnexus.taterapi.util.PathUtils;
 
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.plugin.PluginContainer;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -66,39 +70,73 @@ final class SpongeModernMeta implements Platform.Meta {
 
     @Override
     public @NonNull String loaderVersion() {
-        Optional<PluginContainer> container = Sponge.pluginManager().plugin("sponge");
-        if (container.isPresent()) {
-            return container.get().metadata().version().toString();
-        } else {
-            return "Unknown";
-        }
+        return Sponge.pluginManager()
+                .plugin("sponge")
+                .map(p -> p.metadata().version().toString())
+                .orElse("Unknown");
     }
 
     @Override
     public @NonNull String apiVersion() {
-        Optional<PluginContainer> container = Sponge.pluginManager().plugin("sponge-api");
-        if (container.isPresent()) {
-            return container.get().metadata().version().toString();
-        } else {
-            return "Unknown";
-        }
+        return Sponge.pluginManager()
+                .plugin("sponge-api")
+                .map(p -> p.metadata().version().toString())
+                .orElse("Unknown");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull List<ModInfo> mods() {
+    public @NonNull <T> Collection<ModContainer<T>> mods() {
         return Sponge.pluginManager().plugins().stream()
-                .map(
-                        pluginContainer ->
-                                new ModInfoImpl(
-                                        pluginContainer.metadata().id(),
-                                        pluginContainer.metadata().name().orElse(""),
-                                        pluginContainer.metadata().version().toString(),
-                                        Platforms.SPONGE))
+                .map(pc -> (ModContainer<T>) this.toContainer(pc))
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Logger logger(@NonNull String modId) {
+    public @NonNull <T> Optional<ModContainer<T>> mod(@NonNull String modId) {
+        return Sponge.pluginManager()
+                .plugin(modId)
+                .map(pc -> (ModContainer<T>) this.toContainer(pc));
+    }
+
+    @Override
+    public @NonNull Logger logger(final @NonNull String modId) {
         return new ApacheLogger(modId);
+    }
+
+    @Override
+    public boolean isModLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (Sponge.pluginManager().plugin(id).isPresent()
+                    || Sponge.pluginManager().plugin(id.toLowerCase(Locale.ROOT)).isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean areModsLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (Sponge.pluginManager().plugin(id).isEmpty()
+                    && Sponge.pluginManager().plugin(id.toLowerCase(Locale.ROOT)).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private @NonNull ModContainer<PluginContainer> toContainer(
+            final @NonNull PluginContainer container) {
+        return new ModContainerImpl<>(
+                container,
+                new ModInfoImpl(
+                        container.metadata().id(),
+                        container.metadata().name().orElse("Unknown"),
+                        container.metadata().version().toString(),
+                        Platforms.SPONGE),
+                new ModResourceImpl(
+                        () -> PathUtils.getPathFromClass(container.instance().getClass())));
     }
 }

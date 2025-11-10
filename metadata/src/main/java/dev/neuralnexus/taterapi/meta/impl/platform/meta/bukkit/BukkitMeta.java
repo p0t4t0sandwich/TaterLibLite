@@ -11,23 +11,42 @@ import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.JavaLogger;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.ModInfo;
+import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
+import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModContainerImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModInfoImpl;
+import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModResourceImpl;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.NonNull;
 
+import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Stores data about the Bukkit platform */
 public final class BukkitMeta implements Platform.Meta {
+    private static Field pluginFileField;
+
+    static {
+        try {
+            pluginFileField = JavaPlugin.class.getDeclaredField("file");
+            pluginFileField.setAccessible(true);
+        } catch (final NoSuchFieldException ignored) {
+        }
+    }
+
     @Override
     public @NonNull Object server() {
         return Bukkit.getServer();
@@ -88,25 +107,56 @@ public final class BukkitMeta implements Platform.Meta {
         return Bukkit.getBukkitVersion();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull List<ModInfo> mods() {
+    public @NonNull <T> Collection<ModContainer<T>> mods() {
         return Arrays.stream(Bukkit.getServer().getPluginManager().getPlugins())
-                .map(
-                        plugin ->
-                                new ModInfoImpl(
-                                        plugin.getDescription().getName(),
-                                        plugin.getDescription().getName(),
-                                        plugin.getDescription().getVersion(),
-                                        Platforms.BUKKIT))
+                .map(p -> (ModContainer<T>) this.toContainer(p))
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Logger logger(@NonNull String modId) {
+    public @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull String modId) {
+        @UnknownNullability Plugin plugin = Bukkit.getPluginManager().getPlugin(modId);
+        if (plugin != null) {
+            return Optional.of((ModContainer<T>) this.toContainer(plugin));
+        }
+        plugin = Bukkit.getPluginManager().getPlugin(modId.toLowerCase(Locale.ROOT));
+        if (plugin != null) {
+            return Optional.of((ModContainer<T>) this.toContainer(plugin));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public @NonNull Logger logger(final @NonNull String modId) {
         if (MetaAPI.instance().isHybrid()) {
             return BukkitHybridMeta.logger(modId);
         }
         return new JavaLogger(modId, Bukkit.getLogger());
+    }
+
+    @Override
+    public boolean isModLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (Bukkit.getPluginManager().getPlugin(id) != null
+                    || Bukkit.getPluginManager().getPlugin(id.toLowerCase(Locale.ROOT)) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean areModsLoaded(final @NonNull String... modId) {
+        for (final String id : modId) {
+            if (Bukkit.getPluginManager().getPlugin(id) == null
+                    && Bukkit.getPluginManager().getPlugin(id.toLowerCase(Locale.ROOT)) == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -117,5 +167,23 @@ public final class BukkitMeta implements Platform.Meta {
     @Override
     public @NonNull Path configFolder() {
         return getPluginsFolder();
+    }
+
+    private @NonNull ModContainer<Plugin> toContainer(final @NonNull Plugin plugin) {
+        return new ModContainerImpl<>(
+                plugin,
+                new ModInfoImpl(
+                        plugin.getDescription().getName(),
+                        plugin.getDescription().getName(),
+                        plugin.getDescription().getVersion(),
+                        Platforms.BUKKIT),
+                new ModResourceImpl(
+                        () -> {
+                            try {
+                                return ((File) pluginFileField.get(plugin)).toPath();
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }));
     }
 }
