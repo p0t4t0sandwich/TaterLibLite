@@ -50,18 +50,12 @@ public final class EntrypointLoader<T extends Entrypoint> {
             this.logger.debug("Resolving Entrypoint: " + name);
 
             AConstraints constraints = clazz.getAnnotation(AConstraints.class);
-            if (constraints == null) {
-                this.logger.debug(
-                        "Entrypoint " + name + " does not contain an AConstraints annotation");
-            } else if (!Constraints.from(constraints).result()) {
+            if (constraints != null && !Constraints.from(constraints).result()) {
                 this.logger.debug("Skipping Entrypoint: " + name);
                 continue;
             }
             AConstraint constraint = clazz.getAnnotation(AConstraint.class);
-            if (constraint == null) {
-                this.logger.debug(
-                        "Entrypoint " + name + " does not contain an AConstraint annotation");
-            } else if (!Constraint.from(constraint).result()) {
+            if (constraint != null && !Constraint.from(constraint).result()) {
                 this.logger.debug("Skipping Entrypoint: " + name);
                 continue;
             }

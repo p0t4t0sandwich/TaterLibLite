@@ -15,6 +15,7 @@ import java.lang.annotation.Target;
  * Requires the specified Minecraft versions or a range of versions to be present for the mixin to
  * be applied
  */
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface ReqMCVersion {

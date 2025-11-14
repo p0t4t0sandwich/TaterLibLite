@@ -16,7 +16,7 @@ public final class Constraints {
     private boolean result;
 
     public Constraints(Set<Constraint> constraints) {
-        this.constraints = constraints;
+        this.constraints = Set.copyOf(constraints);
     }
 
     public Constraints(Constraint... constraints) {

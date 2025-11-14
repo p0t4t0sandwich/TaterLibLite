@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -55,7 +56,17 @@ public record Constraint(
     public static Constraint from(final AConstraint constraint) {
         return builder()
                 .deps(Stream.of(constraint.deps()).map(Dependency::value).toList())
+                .deps(
+                        Stream.of(constraint.deps())
+                                .map(Dependency::aliases)
+                                .flatMap(Stream::of)
+                                .collect(Collectors.toSet()))
                 .notDeps(Stream.of(constraint.notDeps()).map(Dependency::value).toList())
+                .notDeps(
+                        Stream.of(constraint.notDeps())
+                                .map(Dependency::aliases)
+                                .flatMap(Stream::of)
+                                .collect(Collectors.toSet()))
                 .mappings(constraint.mappings())
                 .platform(
                         Stream.of(constraint.platform())
