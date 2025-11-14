@@ -14,7 +14,9 @@ import java.util.Set;
 /** Base plugin for Muxins */
 public final class MuxinPlugin implements IMixinConfigPlugin {
     @Override
-    public void onLoad(String mixinPackage) {}
+    public void onLoad(String mixinPackage) {
+        Muxins.bootstrap(mixinPackage);
+    }
 
     @Override
     public String getRefMapperConfig() {

@@ -46,6 +46,48 @@ public final class AnnotationChecker {
 
     private AnnotationChecker() {}
 
+    public static boolean isConstraintAnnotationNode(AnnotationNode node) {
+        return CONSTRAINT_DESC.equals(node.desc) || CONSTRAINTS_DESC.equals(node.desc);
+    }
+
+    /**
+     * Checks a constraint annotation node
+     *
+     * @param annotation The annotation node
+     * @param verbose If the method should log the result
+     * @return If the constraint is met
+     */
+    public static boolean checkAnnotation(AnnotationNode annotation, boolean verbose) {
+        boolean debug = Constraint.Evaluator.DEBUG;
+        Constraint.Evaluator.DEBUG = verbose;
+
+        if (CONSTRAINT_DESC.equals(annotation.desc)) {
+            if (!toConstraint(annotation).result()) {
+                if (verbose) {
+                    logger.info(ansiParser("§4Skipping mixin §9 constraint not met."));
+                }
+                Constraint.Evaluator.DEBUG = debug;
+                return false;
+            }
+        } else if (CONSTRAINTS_DESC.equals(annotation.desc)) {
+            List<AnnotationNode> constraintNodes = getValue(annotation, "value", true);
+            Constraints constraints =
+                    new Constraints(
+                            constraintNodes.stream()
+                                    .map(AnnotationChecker::toConstraint)
+                                    .collect(Collectors.toUnmodifiableSet()));
+            if (!constraints.result()) {
+                if (verbose) {
+                    logger.info(ansiParser("§4Skipping mixin §9 constraints not met."));
+                }
+                Constraint.Evaluator.DEBUG = debug;
+                return false;
+            }
+        }
+        Constraint.Evaluator.DEBUG = debug;
+        return true;
+    }
+
     /**
      * Checks the annotations on a mixin
      *

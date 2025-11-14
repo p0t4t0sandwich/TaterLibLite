@@ -7,6 +7,8 @@ package dev.neuralnexus.taterapi.muxins;
 import static dev.neuralnexus.taterapi.util.TextUtil.ansiParser;
 
 import dev.neuralnexus.taterapi.logger.Logger;
+import dev.neuralnexus.taterapi.muxins.mixin.MixinHacks;
+import dev.neuralnexus.taterapi.muxins.mixin.MuxinExtension;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.service.MixinService;
@@ -14,14 +16,27 @@ import org.spongepowered.asm.service.MixinService;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-/**
- * Utility class for users that what to use conditional mixins allong with their own mixin plugin
- */
+/** Utility class for users that what to use muxins allong with their own mixin plugin */
 public final class Muxins {
     public static final Logger logger = Logger.create("muxins");
 
     private Muxins() {}
+
+    private static final Set<String> initializedMixinPackages = new HashSet<>();
+
+    public static void bootstrap(String mixinPackage, boolean verbose) {
+        if (initializedMixinPackages.contains(mixinPackage)) return;
+
+        initializedMixinPackages.add(mixinPackage);
+        MixinHacks.registerMixinExtension(new MuxinExtension(mixinPackage, verbose));
+    }
+
+    public static void bootstrap(String mixinPackage) {
+        bootstrap(mixinPackage, false);
+    }
 
     /**
      * Checks if a mixin should be applied based on its annotations
