@@ -25,10 +25,7 @@ public final class Constraints {
     }
 
     public static Constraints from(AConstraints constraints) {
-        return new Constraints(
-                Stream.of(constraints.value())
-                        .map(Constraint::from)
-                        .toList());
+        return new Constraints(Stream.of(constraints.value()).map(Constraint::from).toList());
     }
 
     public boolean result() {

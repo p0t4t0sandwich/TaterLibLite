@@ -132,7 +132,19 @@ public record Constraint(
 
     @Override
     public int hashCode() {
-        return Objects.hash(deps, notDeps, mappings, platform, notPlatform, side, version, min, max, notVersion, notMin, notMax);
+        return Objects.hash(
+                deps,
+                notDeps,
+                mappings,
+                platform,
+                notPlatform,
+                side,
+                version,
+                min,
+                max,
+                notVersion,
+                notMin,
+                notMax);
     }
 
     /** Creates a new {@link Builder} instance for constructing a {@link Constraint}. */
