@@ -6,17 +6,18 @@ package dev.neuralnexus.taterapi.meta;
 
 import dev.neuralnexus.taterapi.meta.anno.AConstraints;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class Constraints {
-    private final Set<Constraint> constraints;
+    private final Collection<Constraint> constraints;
     private boolean evaluated = false;
     private boolean result;
 
-    public Constraints(Set<Constraint> constraints) {
-        this.constraints = Set.copyOf(constraints);
+    public Constraints(Collection<Constraint> constraints) {
+        this.constraints = Collections.unmodifiableCollection(constraints);
     }
 
     public Constraints(Constraint... constraints) {
@@ -27,7 +28,7 @@ public final class Constraints {
         return new Constraints(
                 Stream.of(constraints.value())
                         .map(Constraint::from)
-                        .collect(Collectors.toUnmodifiableSet()));
+                        .toList());
     }
 
     public boolean result() {

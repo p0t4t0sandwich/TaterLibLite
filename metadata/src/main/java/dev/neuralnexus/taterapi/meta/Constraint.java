@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
@@ -25,16 +26,16 @@ import java.util.stream.Stream;
  * Constraints include dependencies, mappings, platform, side, and Minecraft version.
  */
 public record Constraint(
-        Set<String> deps,
-        Set<String> notDeps,
+        Collection<String> deps,
+        Collection<String> notDeps,
         Mappings mappings,
-        Set<Platform> platform,
-        Set<Platform> notPlatform,
-        Set<Side> side,
-        Set<MinecraftVersion> version,
+        Collection<Platform> platform,
+        Collection<Platform> notPlatform,
+        Collection<Side> side,
+        Collection<MinecraftVersion> version,
         MinecraftVersion min,
         MinecraftVersion max,
-        Set<MinecraftVersion> notVersion,
+        Collection<MinecraftVersion> notVersion,
         MinecraftVersion notMin,
         MinecraftVersion notMax) {
 
@@ -120,6 +121,18 @@ public record Constraint(
                 + ", notMax="
                 + notMax
                 + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return this.hashCode() == o.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(deps, notDeps, mappings, platform, notPlatform, side, version, min, max, notVersion, notMin, notMax);
     }
 
     /** Creates a new {@link Builder} instance for constructing a {@link Constraint}. */
@@ -348,16 +361,16 @@ public record Constraint(
          */
         public Constraint build() {
             return new Constraint(
-                    Collections.unmodifiableSet(deps),
-                    Collections.unmodifiableSet(notDeps),
+                    Collections.unmodifiableCollection(deps),
+                    Collections.unmodifiableCollection(notDeps),
                     mappings,
-                    Collections.unmodifiableSet(platform),
-                    Collections.unmodifiableSet(notPlatform),
-                    Collections.unmodifiableSet(side),
-                    Collections.unmodifiableSet(version),
+                    Collections.unmodifiableCollection(platform),
+                    Collections.unmodifiableCollection(notPlatform),
+                    Collections.unmodifiableCollection(side),
+                    Collections.unmodifiableCollection(version),
                     min,
                     max,
-                    Collections.unmodifiableSet(notVersion),
+                    Collections.unmodifiableCollection(notVersion),
                     notMin,
                     notMax);
         }
