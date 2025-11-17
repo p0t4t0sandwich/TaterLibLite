@@ -409,6 +409,9 @@ public record Constraint(
          * @return true if the dependency constraints are satisfied, false otherwise
          */
         public static boolean evalDeps(Constraint constraint) {
+            if (constraint.deps.isEmpty() && constraint.notDeps.isEmpty()) {
+                return true;
+            }
             if (!constraint.deps.isEmpty()
                     && !META.isModLoaded(constraint.deps.toArray(String[]::new))) {
                 if (DEBUG) {
@@ -470,6 +473,9 @@ public record Constraint(
          * @return true if the platform constraints are satisfied, false otherwise
          */
         public static boolean evalPlatform(Constraint constraint) {
+            if (constraint.platform.isEmpty() && constraint.notPlatform.isEmpty()) {
+                return true;
+            }
             if (!constraint.platform.isEmpty()
                     && !META.isPlatformPresent(constraint.platform.toArray(Platform[]::new))) {
                 if (DEBUG) {
@@ -528,6 +534,14 @@ public record Constraint(
          * @return true if the version constraints are satisfied, false otherwise
          */
         public static boolean evalVersion(Constraint constraint) {
+            if (constraint.version.isEmpty()
+                    && constraint.min == MinecraftVersions.UNKNOWN
+                    && constraint.max == MinecraftVersions.UNKNOWN
+                    && constraint.notVersion.isEmpty()
+                    && constraint.notMin == MinecraftVersions.UNKNOWN
+                    && constraint.notMax == MinecraftVersions.UNKNOWN) {
+                return true;
+            }
             if (!constraint.version.isEmpty() && !constraint.version.contains(version)) {
                 if (DEBUG) {
                     logger.debug(
@@ -538,9 +552,7 @@ public record Constraint(
                 }
                 return false;
             }
-            if (constraint.min != MinecraftVersions.UNKNOWN
-                    && constraint.max != MinecraftVersions.UNKNOWN
-                    && !version.isInRange(constraint.min, constraint.max)) {
+            if (!version.isInRange(constraint.min, constraint.max)) {
                 if (DEBUG) {
                     logger.debug(
                             "Version constraint failed. Required range not satisfied: "
@@ -562,9 +574,9 @@ public record Constraint(
                 }
                 return false;
             }
-            if (constraint.notMin != MinecraftVersions.UNKNOWN
-                    && constraint.notMax != MinecraftVersions.UNKNOWN
-                    && version.isInRange(constraint.notMin, constraint.notMax)) {
+            if (version.isInRange(constraint.notMin, constraint.notMax)
+                    && (constraint.notMin != MinecraftVersions.UNKNOWN
+                            || constraint.notMax != MinecraftVersions.UNKNOWN)) {
                 if (DEBUG) {
                     logger.debug(
                             "Version constraint failed. Forbidden range satisfied: "
