@@ -11,7 +11,10 @@ import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.AConstraints;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
 /**
@@ -44,23 +47,39 @@ public final class EntrypointLoader<T extends Entrypoint> {
      * entrypoints.
      */
     public void load() {
-        for (T entrypoint : this.loader) {
-            Class<?> clazz = entrypoint.getClass();
-            String name = clazz.getName();
-            this.logger.debug("Resolving Entrypoint: " + name);
+        // TODO: Use Java version overrides to allow for safer Java 9+ usage.
+        Iterator<T> iterator = this.loader.iterator();
+        while (iterator.hasNext()) {
+            try {
+                T entrypoint = iterator.next();
 
-            AConstraints constraints = clazz.getAnnotation(AConstraints.class);
-            if (constraints != null && !Constraints.from(constraints).result()) {
-                this.logger.debug("Skipping Entrypoint: " + name);
-                continue;
+                Class<?> clazz = entrypoint.getClass();
+                String name = clazz.getName();
+                this.logger.debug("Resolving Entrypoint: " + name);
+
+                AConstraints constraints = clazz.getAnnotation(AConstraints.class);
+                if (constraints != null && !Constraints.from(constraints).result()) {
+                    this.logger.debug("Skipping Entrypoint: " + name);
+                    continue;
+                }
+                AConstraint constraint = clazz.getAnnotation(AConstraint.class);
+                if (constraint != null && !Constraint.from(constraint).result()) {
+                    this.logger.debug("Skipping Entrypoint: " + name);
+                    continue;
+                }
+                this.logger.debug("Loading Entrypoint: " + name);
+                this.entrypoints.add(entrypoint);
+            } catch (ServiceConfigurationError e) {
+                this.logger.debug(
+                        "Failed to load entrypoint: "
+                                + e.getMessage()
+                                + Arrays.toString(e.getStackTrace()));
+            } catch (Exception e) {
+                this.logger.debug(
+                        "An unexpected error occurred while loading entrypoint: "
+                                + e.getMessage()
+                                + Arrays.toString(e.getStackTrace()));
             }
-            AConstraint constraint = clazz.getAnnotation(AConstraint.class);
-            if (constraint != null && !Constraint.from(constraint).result()) {
-                this.logger.debug("Skipping Entrypoint: " + name);
-                continue;
-            }
-            this.logger.debug("Loading Entrypoint: " + name);
-            this.entrypoints.add(entrypoint);
         }
     }
 
