@@ -10,8 +10,9 @@ import dev.neuralnexus.taterapi.meta.Constraints;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.AConstraints;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceConfigurationError;
@@ -70,15 +71,15 @@ public final class EntrypointLoader<T extends Entrypoint> {
                 this.logger.debug("Loading Entrypoint: " + name);
                 this.entrypoints.add(entrypoint);
             } catch (ServiceConfigurationError e) {
-                this.logger.debug(
-                        "Failed to load entrypoint: "
-                                + e.getMessage()
-                                + Arrays.toString(e.getStackTrace()));
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                this.logger.debug("Failed to load entrypoint: " + sw);
             } catch (Exception e) {
-                this.logger.debug(
-                        "An unexpected error occurred while loading entrypoint: "
-                                + e.getMessage()
-                                + Arrays.toString(e.getStackTrace()));
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                this.logger.debug("An unexpected error occurred while loading entrypoint: " + sw);
             }
         }
     }
