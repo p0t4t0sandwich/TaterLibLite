@@ -35,9 +35,23 @@ public final class EntrypointLoader<T extends Entrypoint> {
      *
      * @param entrypointClass The interface of the entrypoint to load, which must extend {@link
      *     Entrypoint}.
+     * @param logger The logger to use for logging messages.
      */
     public EntrypointLoader(Class<T> entrypointClass, Logger logger) {
         this.loader = ServiceLoader.load(entrypointClass);
+        this.logger = logger;
+    }
+
+    /**
+     * Constructs a new EntrypointLoader for the specified entrypoint class.
+     *
+     * @param entrypointClass The interface of the entrypoint to load, which must extend {@link
+     *     Entrypoint}.
+     * @param cl The class loader to use for loading entrypoints.
+     * @param logger The logger to use for logging messages.
+     */
+    public EntrypointLoader(Class<T> entrypointClass, ClassLoader cl, Logger logger) {
+        this.loader = ServiceLoader.load(entrypointClass, cl);
         this.logger = logger;
     }
 
