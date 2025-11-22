@@ -372,13 +372,13 @@ public final class MetaAPIImpl implements MetaAPI {
     }
 
     @Override
-    public @NonNull Collection<ModContainer<Object>> mod(final @NonNull String modId) {
+    public @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull String modId) {
         Objects.requireNonNull(modId, "Mod ID cannot be null");
         return lookupAll().stream()
-                .map(meta -> meta.mod(modId))
+                .map(meta -> meta.<T>mod(modId))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .toList();
+                .findFirst();
     }
 
     @Override

@@ -229,7 +229,7 @@ public interface MetaAPI {
      * @param modId The modId of the mod
      * @return The mod container
      */
-    @NonNull Collection<ModContainer<Object>> mod(final @NonNull String modId);
+    @NonNull <T> Optional<ModContainer<T>> mod(final @NonNull String modId);
 
     /**
      * Get a specific mod by its modId
