@@ -48,7 +48,7 @@ public interface ModResource {
      * @return The FileSystem of the mod's jar file
      */
     default @NonNull FileSystem fileSystem() throws IOException {
-        return FileSystems.newFileSystem(this.path(), this.getClass().getClassLoader());
+        return FileSystems.newFileSystem(this.path());
     }
 
     /**
