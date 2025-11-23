@@ -230,12 +230,12 @@ public final class EntrypointLoader<T extends Entrypoint> {
         }
     }
 
-    public static <T extends Entrypoint> Builder<T> builder() {
-        return new Builder<>();
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public static final class Builder<T extends Entrypoint> {
-        private Class<T> entrypointClass;
+    public static final class Builder {
+        private Class<? extends Entrypoint> entrypointClass;
         private @Nullable ClassLoader classLoader = null;
         private @NonNull Logger logger = Logger.create("EntrypointLoader");
         private final Collection<@NonNull Path> servicePaths = new ArrayList<>();
@@ -243,48 +243,51 @@ public final class EntrypointLoader<T extends Entrypoint> {
 
         private Builder() {}
 
-        @SuppressWarnings("unchecked")
-        public Builder<T> entrypointClass(final @NonNull Class<?> entrypointClass) {
-            this.entrypointClass = (Class<T>) entrypointClass;
+        public Builder entrypointClass(final @NonNull Class<? extends Entrypoint> entrypointClass) {
+            this.entrypointClass = entrypointClass;
             return this;
         }
 
-        public Builder<T> classLoader(final @NonNull ClassLoader classLoader) {
+        public Builder classLoader(final @NonNull ClassLoader classLoader) {
             this.classLoader = classLoader;
             return this;
         }
 
-        public Builder<T> logger(final @NonNull Logger logger) {
+        public Builder logger(final @NonNull Logger logger) {
             this.logger = logger;
             return this;
         }
 
-        public Builder<T> servicePaths(final Collection<@NonNull Path> servicePaths) {
+        public Builder servicePaths(final Collection<@NonNull Path> servicePaths) {
             this.servicePaths.addAll(servicePaths);
             return this;
         }
 
-        public Builder<T> servicePaths(final @NonNull Path... servicePaths) {
+        public Builder servicePaths(final @NonNull Path... servicePaths) {
             this.servicePaths.addAll(List.of(servicePaths));
             return this;
         }
 
-        public Builder<T> forceFallback(final boolean forceFallback) {
+        public Builder forceFallback(final boolean forceFallback) {
             this.forceFallback = forceFallback;
             return this;
         }
 
-        public @NonNull EntrypointLoader<T> build() {
+        @SuppressWarnings("unchecked")
+        public @NonNull <T extends Entrypoint> EntrypointLoader<T> build() {
             if (this.classLoader != null) {
                 return new EntrypointLoader<>(
-                        this.entrypointClass,
+                        (Class<T>) this.entrypointClass,
                         this.classLoader,
                         this.logger,
                         this.servicePaths,
                         this.forceFallback);
             } else {
                 return new EntrypointLoader<>(
-                        this.entrypointClass, this.logger, this.servicePaths, this.forceFallback);
+                        (Class<T>) this.entrypointClass,
+                        this.logger,
+                        this.servicePaths,
+                        this.forceFallback);
             }
         }
     }
