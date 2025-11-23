@@ -60,10 +60,7 @@ public interface ModResource {
     default Optional<Path> getResource(@NonNull String path) {
         Objects.requireNonNull(path, "path cannot be null");
         try (FileSystem fs = this.fileSystem()) {
-            Path resourcePath = fs.getPath(path);
-            if (resourcePath.toFile().exists()) {
-                return Optional.of(resourcePath);
-            }
+            return Optional.of(fs.getPath(path));
         } catch (IOException ignored) {
         }
         return Optional.empty();
@@ -76,16 +73,12 @@ public interface ModResource {
      * @return The Path to the resource
      * @throws RuntimeException If the resource is not found or an error occurs
      */
-    default Path getResourceOrThrow(@NonNull String path) throws RuntimeException {
+    default @NonNull Path getResourceOrThrow(@NonNull String path) throws RuntimeException {
         Objects.requireNonNull(path, "path cannot be null");
         try (FileSystem fs = this.fileSystem()) {
-            Path resourcePath = fs.getPath(path);
-            if (resourcePath.toFile().exists()) {
-                return resourcePath;
-            }
+            return fs.getPath(path);
         } catch (IOException e) {
             throw new RuntimeException("Error accessing resource: " + path, e);
         }
-        throw new RuntimeException("Resource not found: " + path);
     }
 }
