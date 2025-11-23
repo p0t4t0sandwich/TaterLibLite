@@ -243,8 +243,9 @@ public final class EntrypointLoader<T extends Entrypoint> {
 
         private Builder() {}
 
-        public Builder<T> entrypointClass(final @NonNull Class<T> entrypointClass) {
-            this.entrypointClass = entrypointClass;
+        @SuppressWarnings("unchecked")
+        public Builder<T> entrypointClass(final @NonNull Class<?> entrypointClass) {
+            this.entrypointClass = (Class<T>) entrypointClass;
             return this;
         }
 
