@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,9 +46,7 @@ public interface ModResource {
      *
      * @return The FileSystem of the mod's jar file
      */
-    default @NonNull FileSystem fileSystem() throws IOException {
-        return FileSystems.newFileSystem(this.path());
-    }
+    @NonNull FileSystem fileSystem() throws IOException;
 
     /**
      * Get a resource from the mod's jar file
@@ -57,10 +54,10 @@ public interface ModResource {
      * @param path The path to the resource
      * @return An Optional containing the Path to the resource, or empty if not found
      */
-    default Optional<Path> getResource(@NonNull String path) {
+    default Optional<Path> getResource(final @NonNull String path) {
         Objects.requireNonNull(path, "path cannot be null");
-        try (FileSystem fs = this.fileSystem()) {
-            return Optional.of(fs.getPath(path));
+        try {
+            return Optional.of(this.fileSystem().getPath(path));
         } catch (IOException ignored) {
         }
         return Optional.empty();
@@ -73,10 +70,10 @@ public interface ModResource {
      * @return The Path to the resource
      * @throws RuntimeException If the resource is not found or an error occurs
      */
-    default @NonNull Path getResourceOrThrow(@NonNull String path) throws RuntimeException {
+    default @NonNull Path getResourceOrThrow(final @NonNull String path) throws RuntimeException {
         Objects.requireNonNull(path, "path cannot be null");
-        try (FileSystem fs = this.fileSystem()) {
-            return fs.getPath(path);
+        try {
+            return this.fileSystem().getPath(path);
         } catch (IOException e) {
             throw new RuntimeException("Error accessing resource: " + path, e);
         }
