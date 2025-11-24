@@ -192,7 +192,7 @@ public final class EntrypointLoader<T extends Entrypoint> {
      */
     public void load() {
         // TODO: Add Java class versions to Constraint
-        final boolean isJava9 = Integer.parseInt(System.getProperty("java.class.version")) >= 52;
+        final boolean isJava9 = Float.parseFloat(System.getProperty("java.class.version")) >= 52;
         final boolean serviceLoaderBroken =
                 Constraint.builder()
                         .platform(Platforms.FORGE)
