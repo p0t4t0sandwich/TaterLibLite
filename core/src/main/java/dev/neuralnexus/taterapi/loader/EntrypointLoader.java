@@ -241,7 +241,7 @@ public final class EntrypointLoader<T extends Entrypoint> {
         private final Collection<@NonNull Path> servicePaths = new ArrayList<>();
         private boolean forceFallback = false;
 
-        private Builder() {}
+        Builder() {}
 
         public Builder entrypointClass(final @NonNull Class<? extends Entrypoint> entrypointClass) {
             this.entrypointClass = entrypointClass;
