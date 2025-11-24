@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
@@ -93,9 +94,11 @@ public final class EntrypointLoader<T extends Entrypoint> {
      */
     private Collection<@NonNull T> loadServiceLoader() {
         final Collection<@NonNull T> loadedEntrypoints = new ArrayList<>();
-        for (final ServiceLoader.Provider<T> p : loader.stream().toList()) {
+        Iterator<T> iterator = loader.iterator();
+        while (iterator.hasNext()) {
             try {
-                final Class<? extends T> clazz = p.type();
+                final T entrypoint = iterator.next();
+                final Class<? extends Entrypoint> clazz = entrypoint.getClass();
                 final String name = clazz.getName();
                 this.logger.debug("Resolving Entrypoint: " + name);
 
@@ -111,19 +114,12 @@ public final class EntrypointLoader<T extends Entrypoint> {
                 }
 
                 this.logger.debug("Loading Entrypoint: " + name);
-                final T entrypoint = p.get();
-
                 loadedEntrypoints.add(entrypoint);
             } catch (ServiceConfigurationError e) {
                 final StringWriter sw = new StringWriter();
                 final PrintWriter pw = new PrintWriter(sw);
                 e.printStackTrace(pw);
-                this.logger.debug("Failed to load entrypoint: " + sw);
-            } catch (Throwable e) {
-                final StringWriter sw = new StringWriter();
-                final PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                this.logger.debug("An unexpected error occurred while loading entrypoint: " + sw);
+                this.logger.debug("Failed to load entrypoint: \n" + sw);
             }
         }
         return loadedEntrypoints;
