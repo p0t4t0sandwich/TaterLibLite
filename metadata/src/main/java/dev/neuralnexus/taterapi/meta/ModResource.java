@@ -56,7 +56,7 @@ public interface ModResource extends AutoCloseable {
      */
     default Optional<Path> getResource(final @NonNull String path) {
         Objects.requireNonNull(path, "path cannot be null");
-        try (FileSystem fs = this.fileSystem()) {
+        try (final FileSystem fs = this.fileSystem()) {
             return Optional.of(fs.getPath(path));
         } catch (IOException ignored) {
         }
@@ -72,7 +72,7 @@ public interface ModResource extends AutoCloseable {
      */
     default @NonNull Path getResourceOrThrow(final @NonNull String path) throws IOException {
         Objects.requireNonNull(path, "path cannot be null");
-        try (FileSystem fs = this.fileSystem()) {
+        try (final FileSystem fs = this.fileSystem()) {
             return fs.getPath(path);
         }
     }
