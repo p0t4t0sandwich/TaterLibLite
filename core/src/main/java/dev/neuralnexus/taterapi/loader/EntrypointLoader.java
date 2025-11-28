@@ -227,6 +227,8 @@ public final class EntrypointLoader<T extends Entrypoint> {
     public void load() {
         // TODO: Add Java class versions to Constraint
         // final boolean isJava9 = Float.parseFloat(System.getProperty("java.class.version")) >= 52;
+
+        // https://github.com/McModLauncher/modlauncher/issues/39#issuecomment-683487396
         final boolean serviceLoaderBroken =
                 Constraint.builder()
                         .platform(Platforms.FORGE)
