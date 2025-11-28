@@ -25,9 +25,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
@@ -39,10 +39,11 @@ import java.util.ServiceLoader;
  * @param <T> The type of entrypoint, which must extend {@link Entrypoint}.
  */
 public final class EntrypointLoader<T extends Entrypoint> {
-    private final @NonNull ServiceLoader<T> loader;
+    private final @Nullable ServiceLoader<T> loader;
     private final @NonNull Logger logger;
-    private final Collection<@NonNull Path> servicePaths;
-    private final boolean forceFallback;
+    private final Collection<@NonNull Class<? extends T>> providers;
+    private final boolean useServiceLoader;
+    private final boolean useOtherProviders;
     private final Collection<@NonNull T> entrypoints = new ArrayList<>();
 
     /**
@@ -51,18 +52,26 @@ public final class EntrypointLoader<T extends Entrypoint> {
      * @param entrypointClass The interface of the entrypoint to load, which must extend {@link
      *     Entrypoint}.
      * @param logger The logger to use for logging messages.
-     * @param servicePaths The collection of service paths to use for fallback loading.
-     * @param forceFallback Whether to force fallback loading from service paths.
+     * @param providers A collection of additional provider classes to load.
+     * @param useServiceLoader Whether to use the ServiceLoader mechanism.
+     * @param useOtherProviders Whether to use additional provider classes.
      */
-    private EntrypointLoader(
-            final @NonNull Class<T> entrypointClass,
+    @SuppressWarnings("unchecked")
+    EntrypointLoader(
+            final @NonNull Class<? extends Entrypoint> entrypointClass,
             final @NonNull Logger logger,
-            final Collection<@NonNull Path> servicePaths,
-            final boolean forceFallback) {
-        this.loader = ServiceLoader.load(entrypointClass);
+            final Collection<@NonNull Class<? extends Entrypoint>> providers,
+            final boolean useServiceLoader,
+            final boolean useOtherProviders) {
+        if (!useServiceLoader) {
+            this.loader = null;
+        } else {
+            this.loader = (ServiceLoader<T>) ServiceLoader.load(entrypointClass);
+        }
         this.logger = logger;
-        this.servicePaths = servicePaths;
-        this.forceFallback = forceFallback;
+        this.providers = (Collection<@NonNull Class<? extends T>>) (Object) providers;
+        this.useServiceLoader = useServiceLoader;
+        this.useOtherProviders = useOtherProviders;
     }
 
     /**
@@ -72,19 +81,31 @@ public final class EntrypointLoader<T extends Entrypoint> {
      *     Entrypoint}.
      * @param cl The class loader to use for loading entrypoints.
      * @param logger The logger to use for logging messages.
-     * @param servicePaths The collection of service paths to use for fallback loading.
-     * @param forceFallback Whether to force fallback loading from service paths.
+     * @param providers A collection of additional provider classes to load.
+     * @param useServiceLoader Whether to use the ServiceLoader mechanism.
+     * @param useOtherProviders Whether to use additional provider classes.
      */
-    private EntrypointLoader(
-            final @NonNull Class<T> entrypointClass,
+    @SuppressWarnings("unchecked")
+    EntrypointLoader(
+            final @NonNull Class<? extends Entrypoint> entrypointClass,
             final @Nullable ClassLoader cl,
             final @NonNull Logger logger,
-            final Collection<@NonNull Path> servicePaths,
-            final boolean forceFallback) {
-        this.loader = ServiceLoader.load(entrypointClass, cl);
+            final Collection<@NonNull Class<? extends Entrypoint>> providers,
+            final boolean useServiceLoader,
+            final boolean useOtherProviders) {
+        if (!useServiceLoader) {
+            this.loader = null;
+        } else {
+            if (cl == null) {
+                this.loader = (ServiceLoader<T>) ServiceLoader.load(entrypointClass);
+            } else {
+                this.loader = (ServiceLoader<T>) ServiceLoader.load(entrypointClass, cl);
+            }
+        }
         this.logger = logger;
-        this.servicePaths = servicePaths;
-        this.forceFallback = forceFallback;
+        this.providers = (Collection<@NonNull Class<? extends T>>) (Object) providers;
+        this.useServiceLoader = useServiceLoader;
+        this.useOtherProviders = useOtherProviders;
     }
 
     /**
@@ -94,6 +115,9 @@ public final class EntrypointLoader<T extends Entrypoint> {
      */
     private Collection<@NonNull T> loadServiceLoader() {
         final Collection<@NonNull T> loadedEntrypoints = new ArrayList<>();
+        if (this.loader == null) {
+            throw new IllegalStateException("ServiceLoader is not initialized.");
+        }
         Iterator<T> iterator = loader.iterator();
         while (iterator.hasNext()) {
             try {
@@ -119,20 +143,15 @@ public final class EntrypointLoader<T extends Entrypoint> {
                 final StringWriter sw = new StringWriter();
                 final PrintWriter pw = new PrintWriter(sw);
                 e.printStackTrace(pw);
-                this.logger.debug("Failed to load entrypoint: \n" + sw);
+                this.logger.debug("Failed to resolve entrypoint: \n" + sw);
             }
         }
         return loadedEntrypoints;
     }
 
-    /**
-     * Manually loads entrypoints from the specified service file.
-     *
-     * @param servicePath The path to the service file.
-     * @return A collection of loaded entrypoints.
-     */
-    private Collection<@NonNull T> loadFallbackPath(@NonNull Path servicePath) {
-        final Collection<@NonNull T> loadedEntrypoints = new ArrayList<>();
+    static Collection<Class<? extends Entrypoint>> readServiceFile(
+            Logger logger, Path servicePath) {
+        final Collection<Class<? extends Entrypoint>> classes = new ArrayList<>();
         try (final InputStream is = Files.newInputStream(servicePath);
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             String line;
@@ -142,40 +161,59 @@ public final class EntrypointLoader<T extends Entrypoint> {
                     continue;
                 }
                 try {
-                    final Class<?> clazz =
-                            Class.forName(line, false, this.getClass().getClassLoader());
-                    final String name = clazz.getName();
-                    this.logger.debug("Resolving Entrypoint: " + name);
-
-                    final AConstraints constraints = clazz.getAnnotation(AConstraints.class);
-                    if (constraints != null && !Constraints.from(constraints).result()) {
-                        this.logger.debug("Skipping Entrypoint: " + name);
-                        continue;
-                    }
-
-                    final AConstraint constraint = clazz.getAnnotation(AConstraint.class);
-                    if (constraint != null && !Constraint.from(constraint).result()) {
-                        this.logger.debug("Skipping Entrypoint: " + name);
-                        continue;
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    final T instance = (T) clazz.getConstructor().newInstance();
-
-                    loadedEntrypoints.add(instance);
-                } catch (ClassNotFoundException
-                        | InstantiationException
-                        | IllegalAccessException
-                        | InvocationTargetException
-                        | NoSuchMethodException e) {
+                    final Class<? extends Entrypoint> clazz =
+                            Class.forName(line, false, EntrypointLoader.class.getClassLoader())
+                                    .asSubclass(Entrypoint.class);
+                    classes.add(clazz);
+                } catch (ClassCastException | ClassNotFoundException e) {
                     final StringWriter sw = new StringWriter();
                     final PrintWriter pw = new PrintWriter(sw);
                     e.printStackTrace(pw);
-                    this.logger.debug("Failed to load entrypoint from line: " + line + "\n" + sw);
+                    logger.debug("Failed to load class from line: " + line + "\n" + sw);
                 }
             }
         } catch (IOException e) {
-            this.logger.debug("Failed to read service file at path: " + servicePath);
+            logger.debug("Failed to read service file at path: " + servicePath);
+        }
+        return classes;
+    }
+
+    /**
+     * Manually loads entrypoints from the given service classes.
+     *
+     * @return A collection of loaded entrypoints.
+     */
+    private Collection<@NonNull T> loadProviderClasses() {
+        final Collection<@NonNull T> loadedEntrypoints = new ArrayList<>();
+        for (final Class<? extends T> provider : this.providers) {
+            final String name = provider.getName();
+            try {
+                this.logger.debug("Resolving Entrypoint: " + name);
+
+                final AConstraints constraints = provider.getAnnotation(AConstraints.class);
+                if (constraints != null && !Constraints.from(constraints).result()) {
+                    this.logger.debug("Skipping Entrypoint: " + name);
+                    continue;
+                }
+
+                final AConstraint constraint = provider.getAnnotation(AConstraint.class);
+                if (constraint != null && !Constraint.from(constraint).result()) {
+                    this.logger.debug("Skipping Entrypoint: " + name);
+                    continue;
+                }
+
+                final T instance = provider.getConstructor().newInstance();
+
+                loadedEntrypoints.add(instance);
+            } catch (InstantiationException
+                    | IllegalAccessException
+                    | InvocationTargetException
+                    | NoSuchMethodException e) {
+                final StringWriter sw = new StringWriter();
+                final PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                this.logger.debug("Failed to resolve entrypoint: " + name + "\n" + sw);
+            }
         }
         return loadedEntrypoints;
     }
@@ -188,7 +226,7 @@ public final class EntrypointLoader<T extends Entrypoint> {
      */
     public void load() {
         // TODO: Add Java class versions to Constraint
-        final boolean isJava9 = Float.parseFloat(System.getProperty("java.class.version")) >= 52;
+        // final boolean isJava9 = Float.parseFloat(System.getProperty("java.class.version")) >= 52;
         final boolean serviceLoaderBroken =
                 Constraint.builder()
                         .platform(Platforms.FORGE)
@@ -196,11 +234,10 @@ public final class EntrypointLoader<T extends Entrypoint> {
                         .max(MinecraftVersions.V16_2)
                         .build()
                         .result();
-        if (!isJava9 || serviceLoaderBroken || this.forceFallback) {
-            for (final @NonNull Path servicePath : this.servicePaths) {
-                this.entrypoints.addAll(this.loadFallbackPath(servicePath));
-            }
-        } else {
+        if (serviceLoaderBroken || this.useOtherProviders) {
+            this.entrypoints.addAll(this.loadProviderClasses());
+        }
+        if (!serviceLoaderBroken && this.useServiceLoader) {
             this.entrypoints.addAll(this.loadServiceLoader());
         }
     }
@@ -234,8 +271,10 @@ public final class EntrypointLoader<T extends Entrypoint> {
         private Class<? extends Entrypoint> entrypointClass;
         private @Nullable ClassLoader classLoader = null;
         private @NonNull Logger logger = Logger.create("EntrypointLoader");
-        private final Collection<@NonNull Path> servicePaths = new ArrayList<>();
-        private boolean forceFallback = false;
+        private final Collection<@NonNull Class<? extends Entrypoint>> providers =
+                new ArrayList<>();
+        private boolean useServiceLoader = true;
+        private boolean useOtherProviders = false;
 
         Builder() {}
 
@@ -255,35 +294,81 @@ public final class EntrypointLoader<T extends Entrypoint> {
         }
 
         public Builder servicePaths(final Collection<@NonNull Path> servicePaths) {
-            this.servicePaths.addAll(servicePaths);
+            for (final Path servicePath : servicePaths) {
+                this.providers.addAll(readServiceFile(this.logger, servicePath));
+            }
             return this;
         }
 
         public Builder servicePaths(final @NonNull Path... servicePaths) {
-            this.servicePaths.addAll(List.of(servicePaths));
+            for (final Path servicePath : servicePaths) {
+                this.providers.addAll(readServiceFile(this.logger, servicePath));
+            }
             return this;
         }
 
-        public Builder forceFallback(final boolean forceFallback) {
-            this.forceFallback = forceFallback;
+        public Builder serviceNames(final Collection<@NonNull String> serviceNames) {
+            for (final String serviceName : serviceNames) {
+                try {
+                    final Class<? extends Entrypoint> clazz =
+                            Class.forName(
+                                            serviceName,
+                                            false,
+                                            EntrypointLoader.class.getClassLoader())
+                                    .asSubclass(Entrypoint.class);
+                    this.providers.add(clazz);
+                } catch (ClassCastException | ClassNotFoundException e) {
+                    final StringWriter sw = new StringWriter();
+                    final PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    this.logger.debug("Failed to load class from name: " + serviceName + "\n" + sw);
+                }
+            }
             return this;
         }
 
-        @SuppressWarnings("unchecked")
+        public Builder serviceNames(final @NonNull String... serviceNames) {
+            return this.serviceNames(Arrays.asList(serviceNames));
+        }
+
+        public Builder serviceClasses(
+                final Collection<@NonNull Class<? extends Entrypoint>> serviceClasses) {
+            this.providers.addAll(serviceClasses);
+            return this;
+        }
+
+        public Builder serviceClasses(
+                final @NonNull Class<? extends Entrypoint>... serviceClasses) {
+            this.providers.addAll(Arrays.asList(serviceClasses));
+            return this;
+        }
+
+        public Builder useServiceLoader(final boolean useServiceLoader) {
+            this.useServiceLoader = useServiceLoader;
+            return this;
+        }
+
+        public Builder useOtherProviders(final boolean useOtherProviders) {
+            this.useOtherProviders = useOtherProviders;
+            return this;
+        }
+
         public @NonNull <T extends Entrypoint> EntrypointLoader<T> build() {
             if (this.classLoader != null) {
                 return new EntrypointLoader<>(
-                        (Class<T>) this.entrypointClass,
+                        this.entrypointClass,
                         this.classLoader,
                         this.logger,
-                        this.servicePaths,
-                        this.forceFallback);
+                        this.providers,
+                        this.useServiceLoader,
+                        this.useOtherProviders);
             } else {
                 return new EntrypointLoader<>(
-                        (Class<T>) this.entrypointClass,
+                        this.entrypointClass,
                         this.logger,
-                        this.servicePaths,
-                        this.forceFallback);
+                        this.providers,
+                        this.useServiceLoader,
+                        this.useOtherProviders);
             }
         }
     }
