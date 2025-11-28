@@ -69,7 +69,8 @@ public class ModResourceImpl implements ModResource {
         @SuppressWarnings("RedundantThrows")
         @Override
         public void close() throws IOException {
-            throw new UnsupportedOperationException("This FileSystem must not be closed directly, please use the ModResource#close() method.");
+            throw new UnsupportedOperationException(
+                    "This FileSystem must not be closed directly, please use the ModResource#close() method.");
         }
 
         @Override
@@ -103,7 +104,7 @@ public class ModResourceImpl implements ModResource {
         }
 
         @Override
-        public @NonNull Path getPath(@NonNull String first, String @NonNull ...more) {
+        public @NonNull Path getPath(@NonNull String first, String @NonNull ... more) {
             return this.delegate.getPath(first, more);
         }
 
