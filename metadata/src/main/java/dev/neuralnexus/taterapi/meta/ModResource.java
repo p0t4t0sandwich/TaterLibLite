@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /** Represents a mod's jar and resources */
-public interface ModResource {
+public interface ModResource extends AutoCloseable {
     /**
      * Get the path to the mod's file
      *
@@ -56,8 +56,8 @@ public interface ModResource {
      */
     default Optional<Path> getResource(final @NonNull String path) {
         Objects.requireNonNull(path, "path cannot be null");
-        try {
-            return Optional.of(this.fileSystem().getPath(path));
+        try (FileSystem fs = this.fileSystem()) {
+            return Optional.of(fs.getPath(path));
         } catch (IOException ignored) {
         }
         return Optional.empty();
@@ -68,14 +68,12 @@ public interface ModResource {
      *
      * @param path The path to the resource
      * @return The Path to the resource
-     * @throws RuntimeException If the resource is not found or an error occurs
+     * @throws IOException If the resource is not found or an I/O error occurs
      */
-    default @NonNull Path getResourceOrThrow(final @NonNull String path) throws RuntimeException {
+    default @NonNull Path getResourceOrThrow(final @NonNull String path) throws IOException {
         Objects.requireNonNull(path, "path cannot be null");
-        try {
-            return this.fileSystem().getPath(path);
-        } catch (IOException e) {
-            throw new RuntimeException("Error accessing resource: " + path, e);
+        try (FileSystem fs = this.fileSystem()) {
+            return fs.getPath(path);
         }
     }
 }
