@@ -119,6 +119,22 @@ final class SpongeModernMeta implements Platform.Meta {
     @SuppressWarnings("unchecked")
     @Override
     public @NonNull <T> Optional<ModContainer<T>> mod(@NonNull String modId) {
+        // TODO: Add mechanism to unwrap and use underlying platform's ModContainer
+        // Defer to parent platforms to prevent null pointer mentioned below
+        if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
+            Platform.Meta forge = ForgeData.create();
+            if (forge != null && forge.isModLoaded(modId)) {
+                return Optional.empty();
+            }
+        } else if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE)) {
+            if (new NeoForgeMeta().isModLoaded(modId)) {
+                return Optional.empty();
+            }
+        } else if (MetaAPI.instance().isPlatformPresent(Platforms.FABRIC)) {
+            if (new FabricMeta().isModLoaded(modId)) {
+                return Optional.empty();
+            }
+        }
         return Sponge.pluginManager()
                 .plugin(modId)
                 .map(pc -> (ModContainer<T>) this.toContainer(pc));
@@ -153,6 +169,8 @@ final class SpongeModernMeta implements Platform.Meta {
 
     private @NonNull ModContainer<PluginContainer> toContainer(
             final @NonNull PluginContainer container) {
+        // TODO: Doesn't work from inside Neo/Forge mod's constructor, since
+        // ForgePluginContainer#instance is null
         return new ModContainerImpl<>(
                 container,
                 new ModInfoImpl(
