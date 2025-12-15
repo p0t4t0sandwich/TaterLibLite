@@ -884,4 +884,19 @@ public interface Release {
     MinecraftVersion V21_9 = MinecraftVersionImpl.of("1.21.9");
     MinecraftVersion V21_10_RC1 = MinecraftVersionImpl.of("1.21.10-rc1");
     MinecraftVersion V21_10 = MinecraftVersionImpl.of("1.21.10");
+    MinecraftVersion S25W41A = MinecraftVersionImpl.of("25w41a");
+    MinecraftVersion S25W42A = MinecraftVersionImpl.of("25w42a");
+    MinecraftVersion S25W43A = MinecraftVersionImpl.of("25w43a");
+    MinecraftVersion S25W44A = MinecraftVersionImpl.of("25w44a");
+    MinecraftVersion S25W45A = MinecraftVersionImpl.of("25w45a");
+    MinecraftVersion S25W46A = MinecraftVersionImpl.of("25w46a");
+    MinecraftVersion V21_11_PRE1 = MinecraftVersionImpl.of("1.21.11-pre1");
+    MinecraftVersion V21_11_PRE2 = MinecraftVersionImpl.of("1.21.11-pre2");
+    MinecraftVersion V21_11_PRE3 = MinecraftVersionImpl.of("1.21.11-pre3");
+    MinecraftVersion V21_11_PRE4 = MinecraftVersionImpl.of("1.21.11-pre4");
+    MinecraftVersion V21_11_PRE5 = MinecraftVersionImpl.of("1.21.11-pre5");
+    MinecraftVersion V21_11_RC1 = MinecraftVersionImpl.of("1.21.11-rc1");
+    MinecraftVersion V21_11_RC2 = MinecraftVersionImpl.of("1.21.11-rc2");
+    MinecraftVersion V21_11_RC3 = MinecraftVersionImpl.of("1.21.11-rc3");
+    MinecraftVersion V21_11 = MinecraftVersionImpl.of("1.21.11");
 }
