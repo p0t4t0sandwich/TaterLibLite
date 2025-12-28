@@ -4,6 +4,7 @@
  */
 package dev.neuralnexus.taterapi.meta.impl.platform.meta;
 
+import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.ModResource;
 
 import org.jspecify.annotations.NonNull;
@@ -16,6 +17,7 @@ import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.ProviderNotFoundException;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
@@ -24,6 +26,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class ModResourceImpl implements ModResource {
+    private final @NonNull Logger logger = Logger.create("ModResourceImpl");
     private final @NonNull Supplier<@NonNull Path> pathSupplier;
     private FileSystem fileSystem;
     private int refCount = 0;
@@ -44,11 +47,20 @@ public class ModResourceImpl implements ModResource {
             return this.fileSystem;
         }
 
-        URI uri = URI.create("jar:" + this.path().toUri() + "!/");
+        URI uri;
+        if (this.path().getFileSystem().provider().getScheme().equals("file")) {
+            uri = URI.create("jar:" + this.path().toUri() + "!/");
+        } else {
+            uri = this.path().toUri();
+        }
+
         try {
             this.fileSystem = new FSWrapper(FileSystems.newFileSystem(uri, Collections.emptyMap()));
         } catch (FileSystemAlreadyExistsException e) {
             this.fileSystem = FileSystems.getFileSystem(uri);
+        } catch (ProviderNotFoundException e) {
+            this.logger.error("No provider found for URI: " + uri, e);
+            throw e;
         }
 
         this.refCount = 1;
