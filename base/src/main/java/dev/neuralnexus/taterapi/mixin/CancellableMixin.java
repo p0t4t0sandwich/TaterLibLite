@@ -11,13 +11,12 @@ import dev.neuralnexus.taterapi.event.Cancellable;
  * Wrapper for mixin events that implement {@link
  * org.spongepowered.asm.mixin.injection.callback.Cancellable}.
  */
-public class MixinCancellableCallbackWrapper
+public class CancellableMixin
         implements Cancellable,
                 Wrapped<org.spongepowered.asm.mixin.injection.callback.Cancellable> {
     private final org.spongepowered.asm.mixin.injection.callback.Cancellable ci;
 
-    public MixinCancellableCallbackWrapper(
-            org.spongepowered.asm.mixin.injection.callback.Cancellable ci) {
+    public CancellableMixin(org.spongepowered.asm.mixin.injection.callback.Cancellable ci) {
         this.ci = ci;
     }
 
