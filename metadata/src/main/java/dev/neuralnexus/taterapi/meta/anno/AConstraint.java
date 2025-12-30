@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  * define constraints on classes, used with entrypoints or conditional mixins.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
 public @interface AConstraint {
     /** The dependencies required for this constraint to be met. */
     Dependency[] deps() default {};

@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * multiple constraints on classes, used with entrypoints or conditional mixins.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
 public @interface AConstraints {
     /** The list of constraints that must be met */
     AConstraint[] value();
