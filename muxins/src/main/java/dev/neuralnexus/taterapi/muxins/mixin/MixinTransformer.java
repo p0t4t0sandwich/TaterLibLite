@@ -54,9 +54,9 @@ public final class MixinTransformer {
             if (!remove && !AnnotationChecker.checkAnnotation(annotationNode, verbose)) {
                 if (verbose) {
                     Muxins.logger.warn(
-                            "Preventing application of mixin"
+                            "Preventing application of mixin "
                                     + targetName
-                                    + "due to failing constraint");
+                                    + " due to failing constraint");
                 }
 
                 remove = true;
