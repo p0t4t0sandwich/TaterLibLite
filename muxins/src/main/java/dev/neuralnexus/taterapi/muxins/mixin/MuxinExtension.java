@@ -29,7 +29,7 @@ public final class MuxinExtension implements IExtension {
 
     @Override
     public boolean checkActive(MixinEnvironment environment) {
-        return false;
+        return true;
     }
 
     @Override
