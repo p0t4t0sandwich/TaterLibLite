@@ -6,6 +6,8 @@ package dev.neuralnexus.taterapi.event;
 
 /** Abstract class for cancellable events. */
 public interface Cancellable {
+    Dummy DUMMY = new Dummy();
+
     /**
      * Gets whether the event is cancelled.
      *
@@ -23,5 +25,15 @@ public interface Cancellable {
     /** Cancels the event. */
     default void cancel() {
         this.setCancelled(true);
+    }
+
+    final class Dummy implements Cancellable {
+        @Override
+        public boolean cancelled() {
+            return false;
+        }
+
+        @Override
+        public void setCancelled(boolean cancelled) {}
     }
 }
