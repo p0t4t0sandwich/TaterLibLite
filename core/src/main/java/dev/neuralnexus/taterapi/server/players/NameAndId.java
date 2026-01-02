@@ -10,7 +10,7 @@ import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -23,8 +23,8 @@ import java.util.UUID;
  * @param name the player name
  * @param id the player UUID
  */
-public record NameAndId(@NotNull String name, @NotNull UUID id) {
-    public NameAndId(final @NotNull GameProfile profile) {
+public record NameAndId(@NonNull String name, @NonNull UUID id) {
+    public NameAndId(final @NonNull GameProfile profile) {
         this(getName(profile), getId(profile));
     }
 
@@ -64,7 +64,7 @@ public record NameAndId(@NotNull String name, @NotNull UUID id) {
      * @param profile the profile
      * @return the name
      */
-    static @NotNull String getName(final @NotNull GameProfile profile) {
+    static @NonNull String getName(final @NonNull GameProfile profile) {
         if (V21_9.result()) {
             return profile.name();
         } else {
@@ -82,7 +82,7 @@ public record NameAndId(@NotNull String name, @NotNull UUID id) {
      * @param profile the profile
      * @return the id
      */
-    static @NotNull UUID getId(final @NotNull GameProfile profile) {
+    static @NonNull UUID getId(final @NonNull GameProfile profile) {
         if (V21_9.result()) {
             return profile.id();
         } else {

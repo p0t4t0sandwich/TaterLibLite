@@ -15,10 +15,10 @@ import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload
 
 import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @SuppressWarnings("unchecked")
-public record ClientboundCustomQueryPacket(int transactionId, @NotNull CustomQueryPayload payload)
+public record ClientboundCustomQueryPacket(int transactionId, @NonNull CustomQueryPayload payload)
         implements Packet {
     public static final StreamCodec<ByteBuf, ClientboundCustomQueryPacket> STREAM_CODEC =
             Packet.codec(ClientboundCustomQueryPacket::write, ClientboundCustomQueryPacket::new);
@@ -26,20 +26,20 @@ public record ClientboundCustomQueryPacket(int transactionId, @NotNull CustomQue
     public static final AdapterCodec<?, ClientboundCustomQueryPacket> ADAPTER_CODEC =
             NetworkAdapters.registry().getTo(ClientboundCustomQueryPacket.class).orElse(null);
 
-    private ClientboundCustomQueryPacket(final @NotNull ByteBuf buf) {
+    private ClientboundCustomQueryPacket(final @NonNull ByteBuf buf) {
         this(readVarInt(buf), CustomQueryPayload.DEFAULT_CODEC.decode(buf));
     }
 
-    private void write(final @NotNull ByteBuf buf) {
+    private void write(final @NonNull ByteBuf buf) {
         writeVarInt(buf, this.transactionId);
         ((StreamCodec<ByteBuf, CustomQueryPayload>) this.payload.codec()).encode(buf, this.payload);
     }
 
-    public static <T> @NotNull ClientboundCustomQueryPacket fromMC(final @NotNull T obj) {
+    public static <T> @NonNull ClientboundCustomQueryPacket fromMC(final @NonNull T obj) {
         return ((AdapterCodec<T, ClientboundCustomQueryPacket>) ADAPTER_CODEC).from(obj);
     }
 
-    public <T> @NotNull T toMC() {
+    public <T> @NonNull T toMC() {
         return ((AdapterCodec<T, ClientboundCustomQueryPacket>) ADAPTER_CODEC).to(this);
     }
 }

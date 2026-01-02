@@ -17,8 +17,8 @@ import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerP
 
 import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings("unchecked")
 public record ServerboundCustomQueryAnswerPacket(
@@ -34,12 +34,12 @@ public record ServerboundCustomQueryAnswerPacket(
         this(transactionId, null);
     }
 
-    private ServerboundCustomQueryAnswerPacket(final @NotNull ByteBuf buf) {
+    private ServerboundCustomQueryAnswerPacket(final @NonNull ByteBuf buf) {
         this(readVarInt(buf), readNullable(buf, CustomQueryAnswerPayload.DEFAULT_CODEC));
     }
 
     @SuppressWarnings("DataFlowIssue")
-    private void write(final @NotNull ByteBuf buf) {
+    private void write(final @NonNull ByteBuf buf) {
         writeVarInt(buf, this.transactionId);
         writeNullable(
                 buf,
@@ -47,11 +47,11 @@ public record ServerboundCustomQueryAnswerPacket(
                 ((StreamCodec<ByteBuf, CustomQueryAnswerPayload>) this.payload.codec()));
     }
 
-    public static <T> @NotNull ServerboundCustomQueryAnswerPacket fromMC(final @NotNull T obj) {
+    public static <T> @NonNull ServerboundCustomQueryAnswerPacket fromMC(final @NonNull T obj) {
         return ((AdapterCodec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC).from(obj);
     }
 
-    public <T> @NotNull T toMC() {
+    public <T> @NonNull T toMC() {
         return ((AdapterCodec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC).to(this);
     }
 }

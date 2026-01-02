@@ -7,7 +7,7 @@ package dev.neuralnexus.taterapi.network;
 import dev.neuralnexus.taterapi.adapter.AdapterCodec;
 import dev.neuralnexus.taterapi.adapter.AdapterRegistry;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public final class NetworkAdapters {
     private static final AdapterRegistry REGISTRY = new AdapterRegistry();
@@ -16,7 +16,7 @@ public final class NetworkAdapters {
         return REGISTRY;
     }
 
-    public static void register(final @NotNull AdapterCodec<?, ?>... codecs) {
+    public static void register(final @NonNull AdapterCodec<?, ?>... codecs) {
         REGISTRY.register(codecs);
     }
 }

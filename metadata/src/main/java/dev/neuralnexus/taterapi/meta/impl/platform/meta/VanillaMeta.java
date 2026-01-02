@@ -15,7 +15,6 @@ import dev.neuralnexus.taterapi.meta.impl.WMinecraftServer;
 import dev.neuralnexus.taterapi.util.MixinServiceUtil;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
@@ -111,12 +110,12 @@ public final class VanillaMeta implements Platform.Meta {
     }
 
     @Override
-    public boolean isModLoaded(@NotNull @NonNull String... modId) {
+    public boolean isModLoaded(@NonNull String... modId) {
         return false;
     }
 
     @Override
-    public boolean areModsLoaded(@NotNull @NonNull String... modId) {
+    public boolean areModsLoaded(@NonNull String... modId) {
         return false;
     }
 }

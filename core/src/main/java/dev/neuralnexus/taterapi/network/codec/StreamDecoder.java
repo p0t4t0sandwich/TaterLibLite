@@ -4,9 +4,9 @@
  */
 package dev.neuralnexus.taterapi.network.codec;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @FunctionalInterface
 public interface StreamDecoder<I, T> {
-    T decode(final @NotNull I buffer);
+    T decode(final @NonNull I buffer);
 }

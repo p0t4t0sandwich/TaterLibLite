@@ -6,7 +6,7 @@ package dev.neuralnexus.taterapi.network;
 
 import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Utils copied (in part, as needed) from Minecraft's VarLong implementation. <br>
@@ -33,7 +33,7 @@ public final class VarLong {
         return (b & CONTINUATION_BIT_MASK) == CONTINUATION_BIT_MASK;
     }
 
-    public static long read(final @NotNull ByteBuf buf) {
+    public static long read(final @NonNull ByteBuf buf) {
         long l = 0L;
         int i = 0;
 
@@ -49,7 +49,7 @@ public final class VarLong {
         return l;
     }
 
-    public static ByteBuf write(final @NotNull ByteBuf buf, long varLong) {
+    public static ByteBuf write(final @NonNull ByteBuf buf, long varLong) {
         while ((varLong & -CONTINUATION_BIT_MASK) != 0L) {
             buf.writeByte((int) (varLong & DATA_BITS_MASK) | CONTINUATION_BIT_MASK);
             varLong >>>= DATA_BITS_PER_BYTE;

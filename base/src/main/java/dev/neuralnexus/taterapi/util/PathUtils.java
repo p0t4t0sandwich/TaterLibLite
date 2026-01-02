@@ -4,7 +4,7 @@
  */
 package dev.neuralnexus.taterapi.util;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.net.URLDecoder;
@@ -36,7 +36,7 @@ public final class PathUtils {
     }
 
     /** Get the path of the JAR file containing the specified class. */
-    public static @NotNull Path getPathFromClass(final @NotNull Class<?> cls) {
+    public static @NonNull Path getPathFromClass(final @NonNull Class<?> cls) {
         try {
             String path =
                     URLDecoder.decode(

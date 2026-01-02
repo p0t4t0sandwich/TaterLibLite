@@ -18,7 +18,6 @@ import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
@@ -142,7 +141,7 @@ public final class FabricMeta implements Platform.Meta {
     }
 
     private @NonNull ModContainer<net.fabricmc.loader.api.ModContainer> toContainer(
-            @NotNull net.fabricmc.loader.api.ModContainer container) {
+            net.fabricmc.loader.api.@NonNull ModContainer container) {
         return new ModContainerImpl<>(
                 container,
                 new ModInfoImpl(

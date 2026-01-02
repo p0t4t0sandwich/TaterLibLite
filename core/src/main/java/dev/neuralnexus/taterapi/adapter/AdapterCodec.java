@@ -4,7 +4,7 @@
  */
 package dev.neuralnexus.taterapi.adapter;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.ParameterizedType;
 
@@ -25,12 +25,12 @@ public interface AdapterCodec<A, B> extends AdapterDecoder<A, B>, AdapterEncoder
     default AdapterCodec<B, A> reverse() {
         return new AdapterCodec<>() {
             @Override
-            public @NotNull B to(final @NotNull A object) {
+            public @NonNull B to(final @NonNull A object) {
                 return AdapterCodec.this.from(object);
             }
 
             @Override
-            public @NotNull A from(final @NotNull B object) {
+            public @NonNull A from(final @NonNull B object) {
                 return AdapterCodec.this.to(object);
             }
         };

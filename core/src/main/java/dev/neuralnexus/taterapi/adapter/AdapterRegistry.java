@@ -4,7 +4,7 @@
  */
 package dev.neuralnexus.taterapi.adapter;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -14,7 +14,7 @@ import java.util.Set;
 public final class AdapterRegistry {
     private final Set<AdapterCodec<?, ?>> CODECS = new HashSet<>();
 
-    public void register(final @NotNull AdapterCodec<?, ?>... codecs) {
+    public void register(final @NonNull AdapterCodec<?, ?>... codecs) {
         for (final AdapterCodec<?, ?> codec : codecs) {
             for (final AdapterCodec<?, ?> existingCodec : this.CODECS) {
                 if (existingCodec.toClass().equals(codec.toClass())
@@ -31,7 +31,7 @@ public final class AdapterRegistry {
         }
     }
 
-    public <B> Optional<AdapterCodec<?, B>> getTo(final @NotNull Class<B> objClass) {
+    public <B> Optional<AdapterCodec<?, B>> getTo(final @NonNull Class<B> objClass) {
         for (final AdapterCodec<?, ?> codec : this.CODECS) {
             if (codec.fromClass().equals(objClass)) {
                 return Optional.of((AdapterCodec<?, B>) codec);
@@ -40,7 +40,7 @@ public final class AdapterRegistry {
         return Optional.empty();
     }
 
-    public <B> @NotNull AdapterCodec<?, B> getToOrThrow(final @NotNull Class<B> objClass) {
+    public <B> @NonNull AdapterCodec<?, B> getToOrThrow(final @NonNull Class<B> objClass) {
         return this.getTo(objClass)
                 .orElseThrow(
                         () ->
@@ -48,7 +48,7 @@ public final class AdapterRegistry {
                                         "No codec found for object class: " + objClass));
     }
 
-    public <A> Optional<AdapterCodec<A, ?>> getFrom(final @NotNull Class<A> objClass) {
+    public <A> Optional<AdapterCodec<A, ?>> getFrom(final @NonNull Class<A> objClass) {
         for (final AdapterCodec<?, ?> codec : this.CODECS) {
             if (codec.toClass().equals(objClass)) {
                 return Optional.of((AdapterCodec<A, ?>) codec);
@@ -57,7 +57,7 @@ public final class AdapterRegistry {
         return Optional.empty();
     }
 
-    public <A> @NotNull AdapterCodec<A, ?> getFromOrThrow(final @NotNull Class<A> objClass) {
+    public <A> @NonNull AdapterCodec<A, ?> getFromOrThrow(final @NonNull Class<A> objClass) {
         return this.getFrom(objClass)
                 .orElseThrow(
                         () ->
@@ -66,7 +66,7 @@ public final class AdapterRegistry {
     }
 
     public <A, B> Optional<AdapterCodec<A, B>> get(
-            final @NotNull Class<A> toClass, final @NotNull Class<B> fromClass) {
+            final @NonNull Class<A> toClass, final @NonNull Class<B> fromClass) {
         for (final AdapterCodec<?, ?> codec : this.CODECS) {
             if (codec.toClass().equals(toClass) && codec.fromClass().equals(fromClass)) {
                 return Optional.of((AdapterCodec<A, B>) codec);
@@ -80,8 +80,8 @@ public final class AdapterRegistry {
         return Optional.empty();
     }
 
-    public <A, B> @NotNull AdapterCodec<A, B> getOrThrow(
-            final @NotNull Class<A> toClass, final @NotNull Class<B> fromClass) {
+    public <A, B> @NonNull AdapterCodec<A, B> getOrThrow(
+            final @NonNull Class<A> toClass, final @NonNull Class<B> fromClass) {
         return this.get(toClass, fromClass)
                 .orElseThrow(
                         () ->

@@ -12,28 +12,28 @@ import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 
 import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-public record CustomQueryPayloadImpl(@NotNull String id, @NotNull ByteBuf data)
+public record CustomQueryPayloadImpl(@NonNull String id, @NonNull ByteBuf data)
         implements CustomQueryPayload {
-    public static final StreamCodec<@NotNull ByteBuf, @NotNull CustomQueryPayloadImpl>
+    public static final StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryPayloadImpl>
             STREAM_CODEC =
                     CustomQueryPayload.codec(
                             CustomQueryPayloadImpl::write, CustomQueryPayloadImpl::read);
 
-    private static @NotNull CustomQueryPayloadImpl read(final @NotNull ByteBuf buf) {
+    private static @NonNull CustomQueryPayloadImpl read(final @NonNull ByteBuf buf) {
         final String id = readResourceLocation(buf);
-        final @NotNull ByteBuf data = readPayload(buf);
+        final ByteBuf data = readPayload(buf);
         return new CustomQueryPayloadImpl(id, data);
     }
 
-    private void write(final @NotNull ByteBuf buf) {
+    private void write(final @NonNull ByteBuf buf) {
         writeResourceLocation(buf, this.id());
         buf.writeBytes(this.data.slice());
     }
 
     @Override
-    public @NotNull StreamCodec<@NotNull ByteBuf, @NotNull CustomQueryPayloadImpl> codec() {
+    public @NonNull StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryPayloadImpl> codec() {
         return STREAM_CODEC;
     }
 }

@@ -6,7 +6,7 @@ package dev.neuralnexus.taterapi.network;
 
 import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Utils copied (in part, as needed) from Minecraft's VarInt implementation. <br>
@@ -32,7 +32,7 @@ final class VarInt {
         return (b & CONTINUATION_BIT_MASK) == CONTINUATION_BIT_MASK;
     }
 
-    public static int read(final @NotNull ByteBuf buf) {
+    public static int read(final @NonNull ByteBuf buf) {
         int i = 0;
         int j = 0;
 
@@ -48,7 +48,7 @@ final class VarInt {
         return i;
     }
 
-    public static @NotNull ByteBuf write(final @NotNull ByteBuf buf, int varInt) {
+    public static @NonNull ByteBuf write(final @NonNull ByteBuf buf, int varInt) {
         while ((varInt & -CONTINUATION_BIT_MASK) != 0) {
             buf.writeByte(varInt & DATA_BITS_MASK | CONTINUATION_BIT_MASK);
             varInt >>>= DATA_BITS_PER_BYTE;

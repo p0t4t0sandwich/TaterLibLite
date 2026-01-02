@@ -17,8 +17,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
 import io.netty.util.ByteProcessor;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,9 +50,9 @@ public final class FriendlyByteBuf extends ByteBuf {
     public static final int MAX_PAYLOAD_SIZE = 1048576; // 20 bits
     // Serverbound custom payload packet max size is only 32767 (Short.MAX_VALUE)
 
-    private final @NotNull ByteBuf source;
+    private final @NonNull ByteBuf source;
 
-    private FriendlyByteBuf(final @NotNull ByteBuf buf) {
+    private FriendlyByteBuf(final @NonNull ByteBuf buf) {
         this.source = buf;
     }
 
@@ -60,20 +60,20 @@ public final class FriendlyByteBuf extends ByteBuf {
         this.source = Unpooled.buffer();
     }
 
-    public static FriendlyByteBuf wrap(final @NotNull ByteBuf buf) {
+    public static FriendlyByteBuf wrap(final @NonNull ByteBuf buf) {
         return new FriendlyByteBuf(buf);
     }
 
     // ---------------- Addon methods -----------------
-    public @NotNull InetAddress readAddress() {
+    public @NonNull InetAddress readAddress() {
         return readAddress(this.source);
     }
 
-    public @NotNull ByteBuf readPayload(int maxSize) {
+    public @NonNull ByteBuf readPayload(int maxSize) {
         return readPayload(this.source, maxSize);
     }
 
-    public @NotNull ByteBuf readPayload() {
+    public @NonNull ByteBuf readPayload() {
         return readPayload(this.source);
     }
 
@@ -86,11 +86,11 @@ public final class FriendlyByteBuf extends ByteBuf {
     }
 
     // ---------------- Addon static methods -----------------
-    public static @NotNull InetAddress readAddress(final @NotNull ByteBuf buf) {
+    public static @NonNull InetAddress readAddress(final @NonNull ByteBuf buf) {
         return InetAddresses.forString(readUtf(buf));
     }
 
-    public static @NotNull ByteBuf readPayload(final @NotNull ByteBuf buf, int maxSize) {
+    public static @NonNull ByteBuf readPayload(final @NonNull ByteBuf buf, int maxSize) {
         int i = buf.readableBytes();
         if (i >= 0 && i <= maxSize) {
             return buf.readBytes(i);
@@ -100,20 +100,20 @@ public final class FriendlyByteBuf extends ByteBuf {
         }
     }
 
-    public static @NotNull ByteBuf readPayload(final @NotNull ByteBuf buf) {
+    public static @NonNull ByteBuf readPayload(final @NonNull ByteBuf buf) {
         return readPayload(buf, MAX_PAYLOAD_SIZE);
     }
 
-    public static @Nullable ByteBuf readNullablePayload(final @NotNull ByteBuf buf, int maxSize) {
+    public static @Nullable ByteBuf readNullablePayload(final @NonNull ByteBuf buf, int maxSize) {
         return readNullable(buf, (b) -> readPayload(b, maxSize));
     }
 
-    public static @Nullable ByteBuf readNullablePayload(final @NotNull ByteBuf buf) {
+    public static @Nullable ByteBuf readNullablePayload(final @NonNull ByteBuf buf) {
         return readNullable(buf, FriendlyByteBuf::readPayload);
     }
 
     public static void writePayload(
-            final @NotNull ByteBuf buf, final @NotNull ByteBuf payload, int maxSize) {
+            final @NonNull ByteBuf buf, final @NonNull ByteBuf payload, int maxSize) {
         if (payload.readableBytes() > maxSize) {
             throw new IllegalArgumentException(
                     "Payload may not be larger than " + maxSize + " bytes");
@@ -121,12 +121,12 @@ public final class FriendlyByteBuf extends ByteBuf {
         buf.writeBytes(payload.slice());
     }
 
-    public static void writePayload(final @NotNull ByteBuf buf, final @NotNull ByteBuf payload) {
+    public static void writePayload(final @NonNull ByteBuf buf, final @NonNull ByteBuf payload) {
         writePayload(buf, payload, MAX_PAYLOAD_SIZE);
     }
 
     public static void writeNullablePayload(
-            final @NotNull ByteBuf buf, final @Nullable ByteBuf payload, int maxSize) {
+            final @NonNull ByteBuf buf, final @Nullable ByteBuf payload, int maxSize) {
         writeNullable(
                 buf,
                 payload,
@@ -138,16 +138,16 @@ public final class FriendlyByteBuf extends ByteBuf {
     }
 
     public static void writeNullablePayload(
-            final @NotNull ByteBuf buf, final @Nullable ByteBuf payload) {
+            final @NonNull ByteBuf buf, final @Nullable ByteBuf payload) {
         writeNullablePayload(buf, payload, MAX_PAYLOAD_SIZE);
     }
 
     // ---------------- FriendlyByteBuf methods -----------------
-    public @NotNull String readUtf() {
+    public @NonNull String readUtf() {
         return readUtf(this.source);
     }
 
-    public @NotNull String readUtf(int maxLength) {
+    public @NonNull String readUtf(int maxLength) {
         return readUtf(this.source, maxLength);
     }
 
@@ -155,19 +155,19 @@ public final class FriendlyByteBuf extends ByteBuf {
         return readVarInt(this.source);
     }
 
-    public @NotNull UUID readUUID() {
+    public @NonNull UUID readUUID() {
         return readUUID(this.source);
     }
 
-    public @NotNull ByteBuf writeUtf(final @NotNull String string, int maxLength) {
+    public @NonNull ByteBuf writeUtf(final @NonNull String string, int maxLength) {
         return writeUtf(this.source, string, maxLength);
     }
 
-    public @NotNull ByteBuf writeUtf(final @NotNull String string) {
+    public @NonNull ByteBuf writeUtf(final @NonNull String string) {
         return writeUtf(this.source, string, MAX_STRING_LENGTH);
     }
 
-    public @NotNull ByteBuf writeVarInt(final int input) {
+    public @NonNull ByteBuf writeVarInt(final int input) {
         return writeVarInt(this.source, input);
     }
 
@@ -175,74 +175,74 @@ public final class FriendlyByteBuf extends ByteBuf {
         return readByteArray(this.source, maxLength);
     }
 
-    public <T> @NotNull T readResourceLocation() {
+    public <T> @NonNull T readResourceLocation() {
         return readResourceLocation(this.source);
     }
 
-    public @NotNull ByteBuf writeResourceLocation(final @NotNull Object resourceLocationIn) {
+    public @NonNull ByteBuf writeResourceLocation(final @NonNull Object resourceLocationIn) {
         return writeResourceLocation(this.source, resourceLocationIn);
     }
 
-    public <T> Optional<T> readOptional(final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+    public <T> Optional<T> readOptional(final @NonNull StreamDecoder<? super ByteBuf, T> decoder) {
         return readOptional(this.source, decoder);
     }
 
     public <T> void writeOptional(
             @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-                    final @NotNull Optional<T> optional,
-            final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
+                    final @NonNull Optional<T> optional,
+            final @NonNull StreamEncoder<? super ByteBuf, T> encoder) {
         writeOptional(this.source, optional, encoder);
     }
 
-    public @Nullable <T> T readNullable(final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+    public @Nullable <T> T readNullable(final @NonNull StreamDecoder<? super ByteBuf, T> decoder) {
         return readNullable(this.source, decoder);
     }
 
     public <T> void writeNullable(
-            final @Nullable T nullable, final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
+            final @Nullable T nullable, final @NonNull StreamEncoder<? super ByteBuf, T> encoder) {
         writeNullable(this.source, nullable, encoder);
     }
 
-    public @NotNull Instant readInstant() {
+    public @NonNull Instant readInstant() {
         return readInstant(this.source);
     }
 
-    public @NotNull PublicKey readPublicKey() {
+    public @NonNull PublicKey readPublicKey() {
         return readPublicKey(this.source);
     }
 
     // ---------------- FriendlyByteBuf static methods -----------------
-    public static @NotNull String readUtf(final @NotNull ByteBuf buf) {
+    public static @NonNull String readUtf(final @NonNull ByteBuf buf) {
         return readUtf(buf, MAX_STRING_LENGTH);
     }
 
-    public static @NotNull String readUtf(final @NotNull ByteBuf buf, int maxLength) {
+    public static @NonNull String readUtf(final @NonNull ByteBuf buf, int maxLength) {
         return Utf8String.read(buf, maxLength);
     }
 
-    public static @NotNull ByteBuf writeUtf(
-            final @NotNull ByteBuf buf, final @NotNull String string) {
+    public static @NonNull ByteBuf writeUtf(
+            final @NonNull ByteBuf buf, final @NonNull String string) {
         return Utf8String.write(buf, string, MAX_STRING_LENGTH);
     }
 
-    public static @NotNull ByteBuf writeUtf(
-            final @NotNull ByteBuf buf, final @NotNull String string, int maxLength) {
+    public static @NonNull ByteBuf writeUtf(
+            final @NonNull ByteBuf buf, final @NonNull String string, int maxLength) {
         return Utf8String.write(buf, string, maxLength);
     }
 
-    public static int readVarInt(final @NotNull ByteBuf buf) {
+    public static int readVarInt(final @NonNull ByteBuf buf) {
         return VarInt.read(buf);
     }
 
-    public static @NotNull ByteBuf writeVarInt(final @NotNull ByteBuf buf, int varInt) {
+    public static @NonNull ByteBuf writeVarInt(final @NonNull ByteBuf buf, int varInt) {
         return VarInt.write(buf, varInt);
     }
 
-    public static @NotNull UUID readUUID(final @NotNull ByteBuf buf) {
+    public static @NonNull UUID readUUID(final @NonNull ByteBuf buf) {
         return new UUID(buf.readLong(), buf.readLong());
     }
 
-    public static byte[] readByteArray(final @NotNull ByteBuf buf, int maxLength) {
+    public static byte[] readByteArray(final @NonNull ByteBuf buf, int maxLength) {
         int i = readVarInt(buf);
         if (i > maxLength) {
             throw new DecoderException(
@@ -254,26 +254,26 @@ public final class FriendlyByteBuf extends ByteBuf {
         }
     }
 
-    public static <T> @NotNull T readResourceLocation(final @NotNull ByteBuf buf) {
+    public static <T> @NonNull T readResourceLocation(final @NonNull ByteBuf buf) {
         return identifier(readUtf(buf));
     }
 
-    public static @NotNull ByteBuf writeResourceLocation(
-            final @NotNull ByteBuf buf, final @NotNull Object resourceLocationIn) {
+    public static @NonNull ByteBuf writeResourceLocation(
+            final @NonNull ByteBuf buf, final @NonNull Object resourceLocationIn) {
         writeUtf(buf, resourceLocationIn.toString());
         return buf;
     }
 
     public static <T> Optional<T> readOptional(
-            final @NotNull ByteBuf buf, final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+            final @NonNull ByteBuf buf, final @NonNull StreamDecoder<? super ByteBuf, T> decoder) {
         return buf.readBoolean() ? Optional.of(decoder.decode(buf)) : Optional.empty();
     }
 
     public static <T> void writeOptional(
             final ByteBuf buf,
             @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-                    final @NotNull Optional<T> optional,
-            final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
+                    final @NonNull Optional<T> optional,
+            final @NonNull StreamEncoder<? super ByteBuf, T> encoder) {
         if (optional.isPresent()) {
             buf.writeBoolean(true);
             encoder.encode(buf, optional.get());
@@ -283,14 +283,14 @@ public final class FriendlyByteBuf extends ByteBuf {
     }
 
     public static @Nullable <T> T readNullable(
-            final @NotNull ByteBuf buf, final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+            final @NonNull ByteBuf buf, final @NonNull StreamDecoder<? super ByteBuf, T> decoder) {
         return buf.readBoolean() ? decoder.decode(buf) : null;
     }
 
     public static <T> void writeNullable(
-            final @NotNull ByteBuf buf,
+            final @NonNull ByteBuf buf,
             final @Nullable T nullable,
-            final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
+            final @NonNull StreamEncoder<? super ByteBuf, T> encoder) {
         if (nullable != null) {
             buf.writeBoolean(true);
             encoder.encode(buf, nullable);
@@ -300,17 +300,17 @@ public final class FriendlyByteBuf extends ByteBuf {
     }
 
     public static <T> T readOrElse(
-            final @NotNull ByteBuf buf,
-            final @NotNull StreamDecoder<? super ByteBuf, T> decoder,
-            final @NotNull T defaultValue) {
+            final @NonNull ByteBuf buf,
+            final @NonNull StreamDecoder<? super ByteBuf, T> decoder,
+            final @NonNull T defaultValue) {
         return buf.readBoolean() ? decoder.decode(buf) : defaultValue;
     }
 
-    public static @NotNull Instant readInstant(final @NotNull ByteBuf buf) {
+    public static @NonNull Instant readInstant(final @NonNull ByteBuf buf) {
         return Instant.ofEpochMilli(buf.readLong());
     }
 
-    public static @NotNull PublicKey readPublicKey(final @NotNull ByteBuf buf)
+    public static @NonNull PublicKey readPublicKey(final @NonNull ByteBuf buf)
             throws DecoderException {
         try {
             return Crypt.byteToPublicKey(readByteArray(buf, Crypt.MAX_PUBLIC_KEY_LENGTH));
@@ -1258,7 +1258,7 @@ public final class FriendlyByteBuf extends ByteBuf {
     }
 
     public static final class CryptException extends Exception {
-        public CryptException(final @NotNull Throwable cause) {
+        public CryptException(final @NonNull Throwable cause) {
             super(cause);
         }
     }

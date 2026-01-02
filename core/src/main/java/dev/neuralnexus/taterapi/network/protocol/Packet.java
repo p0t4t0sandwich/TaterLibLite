@@ -10,14 +10,14 @@ import dev.neuralnexus.taterapi.network.codec.StreamMemberEncoder;
 
 import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public interface Packet {
-    // void handle(final @NotNull T handler);
+    // void handle(final @NonNull T handler);
 
     static <B extends ByteBuf, T extends Packet> StreamCodec<B, T> codec(
-            final @NotNull StreamMemberEncoder<B, T> encoder,
-            final @NotNull StreamDecoder<B, T> decoder) {
+            final @NonNull StreamMemberEncoder<B, T> encoder,
+            final @NonNull StreamDecoder<B, T> decoder) {
         return StreamCodec.ofMember(encoder, decoder);
     }
 }

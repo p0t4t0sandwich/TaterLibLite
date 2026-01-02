@@ -12,7 +12,6 @@ import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
 
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import space.vectrix.ignite.Ignite;
@@ -108,7 +107,7 @@ public final class IgniteMeta implements Platform.Meta {
     }
 
     @Override
-    public boolean isModLoaded(@NotNull @NonNull String... modId) {
+    public boolean isModLoaded(@NonNull String... modId) {
         for (final String id : modId) {
             if (Ignite.mods().container(id).isPresent()
                     || Ignite.mods().container(id.toLowerCase(Locale.ROOT)).isPresent()) {
@@ -119,7 +118,7 @@ public final class IgniteMeta implements Platform.Meta {
     }
 
     @Override
-    public boolean areModsLoaded(@NotNull @NonNull String... modId) {
+    public boolean areModsLoaded(@NonNull String... modId) {
         final List<String> ids = List.of(modId);
         for (final String id : ids) {
             if (Ignite.mods().container(id).isEmpty()

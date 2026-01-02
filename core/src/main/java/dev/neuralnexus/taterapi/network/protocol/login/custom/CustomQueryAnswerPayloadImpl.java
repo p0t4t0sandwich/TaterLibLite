@@ -10,26 +10,26 @@ import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 
 import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-public record CustomQueryAnswerPayloadImpl(@NotNull ByteBuf data)
+public record CustomQueryAnswerPayloadImpl(@NonNull ByteBuf data)
         implements CustomQueryAnswerPayload {
-    public static final StreamCodec<@NotNull ByteBuf, @NotNull CustomQueryAnswerPayloadImpl>
+    public static final StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryAnswerPayloadImpl>
             STREAM_CODEC =
                     CustomQueryAnswerPayload.codec(
                             CustomQueryAnswerPayloadImpl::write,
                             CustomQueryAnswerPayloadImpl::read);
 
-    private static @NotNull CustomQueryAnswerPayloadImpl read(final @NotNull ByteBuf buf) {
+    private static @NonNull CustomQueryAnswerPayloadImpl read(final @NonNull ByteBuf buf) {
         return new CustomQueryAnswerPayloadImpl(readPayload(buf));
     }
 
-    private void write(final @NotNull ByteBuf buf) {
+    private void write(final @NonNull ByteBuf buf) {
         buf.writeBytes(this.data.slice());
     }
 
     @Override
-    public @NotNull StreamCodec<@NotNull ByteBuf, @NotNull CustomQueryAnswerPayloadImpl> codec() {
+    public @NonNull StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryAnswerPayloadImpl> codec() {
         return STREAM_CODEC;
     }
 }

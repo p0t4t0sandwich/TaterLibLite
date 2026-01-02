@@ -4,18 +4,18 @@
  */
 package dev.neuralnexus.taterapi.network.codec;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B, V> {
     static <B, V> StreamCodec<B, V> of(StreamEncoder<B, V> encoder, StreamDecoder<B, V> decoder) {
         return new StreamCodec<>() {
             @Override
-            public @NotNull V decode(final @NotNull B object) {
+            public @NonNull V decode(final @NonNull B object) {
                 return decoder.decode(object);
             }
 
             @Override
-            public void encode(final @NotNull B object, final @NotNull V value) {
+            public void encode(final @NonNull B object, final @NonNull V value) {
                 encoder.encode(object, value);
             }
         };
@@ -25,12 +25,12 @@ public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B,
             StreamMemberEncoder<B, V> encoder, StreamDecoder<B, V> decoder) {
         return new StreamCodec<>() {
             @Override
-            public @NotNull V decode(final @NotNull B buffer) {
+            public @NonNull V decode(final @NonNull B buffer) {
                 return decoder.decode(buffer);
             }
 
             @Override
-            public void encode(final @NotNull B buffer, final @NotNull V value) {
+            public void encode(final @NonNull B buffer, final @NonNull V value) {
                 encoder.encode(value, buffer);
             }
         };

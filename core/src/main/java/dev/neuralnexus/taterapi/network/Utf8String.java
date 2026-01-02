@@ -12,7 +12,7 @@ import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.CharsetUtil;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.nio.charset.StandardCharsets;
 
@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
  * for compatibility's sake when dealing with multi-version code.
  */
 final class Utf8String {
-    public static @NotNull String read(final @NotNull ByteBuf buf, int maxLength) {
+    public static @NonNull String read(final @NonNull ByteBuf buf, int maxLength) {
         int i = ByteBufUtil.utf8MaxBytes(maxLength);
         int j = VarInt.read(buf);
         if (j > i) {
@@ -58,8 +58,8 @@ final class Utf8String {
         }
     }
 
-    public static @NotNull ByteBuf write(
-            final @NotNull ByteBuf buf, final @NotNull String string, int maxLength) {
+    public static @NonNull ByteBuf write(
+            final @NonNull ByteBuf buf, final @NonNull String string, int maxLength) {
         byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
         if (bytes.length > maxLength) {
             throw new EncoderException(

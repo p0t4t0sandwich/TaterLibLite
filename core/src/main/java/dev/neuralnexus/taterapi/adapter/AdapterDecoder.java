@@ -4,9 +4,9 @@
  */
 package dev.neuralnexus.taterapi.adapter;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @FunctionalInterface
 public interface AdapterDecoder<I, T> {
-    @NotNull T from(final @NotNull I object);
+    @NonNull T from(final @NonNull I object);
 }

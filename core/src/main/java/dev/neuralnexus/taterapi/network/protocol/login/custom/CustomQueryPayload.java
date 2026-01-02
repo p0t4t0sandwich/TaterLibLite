@@ -10,29 +10,29 @@ import dev.neuralnexus.taterapi.network.codec.StreamMemberEncoder;
 
 import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public interface CustomQueryPayload {
-    StreamCodec<@NotNull ByteBuf, ? extends @NotNull CustomQueryPayload> DEFAULT_CODEC =
+    StreamCodec<@NonNull ByteBuf, ? extends @NonNull CustomQueryPayload> DEFAULT_CODEC =
             CustomQueryPayloadImpl.STREAM_CODEC;
 
-    @NotNull String id();
+    @NonNull String id();
 
-    @NotNull ByteBuf data();
+    @NonNull ByteBuf data();
 
-    default @NotNull StreamCodec<@NotNull ByteBuf, ? extends @NotNull CustomQueryPayload> codec() {
+    default @NonNull StreamCodec<@NonNull ByteBuf, ? extends @NonNull CustomQueryPayload> codec() {
         return DEFAULT_CODEC;
     }
 
-    default <T extends @NotNull CustomQueryPayload> T as(
-            final @NotNull StreamDecoder<@NotNull ByteBuf, T> codec) {
+    default <T extends @NonNull CustomQueryPayload> T as(
+            final @NonNull StreamDecoder<@NonNull ByteBuf, T> codec) {
         return codec.decode(this.data());
     }
 
-    static <B extends @NotNull ByteBuf, T extends @NotNull CustomQueryPayload>
+    static <B extends @NonNull ByteBuf, T extends @NonNull CustomQueryPayload>
             StreamCodec<B, T> codec(
-                    final @NotNull StreamMemberEncoder<B, T> encoder,
-                    final @NotNull StreamDecoder<B, T> decoder) {
+                    final @NonNull StreamMemberEncoder<B, T> encoder,
+                    final @NonNull StreamDecoder<B, T> decoder) {
         return StreamCodec.ofMember(encoder, decoder);
     }
 }
