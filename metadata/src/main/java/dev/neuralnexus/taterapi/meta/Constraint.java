@@ -9,11 +9,11 @@ import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Dependency;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -26,18 +26,18 @@ import java.util.stream.Stream;
  * Constraints include dependencies, mappings, platform, side, and Minecraft version.
  */
 public record Constraint(
-        Collection<String> deps,
-        Collection<String> notDeps,
-        Mappings mappings,
-        Collection<Platform> platform,
-        Collection<Platform> notPlatform,
-        Collection<Side> side,
-        Collection<MinecraftVersion> version,
-        MinecraftVersion min,
-        MinecraftVersion max,
-        Collection<MinecraftVersion> notVersion,
-        MinecraftVersion notMin,
-        MinecraftVersion notMax) {
+        Collection<@NonNull String> deps,
+        Collection<@NonNull String> notDeps,
+        @NonNull Mappings mappings,
+        Collection<@NonNull Platform> platform,
+        Collection<@NonNull Platform> notPlatform,
+        Collection<@NonNull Side> side,
+        Collection<@NonNull MinecraftVersion> version,
+        @NonNull MinecraftVersion min,
+        @NonNull MinecraftVersion max,
+        Collection<@NonNull MinecraftVersion> notVersion,
+        @NonNull MinecraftVersion notMin,
+        @NonNull MinecraftVersion notMax) {
 
     /**
      * Evaluates the constraint against the current environment.
@@ -54,20 +54,26 @@ public record Constraint(
      * @param constraint the {@link AConstraint} annotation
      * @return a {@link Constraint} instance
      */
-    public static Constraint from(final AConstraint constraint) {
+    public static @NonNull Constraint from(final @NonNull AConstraint constraint) {
         return builder()
-                .deps(Stream.of(constraint.deps()).map(Dependency::value).toList())
+                .deps(
+                        Stream.of(constraint.deps())
+                                .map(Dependency::value)
+                                .collect(Collectors.toUnmodifiableSet()))
                 .deps(
                         Stream.of(constraint.deps())
                                 .map(Dependency::aliases)
                                 .flatMap(Stream::of)
-                                .collect(Collectors.toSet()))
-                .notDeps(Stream.of(constraint.notDeps()).map(Dependency::value).toList())
+                                .collect(Collectors.toUnmodifiableSet()))
+                .notDeps(
+                        Stream.of(constraint.notDeps())
+                                .map(Dependency::value)
+                                .collect(Collectors.toUnmodifiableSet()))
                 .notDeps(
                         Stream.of(constraint.notDeps())
                                 .map(Dependency::aliases)
                                 .flatMap(Stream::of)
-                                .collect(Collectors.toSet()))
+                                .collect(Collectors.toUnmodifiableSet()))
                 .mappings(constraint.mappings())
                 .platform(constraint.platform())
                 .notPlatform(constraint.notPlatform())
@@ -112,7 +118,7 @@ public record Constraint(
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         return this.hashCode() == o.hashCode();
@@ -142,18 +148,18 @@ public record Constraint(
 
     /** Builder class for constructing {@link Constraint} instances. */
     public static final class Builder {
-        private final Set<String> deps = new HashSet<>();
-        private final Set<String> notDeps = new HashSet<>();
-        private Mappings mappings = Mappings.NONE;
-        private final Set<Platform> platform = new HashSet<>();
-        private final Set<Platform> notPlatform = new HashSet<>();
-        private final Set<Side> side = new HashSet<>();
-        private final Set<MinecraftVersion> version = new HashSet<>();
-        private MinecraftVersion min = MinecraftVersions.UNKNOWN;
-        private MinecraftVersion max = MinecraftVersions.UNKNOWN;
-        private final Set<MinecraftVersion> notVersion = new HashSet<>();
-        private MinecraftVersion notMin = MinecraftVersions.UNKNOWN;
-        private MinecraftVersion notMax = MinecraftVersions.UNKNOWN;
+        private final Set<@NonNull String> deps = new HashSet<>();
+        private final Set<@NonNull String> notDeps = new HashSet<>();
+        private @NonNull Mappings mappings = Mappings.NONE;
+        private final Set<@NonNull Platform> platform = new HashSet<>();
+        private final Set<@NonNull Platform> notPlatform = new HashSet<>();
+        private final Set<@NonNull Side> side = new HashSet<>();
+        private final Set<@NonNull MinecraftVersion> version = new HashSet<>();
+        private @NonNull MinecraftVersion min = MinecraftVersions.UNKNOWN;
+        private @NonNull MinecraftVersion max = MinecraftVersions.UNKNOWN;
+        private final Set<@NonNull MinecraftVersion> notVersion = new HashSet<>();
+        private @NonNull MinecraftVersion notMin = MinecraftVersions.UNKNOWN;
+        private @NonNull MinecraftVersion notMax = MinecraftVersions.UNKNOWN;
 
         Builder() {}
 
@@ -163,7 +169,7 @@ public record Constraint(
          * @param deps a collection of dependency identifiers
          * @return the current {@link Builder} instance
          */
-        public Builder deps(Collection<String> deps) {
+        public Builder deps(final Collection<@NonNull String> deps) {
             this.deps.addAll(deps);
             return this;
         }
@@ -174,8 +180,8 @@ public record Constraint(
          * @param deps an array of dependency identifiers
          * @return the current {@link Builder} instance
          */
-        public Builder deps(String... deps) {
-            return this.deps(List.of(deps));
+        public Builder deps(final @NonNull String... deps) {
+            return this.deps(Set.of(deps));
         }
 
         /**
@@ -184,7 +190,7 @@ public record Constraint(
          * @param notDeps a collection of dependency identifiers
          * @return the current {@link Builder} instance
          */
-        public Builder notDeps(Collection<String> notDeps) {
+        public Builder notDeps(final Collection<@NonNull String> notDeps) {
             this.notDeps.addAll(notDeps);
             return this;
         }
@@ -195,8 +201,8 @@ public record Constraint(
          * @param notDeps an array of dependency identifiers
          * @return the current {@link Builder} instance
          */
-        public Builder notDeps(String... notDeps) {
-            return this.notDeps(List.of(notDeps));
+        public Builder notDeps(final @NonNull String... notDeps) {
+            return this.notDeps(Set.of(notDeps));
         }
 
         /**
@@ -205,7 +211,7 @@ public record Constraint(
          * @param mappings the required {@link Mappings}
          * @return the current {@link Builder} instance
          */
-        public Builder mappings(Mappings mappings) {
+        public Builder mappings(final @NonNull Mappings mappings) {
             this.mappings = mappings;
             return this;
         }
@@ -216,7 +222,7 @@ public record Constraint(
          * @param platform a collection of {@link Platform}
          * @return the current {@link Builder} instance
          */
-        public Builder platform(Collection<Platform> platform) {
+        public Builder platform(final Collection<@NonNull Platform> platform) {
             this.platform.addAll(platform);
             return this;
         }
@@ -227,8 +233,8 @@ public record Constraint(
          * @param platform an array of {@link Platform}
          * @return the current {@link Builder} instance
          */
-        public Builder platform(Platform... platform) {
-            return this.platform(List.of(platform));
+        public Builder platform(final @NonNull Platform... platform) {
+            return this.platform(Set.of(platform));
         }
 
         /**
@@ -237,11 +243,12 @@ public record Constraint(
          * @param platform an array of {@link dev.neuralnexus.taterapi.meta.enums.Platform}
          * @return the current {@link Builder} instance
          */
-        public Builder platform(dev.neuralnexus.taterapi.meta.enums.Platform... platform) {
+        public Builder platform(
+                final dev.neuralnexus.taterapi.meta.enums.@NonNull Platform... platform) {
             return this.platform(
                     Stream.of(platform)
                             .map(dev.neuralnexus.taterapi.meta.enums.Platform::ref)
-                            .toList());
+                            .collect(Collectors.toUnmodifiableSet()));
         }
 
         /**
@@ -250,7 +257,7 @@ public record Constraint(
          * @param notPlatform a collection of {@link Platform}
          * @return the current {@link Builder} instance
          */
-        public Builder notPlatform(Collection<Platform> notPlatform) {
+        public Builder notPlatform(final Collection<@NonNull Platform> notPlatform) {
             this.notPlatform.addAll(notPlatform);
             return this;
         }
@@ -261,8 +268,8 @@ public record Constraint(
          * @param notPlatform an array of {@link Platform}
          * @return the current {@link Builder} instance
          */
-        public Builder notPlatform(Platform... notPlatform) {
-            return this.notPlatform(List.of(notPlatform));
+        public Builder notPlatform(final @NonNull Platform... notPlatform) {
+            return this.notPlatform(Set.of(notPlatform));
         }
 
         /**
@@ -271,11 +278,12 @@ public record Constraint(
          * @param notPlatform an array of {@link dev.neuralnexus.taterapi.meta.enums.Platform}
          * @return the current {@link Builder} instance
          */
-        public Builder notPlatform(dev.neuralnexus.taterapi.meta.enums.Platform... notPlatform) {
+        public Builder notPlatform(
+                final dev.neuralnexus.taterapi.meta.enums.@NonNull Platform... notPlatform) {
             return this.notPlatform(
                     Stream.of(notPlatform)
                             .map(dev.neuralnexus.taterapi.meta.enums.Platform::ref)
-                            .toList());
+                            .collect(Collectors.toUnmodifiableSet()));
         }
 
         /**
@@ -284,7 +292,7 @@ public record Constraint(
          * @param side a collection of {@link Side}
          * @return the current {@link Builder} instance
          */
-        public Builder side(Collection<Side> side) {
+        public Builder side(final Collection<@NonNull Side> side) {
             this.side.addAll(side);
             return this;
         }
@@ -295,8 +303,8 @@ public record Constraint(
          * @param side an array of {@link Side}
          * @return the current {@link Builder} instance
          */
-        public Builder side(Side... side) {
-            return this.side(List.of(side));
+        public Builder side(final @NonNull Side... side) {
+            return this.side(Set.of(side));
         }
 
         /**
@@ -305,7 +313,7 @@ public record Constraint(
          * @param version a collection of {@link MinecraftVersion}
          * @return the current {@link Builder} instance
          */
-        public Builder version(Collection<MinecraftVersion> version) {
+        public Builder version(final Collection<@NonNull MinecraftVersion> version) {
             this.version.addAll(version);
             return this;
         }
@@ -316,8 +324,8 @@ public record Constraint(
          * @param version an array of {@link MinecraftVersion}
          * @return the current {@link Builder} instance
          */
-        public Builder version(MinecraftVersion... version) {
-            return this.version(List.of(version));
+        public Builder version(final @NonNull MinecraftVersion... version) {
+            return this.version(Set.of(version));
         }
 
         /**
@@ -326,11 +334,12 @@ public record Constraint(
          * @param version an array of {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
          * @return the current {@link Builder} instance
          */
-        public Builder version(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion... version) {
+        public Builder version(
+                final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion... version) {
             return this.version(
                     Stream.of(version)
                             .map(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion::ref)
-                            .toList());
+                            .collect(Collectors.toUnmodifiableSet()));
         }
 
         /**
@@ -339,7 +348,7 @@ public record Constraint(
          * @param min the minimum {@link MinecraftVersion}
          * @return the current {@link Builder} instance
          */
-        public Builder min(MinecraftVersion min) {
+        public Builder min(final @NonNull MinecraftVersion min) {
             this.min = min;
             return this;
         }
@@ -350,7 +359,8 @@ public record Constraint(
          * @param min the minimum {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
          * @return the current {@link Builder} instance
          */
-        public Builder min(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion min) {
+        public Builder min(
+                final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion min) {
             this.min = min.ref();
             return this;
         }
@@ -361,7 +371,7 @@ public record Constraint(
          * @param max the maximum {@link MinecraftVersion}
          * @return the current {@link Builder} instance
          */
-        public Builder max(MinecraftVersion max) {
+        public Builder max(final @NonNull MinecraftVersion max) {
             this.max = max;
             return this;
         }
@@ -372,7 +382,8 @@ public record Constraint(
          * @param max the maximum {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
          * @return the current {@link Builder} instance
          */
-        public Builder max(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion max) {
+        public Builder max(
+                final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion max) {
             this.max = max.ref();
             return this;
         }
@@ -383,7 +394,7 @@ public record Constraint(
          * @param notVersion a collection of {@link MinecraftVersion}
          * @return the current {@link Builder} instance
          */
-        public Builder notVersion(Collection<MinecraftVersion> notVersion) {
+        public Builder notVersion(final Collection<@NonNull MinecraftVersion> notVersion) {
             this.notVersion.addAll(notVersion);
             return this;
         }
@@ -394,8 +405,8 @@ public record Constraint(
          * @param notVersion an array of {@link MinecraftVersion}
          * @return the current {@link Builder} instance
          */
-        public Builder notVersion(MinecraftVersion... notVersion) {
-            return this.notVersion(List.of(notVersion));
+        public Builder notVersion(final @NonNull MinecraftVersion... notVersion) {
+            return this.notVersion(Set.of(notVersion));
         }
 
         /**
@@ -406,11 +417,11 @@ public record Constraint(
          * @return the current {@link Builder} instance
          */
         public Builder notVersion(
-                dev.neuralnexus.taterapi.meta.enums.MinecraftVersion... notVersion) {
+                final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion... notVersion) {
             return this.notVersion(
                     Stream.of(notVersion)
                             .map(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion::ref)
-                            .toList());
+                            .collect(Collectors.toUnmodifiableSet()));
         }
 
         /**
@@ -420,7 +431,7 @@ public record Constraint(
          * @param notMin the minimum {@link MinecraftVersion} that must NOT be present
          * @return the current {@link Builder} instance
          */
-        public Builder notMin(MinecraftVersion notMin) {
+        public Builder notMin(final @NonNull MinecraftVersion notMin) {
             this.notMin = notMin;
             return this;
         }
@@ -433,7 +444,8 @@ public record Constraint(
          *     that must NOT be present
          * @return the current {@link Builder} instance
          */
-        public Builder notMin(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion notMin) {
+        public Builder notMin(
+                final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion notMin) {
             this.notMin = notMin.ref();
             return this;
         }
@@ -445,7 +457,7 @@ public record Constraint(
          * @param notMax the maximum {@link MinecraftVersion} that must NOT be present
          * @return the current {@link Builder} instance
          */
-        public Builder notMax(MinecraftVersion notMax) {
+        public Builder notMax(final @NonNull MinecraftVersion notMax) {
             this.notMax = notMax;
             return this;
         }
@@ -458,7 +470,8 @@ public record Constraint(
          *     that must NOT be present
          * @return the current {@link Builder} instance
          */
-        public Builder notMax(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion notMax) {
+        public Builder notMax(
+                final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion notMax) {
             this.notMax = notMax.ref();
             return this;
         }
@@ -489,10 +502,10 @@ public record Constraint(
      * Evaluator class for evaluating {@link Constraint} instances against the current environment.
      */
     public static final class Evaluator {
-        private static final Map<Constraint, Boolean> CACHE = new WeakHashMap<>();
-        private static final MetaAPI META = MetaAPI.instance();
-        private static final Mappings MAPPINGS = META.mappings();
-        private static final MinecraftVersion version = META.version();
+        private static final Map<@NonNull Constraint, @NonNull Boolean> CACHE = new WeakHashMap<>();
+        private static final @NonNull MetaAPI META = MetaAPI.instance();
+        private static final @NonNull Mappings MAPPINGS = META.mappings();
+        private static final @NonNull MinecraftVersion version = META.version();
 
         public static boolean DEBUG = false;
         private static final Logger logger = Logger.create("taterliblite-meta-constraint");
@@ -505,7 +518,7 @@ public record Constraint(
          * @param constraint the {@link Constraint} to evaluate
          * @return true if the dependency constraints are satisfied, false otherwise
          */
-        public static boolean evalDeps(Constraint constraint) {
+        public static boolean evalDeps(final @NonNull Constraint constraint) {
             if (constraint.deps().isEmpty() && constraint.notDeps().isEmpty()) {
                 return true;
             }
@@ -539,7 +552,7 @@ public record Constraint(
          * @param constraint the {@link Constraint} to evaluate
          * @return true if the mappings constraints are satisfied, false otherwise
          */
-        public static boolean evalMappings(Constraint constraint) {
+        public static boolean evalMappings(final @NonNull Constraint constraint) {
             if (constraint.mappings() == Mappings.NONE) {
                 return true;
             }
@@ -569,7 +582,7 @@ public record Constraint(
          * @param constraint the {@link Constraint} to evaluate
          * @return true if the platform constraints are satisfied, false otherwise
          */
-        public static boolean evalPlatform(Constraint constraint) {
+        public static boolean evalPlatform(final @NonNull Constraint constraint) {
             if (constraint.platform().isEmpty() && constraint.notPlatform().isEmpty()) {
                 return true;
             }
@@ -603,7 +616,7 @@ public record Constraint(
          * @param constraint the {@link Constraint} to evaluate
          * @return true if the side constraints are satisfied, false otherwise
          */
-        public static boolean evalSide(Constraint constraint) {
+        public static boolean evalSide(final @NonNull Constraint constraint) {
             if (constraint.side().isEmpty()) {
                 return true;
             }
@@ -631,7 +644,7 @@ public record Constraint(
          * @param constraint the {@link Constraint} to evaluate
          * @return true if the version constraints are satisfied, false otherwise
          */
-        public static boolean evalVersion(Constraint constraint) {
+        public static boolean evalVersion(final @NonNull Constraint constraint) {
             if (constraint.version().isEmpty()
                     && constraint.min() == MinecraftVersions.UNKNOWN
                     && constraint.max() == MinecraftVersions.UNKNOWN
@@ -707,7 +720,7 @@ public record Constraint(
          * @param constraint the {@link Constraint} to evaluate
          * @return true if the constraint is satisfied, false otherwise
          */
-        public static boolean evaluate(Constraint constraint) {
+        public static boolean evaluate(final @NonNull Constraint constraint) {
             if (CACHE.containsKey(constraint)) {
                 return CACHE.get(constraint);
             }
