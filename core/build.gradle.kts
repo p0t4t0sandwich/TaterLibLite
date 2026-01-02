@@ -6,7 +6,11 @@ base {
 }
 
 dependencies {
+    compileOnly(libs.mojang.authlib)
+    compileOnly(libs.guava)
     compileOnly(libs.mixin)
+    compileOnly(libs.netty.buffer)
+    compileOnly(libs.netty.codec)
     compileOnly(libs.asm.tree)
 
     compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.26")
