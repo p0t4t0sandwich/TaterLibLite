@@ -43,7 +43,7 @@ public record NameAndId(@NonNull String name, @NonNull UUID id) {
             idHandle = null;
         } else {
             try {
-                MethodHandles.Lookup lookup = MethodHandles.lookup();
+                final MethodHandles.Lookup lookup = MethodHandles.lookup();
                 //noinspection JavaLangInvokeHandleSignature
                 nameHandle =
                         lookup.findVirtual(

@@ -30,22 +30,24 @@ public final class Identifier {
     // spotless:off
     static {
         try {
+            final MethodHandles.Lookup lookup = MethodHandles.lookup();
+            final Class<?> clazz;
             if (Constraint.builder().max(MinecraftVersions.V16_5).build().result()) {
-                Class<?> clazz = Class.forName("net.minecraft.util.ResourceLocation");
-                newIdentifier = MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class, String.class));
+                clazz = Class.forName("net.minecraft.util.ResourceLocation");
+                newIdentifier = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
             } else if (Constraint.builder()
                     .min(MinecraftVersions.V17)
                     .max(MinecraftVersions.V20_4).build().result()) {
-                Class<?> clazz = Class.forName("net.minecraft.resources.ResourceLocation");
-                newIdentifier = MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class, String.class));
+                clazz = Class.forName("net.minecraft.resources.ResourceLocation");
+                newIdentifier = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
             } else if (Constraint.builder()
                     .min(MinecraftVersions.V20_5)
                     .max(MinecraftVersions.V21_10).build().result()) {
-                Class<?> clazz = Class.forName("net.minecraft.resources.ResourceLocation");
-                newIdentifier = MethodHandles.lookup().findStatic(clazz, "parse", MethodType.methodType(clazz, String.class));
+                clazz = Class.forName("net.minecraft.resources.ResourceLocation");
+                newIdentifier = lookup.findStatic(clazz, "parse", MethodType.methodType(clazz, String.class));
             } else if (Constraint.builder().min(MinecraftVersions.V21_11).build().result()) {
-                Class<?> clazz = Class.forName("net.minecraft.resources.Identifier");
-                newIdentifier = MethodHandles.lookup().findStatic(clazz, "parse", MethodType.methodType(clazz, String.class));
+                clazz = Class.forName("net.minecraft.resources.Identifier");
+                newIdentifier = lookup.findStatic(clazz, "parse", MethodType.methodType(clazz, String.class));
             }
         } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
             logger.error("Failed to initialize Identifier function", e);
