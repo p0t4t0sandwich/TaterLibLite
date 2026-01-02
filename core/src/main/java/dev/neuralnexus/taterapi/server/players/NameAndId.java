@@ -30,33 +30,8 @@ public record NameAndId(@NonNull String name, @NonNull UUID id) {
 
     private static final Logger logger = Logger.create("TaterLibLite/NameAndId");
 
-    // com.mojang:authlib:7.0.0 or newer
-    private static final Constraint V21_9 =
-            Constraint.builder().min(MinecraftVersions.V21_9).build();
-
-    private static MethodHandle nameHandle;
-    private static MethodHandle idHandle;
-
-    static {
-        if (V21_9.result()) {
-            nameHandle = null;
-            idHandle = null;
-        } else {
-            try {
-                final MethodHandles.Lookup lookup = MethodHandles.lookup();
-                //noinspection JavaLangInvokeHandleSignature
-                nameHandle =
-                        lookup.findVirtual(
-                                GameProfile.class, "getName", MethodType.methodType(String.class));
-                //noinspection JavaLangInvokeHandleSignature
-                idHandle =
-                        lookup.findVirtual(
-                                GameProfile.class, "getId", MethodType.methodType(UUID.class));
-            } catch (final NoSuchMethodException | IllegalAccessException e) {
-                logger.error("Failed to initialize GameProfile method handles", e);
-            }
-        }
-    }
+    private static final MethodHandle nameHandle;
+    private static final MethodHandle idHandle;
 
     /**
      * Gets the name from the given GameProfile
@@ -64,15 +39,11 @@ public record NameAndId(@NonNull String name, @NonNull UUID id) {
      * @param profile the profile
      * @return the name
      */
-    static @NonNull String getName(final @NonNull GameProfile profile) {
-        if (V21_9.result()) {
-            return profile.name();
-        } else {
-            try {
-                return (String) nameHandle.invokeExact(profile);
-            } catch (final Throwable e) {
-                throw new IllegalStateException("Failed to get name from GameProfile", e);
-            }
+    private static @NonNull String getName(final @NonNull GameProfile profile) {
+        try {
+            return (String) nameHandle.invokeExact(profile);
+        } catch (final Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -82,15 +53,34 @@ public record NameAndId(@NonNull String name, @NonNull UUID id) {
      * @param profile the profile
      * @return the id
      */
-    static @NonNull UUID getId(final @NonNull GameProfile profile) {
-        if (V21_9.result()) {
-            return profile.id();
+    private static @NonNull UUID getId(final @NonNull GameProfile profile) {
+        try {
+            return (UUID) idHandle.invokeExact(profile);
+        } catch (final Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static {
+        final String name;
+        final String id;
+        // com.mojang:authlib:7.0.0 or newer
+        if (Constraint.builder().min(MinecraftVersions.V21_9).build().result()) {
+            name = "name";
+            id = "id";
         } else {
-            try {
-                return (UUID) idHandle.invokeExact(profile);
-            } catch (final Throwable e) {
-                throw new IllegalStateException("Failed to get id from GameProfile", e);
-            }
+            name = "getName";
+            id = "getId";
+        }
+        try {
+            final MethodHandles.Lookup lookup = MethodHandles.lookup();
+            nameHandle =
+                    lookup.findVirtual(
+                            GameProfile.class, name, MethodType.methodType(String.class));
+            idHandle = lookup.findVirtual(GameProfile.class, id, MethodType.methodType(UUID.class));
+        } catch (final NoSuchMethodException | IllegalAccessException e) {
+            logger.error("Failed to initialize GameProfile method handles", e);
+            throw new RuntimeException(e);
         }
     }
 }

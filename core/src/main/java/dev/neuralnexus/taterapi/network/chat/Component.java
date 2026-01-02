@@ -9,34 +9,36 @@ import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
+import org.jspecify.annotations.NonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.function.Function;
 
 public final class Component {
     private static final Logger logger = Logger.create("TaterLibLite/Component");
 
-    private static MethodHandle newLiteral;
-    private static MethodHandle newTranslatable;
+    private static final MethodHandle newLiteral;
+    private static final MethodHandle newTranslatable;
 
-    public static final Function<String, ?> LITERAL =
-            text -> {
-                try {
-                    return newLiteral.invoke(text);
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-            };
+    @SuppressWarnings("unchecked")
+    public static <T> @NonNull T literal(final @NonNull String text) {
+        try {
+            return (T) newLiteral.invokeExact(text);
+        } catch (final Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-    public static final Function<String, ?> TRANSLATABLE =
-            key -> {
-                try {
-                    return newTranslatable.invoke(key);
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-            };
+    @SuppressWarnings("unchecked")
+    public static <T> @NonNull T translatable(final @NonNull String key) {
+        try {
+            // Can't invokeExact here because of varargs constructor in older versions
+            return (T) newTranslatable.invoke(key);
+        } catch (final Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     // spotless:off
     static {
@@ -76,10 +78,11 @@ public final class Component {
                 rType = Class.forName("net.minecraft.network.chat.MutableComponent");
                 newLiteral = lookup.findStatic(clazz, "literal", MethodType.methodType(rType, String.class));
             } else {
-                throw new ClassNotFoundException("No matching version for Component.literal");
+                throw new RuntimeException("No matching version for Component.literal");
             }
-        } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
+        } catch (final ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
             logger.error("Failed to initialize Component.literal function", e);
+            throw new RuntimeException(e);
         }
 
         try { // Component.translatable(String)
@@ -115,21 +118,12 @@ public final class Component {
                 rType = Class.forName("net.minecraft.network.chat.MutableComponent");
                 newTranslatable = lookup.findStatic(clazz, "translatable", MethodType.methodType(rType, String.class));
             } else {
-                throw new ClassNotFoundException("No matching version for Component.translatable");
+                throw new RuntimeException("No matching version for Component.translatable");
             }
-        } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
+        } catch (final ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
             logger.error("Failed to initialize Component.translatable function", e);
+            throw new RuntimeException(e);
         }
     }
     // spotless:on
-
-    @SuppressWarnings("unchecked")
-    public static <T> T literal(String text) {
-        return (T) LITERAL.apply(text);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T translatable(String key) {
-        return (T) TRANSLATABLE.apply(key);
-    }
 }

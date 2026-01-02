@@ -8,24 +8,25 @@ import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
+import org.jspecify.annotations.NonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.function.Function;
 
 public final class Identifier {
     private static final Logger logger = Logger.create("TaterLibLite/Identifier");
 
-    private static MethodHandle newIdentifier;
+    private static final MethodHandle newIdentifier;
 
-    public static final Function<String, ?> IDENTIFIER =
-            id -> {
-                try {
-                    return newIdentifier.invoke(id);
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-            };
+    @SuppressWarnings("unchecked")
+    public static <T> @NonNull T identifier(final @NonNull String id) {
+        try {
+            return (T) newIdentifier.invokeExact(id);
+        } catch (final Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     // spotless:off
     static {
@@ -45,18 +46,14 @@ public final class Identifier {
                     .max(MinecraftVersions.V21_10).build().result()) {
                 clazz = Class.forName("net.minecraft.resources.ResourceLocation");
                 newIdentifier = lookup.findStatic(clazz, "parse", MethodType.methodType(clazz, String.class));
-            } else if (Constraint.builder().min(MinecraftVersions.V21_11).build().result()) {
+            } else { // min(MinecraftVersions.V21_11)
                 clazz = Class.forName("net.minecraft.resources.Identifier");
                 newIdentifier = lookup.findStatic(clazz, "parse", MethodType.methodType(clazz, String.class));
             }
-        } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
+        } catch (final ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
             logger.error("Failed to initialize Identifier function", e);
+            throw new RuntimeException(e);
         }
     }
     // spotless:on
-
-    @SuppressWarnings("unchecked")
-    public static <T> T identifier(String id) {
-        return (T) IDENTIFIER.apply(id);
-    }
 }
