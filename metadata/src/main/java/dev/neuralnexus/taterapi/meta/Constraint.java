@@ -69,27 +69,15 @@ public record Constraint(
                                 .flatMap(Stream::of)
                                 .collect(Collectors.toSet()))
                 .mappings(constraint.mappings())
-                .platform(
-                        Stream.of(constraint.platform())
-                                .map(dev.neuralnexus.taterapi.meta.enums.Platform::ref)
-                                .toList())
-                .notPlatform(
-                        Stream.of(constraint.notPlatform())
-                                .map(dev.neuralnexus.taterapi.meta.enums.Platform::ref)
-                                .toList())
-                .side(Stream.of(constraint.side()).toList())
-                .version(
-                        Stream.of(constraint.version().value())
-                                .map(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion::ref)
-                                .toList())
-                .min(constraint.version().min().ref())
-                .max(constraint.version().max().ref())
-                .notVersion(
-                        Stream.of(constraint.notVersion().value())
-                                .map(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion::ref)
-                                .toList())
-                .notMin(constraint.notVersion().min().ref())
-                .notMax(constraint.notVersion().max().ref())
+                .platform(constraint.platform())
+                .notPlatform(constraint.notPlatform())
+                .side(constraint.side())
+                .version(constraint.version().value())
+                .min(constraint.version().min())
+                .max(constraint.version().max())
+                .notVersion(constraint.notVersion().value())
+                .notMin(constraint.notVersion().min())
+                .notMax(constraint.notVersion().max())
                 .build();
     }
 
@@ -244,6 +232,19 @@ public record Constraint(
         }
 
         /**
+         * Adds platforms that must be present for the constraint to be satisfied.
+         *
+         * @param platform an array of {@link dev.neuralnexus.taterapi.meta.enums.Platform}
+         * @return the current {@link Builder} instance
+         */
+        public Builder platform(dev.neuralnexus.taterapi.meta.enums.Platform... platform) {
+            return this.platform(
+                    Stream.of(platform)
+                            .map(dev.neuralnexus.taterapi.meta.enums.Platform::ref)
+                            .toList());
+        }
+
+        /**
          * Adds platforms that must NOT be present for the constraint to be satisfied.
          *
          * @param notPlatform a collection of {@link Platform}
@@ -262,6 +263,19 @@ public record Constraint(
          */
         public Builder notPlatform(Platform... notPlatform) {
             return this.notPlatform(List.of(notPlatform));
+        }
+
+        /**
+         * Adds platforms that must NOT be present for the constraint to be satisfied.
+         *
+         * @param notPlatform an array of {@link dev.neuralnexus.taterapi.meta.enums.Platform}
+         * @return the current {@link Builder} instance
+         */
+        public Builder notPlatform(dev.neuralnexus.taterapi.meta.enums.Platform... notPlatform) {
+            return this.notPlatform(
+                    Stream.of(notPlatform)
+                            .map(dev.neuralnexus.taterapi.meta.enums.Platform::ref)
+                            .toList());
         }
 
         /**
@@ -307,6 +321,19 @@ public record Constraint(
         }
 
         /**
+         * Adds Minecraft versions that the constraint applies to.
+         *
+         * @param version an array of {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
+         * @return the current {@link Builder} instance
+         */
+        public Builder version(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion... version) {
+            return this.version(
+                    Stream.of(version)
+                            .map(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion::ref)
+                            .toList());
+        }
+
+        /**
          * Sets the minimum Minecraft version for the constraint to be satisfied.
          *
          * @param min the minimum {@link MinecraftVersion}
@@ -318,6 +345,17 @@ public record Constraint(
         }
 
         /**
+         * Sets the minimum Minecraft version for the constraint to be satisfied.
+         *
+         * @param min the minimum {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
+         * @return the current {@link Builder} instance
+         */
+        public Builder min(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion min) {
+            this.min = min.ref();
+            return this;
+        }
+
+        /**
          * Sets the maximum Minecraft version for the constraint to be satisfied.
          *
          * @param max the maximum {@link MinecraftVersion}
@@ -325,6 +363,17 @@ public record Constraint(
          */
         public Builder max(MinecraftVersion max) {
             this.max = max;
+            return this;
+        }
+
+        /**
+         * Sets the maximum Minecraft version for the constraint to be satisfied.
+         *
+         * @param max the maximum {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
+         * @return the current {@link Builder} instance
+         */
+        public Builder max(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion max) {
+            this.max = max.ref();
             return this;
         }
 
@@ -350,6 +399,21 @@ public record Constraint(
         }
 
         /**
+         * Adds Minecraft versions that must NOT be present for the constraint to be satisfied.
+         *
+         * @param notVersion an array of {@link
+         *     dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
+         * @return the current {@link Builder} instance
+         */
+        public Builder notVersion(
+                dev.neuralnexus.taterapi.meta.enums.MinecraftVersion... notVersion) {
+            return this.notVersion(
+                    Stream.of(notVersion)
+                            .map(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion::ref)
+                            .toList());
+        }
+
+        /**
          * Sets the minimum Minecraft version that must NOT be present for the constraint to be
          * satisfied.
          *
@@ -361,8 +425,41 @@ public record Constraint(
             return this;
         }
 
+        /**
+         * Sets the maximum Minecraft version that must NOT be present for the constraint to be
+         * satisfied.
+         *
+         * @param notMin the minimum {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
+         *     that must NOT be present
+         * @return the current {@link Builder} instance
+         */
+        public Builder notMin(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion notMin) {
+            this.notMin = notMin.ref();
+            return this;
+        }
+
+        /**
+         * Sets the maximum Minecraft version that must NOT be present for the constraint to be
+         * satisfied.
+         *
+         * @param notMax the maximum {@link MinecraftVersion} that must NOT be present
+         * @return the current {@link Builder} instance
+         */
         public Builder notMax(MinecraftVersion notMax) {
             this.notMax = notMax;
+            return this;
+        }
+
+        /**
+         * Sets the maximum Minecraft version that must NOT be present for the constraint to be
+         * satisfied.
+         *
+         * @param notMax the maximum {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
+         *     that must NOT be present
+         * @return the current {@link Builder} instance
+         */
+        public Builder notMax(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion notMax) {
+            this.notMax = notMax.ref();
             return this;
         }
 
