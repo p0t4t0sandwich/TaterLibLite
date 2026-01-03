@@ -33,17 +33,17 @@ public final class Identifier {
         try {
             final MethodHandles.Lookup lookup = MethodHandles.lookup();
             final Class<?> clazz;
-            if (Constraint.builder().max(MinecraftVersions.V16_5).build().result()) {
+            if (Constraint.builder().max(MinecraftVersions.V16_5).result()) {
                 clazz = Class.forName("net.minecraft.util.ResourceLocation");
                 newIdentifier = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
             } else if (Constraint.builder()
                     .min(MinecraftVersions.V17)
-                    .max(MinecraftVersions.V20_4).build().result()) {
+                    .max(MinecraftVersions.V20_4).result()) {
                 clazz = Class.forName("net.minecraft.resources.ResourceLocation");
                 newIdentifier = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
             } else if (Constraint.builder()
                     .min(MinecraftVersions.V20_5)
-                    .max(MinecraftVersions.V21_10).build().result()) {
+                    .max(MinecraftVersions.V21_10).result()) {
                 clazz = Class.forName("net.minecraft.resources.ResourceLocation");
                 newIdentifier = lookup.findStatic(clazz, "parse", MethodType.methodType(clazz, String.class));
             } else { // min(MinecraftVersions.V21_11)

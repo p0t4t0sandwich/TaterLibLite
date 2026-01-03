@@ -321,7 +321,7 @@ public final class MetaAPIImpl implements MetaAPI {
                 }
                 // Check Forge
             } else if (api.isPlatformPresent(Platforms.FORGE)) {
-                if (this.version().isAtMost(MinecraftVersions.V16_5)) {
+                if (this.version().noGreaterThan(MinecraftVersions.V16_5)) {
                     mappings = Mappings.LEGACY_SEARGE;
                 } else if (this.version()
                         .isInRange(MinecraftVersions.V17, MinecraftVersions.V20_5)) {
@@ -332,25 +332,25 @@ public final class MetaAPIImpl implements MetaAPI {
                 // Check Fabric
             } else if (api.isPlatformPresent(Platforms.FABRIC)) {
                 // TODO: Add Babric and CursedFabric checks
-                if (this.version().isOlderThan(MinecraftVersions.V14)) {
+                if (this.version().lessThan(MinecraftVersions.V14)) {
                     mappings = Mappings.LEGACY_INTERMEDIARY;
                 } else {
                     mappings = Mappings.YARN_INTERMEDIARY;
                 }
                 // Check SpongeVanilla
             } else if (api.isPlatformPresent(Platforms.SPONGE)) {
-                if (this.version().isOlderThan(MinecraftVersions.V14)) {
+                if (this.version().lessThan(MinecraftVersions.V14)) {
                     mappings = Mappings.SEARGE;
                 } else {
                     mappings = Mappings.MOJANG;
                 }
                 // Check Paper
             } else if (api.isPlatformPresent(Platforms.PAPER)
-                    && this.version().isAtLeast(MinecraftVersions.V20_5)) {
+                    && this.version().noLessThan(MinecraftVersions.V20_5)) {
                 mappings = Mappings.MOJANG;
                 // Check Spigot
             } else if (api.isPlatformPresent(Platforms.SPIGOT)) {
-                if (this.version().isOlderThan(MinecraftVersions.V18)) {
+                if (this.version().lessThan(MinecraftVersions.V18)) {
                     mappings = Mappings.LEGACY_SPIGOT;
                 } else {
                     mappings = Mappings.SPIGOT;

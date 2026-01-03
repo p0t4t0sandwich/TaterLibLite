@@ -4,7 +4,7 @@
  */
 package dev.neuralnexus.taterapi.network;
 
-import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import io.netty.buffer.ByteBuf;
@@ -79,7 +79,7 @@ final class Utf8String {
         private static final int MAX_BYTES_PER_CHAR_UTF8;
 
         static { // Netty 4.1 differences
-            if (MetaAPI.instance().version().isAtLeast(MinecraftVersions.V12)) {
+            if (Constraint.noLessThan(MinecraftVersions.V12).result()) {
                 MAX_BYTES_PER_CHAR_UTF8 =
                         (int) CharsetUtil.encoder(CharsetUtil.UTF_8).maxBytesPerChar();
             } else {
