@@ -17,11 +17,17 @@ public @interface Versions {
     /** Acceptable Minecraft version for this constraint. */
     MinecraftVersion[] value() default {};
 
+    /** Whether the minimum version is inclusive. Default is true. */
+    boolean minInclusive() default true;
+
     /**
      * The minimum Minecraft version this constraint is supposed to run on (inclusive). Default
      * returns `MinecraftVersions.Unknown` to indicate no bound.
      */
     MinecraftVersion min() default MinecraftVersion.UNKNOWN;
+
+    /** Whether the maximum version is inclusive. Default is true. */
+    boolean maxInclusive() default true;
 
     /**
      * The maximum Minecraft version this constraint is supposed to run on (inclusive). Default

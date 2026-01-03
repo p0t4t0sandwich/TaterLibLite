@@ -23,9 +23,6 @@ public @interface AConstraint {
     /** The dependencies required for this constraint to be met. */
     Dependency[] deps() default {};
 
-    /** The dependencies that must NOT be present for this constraint to be met. */
-    Dependency[] notDeps() default {};
-
     /**
      * The mappings this constraint is valid for. Default returns `Mappings.NONE` to indicate no
      * constraint.
@@ -39,12 +36,6 @@ public @interface AConstraint {
     Platform[] platform() default {};
 
     /**
-     * The platform this constraint is NOT valid for. Default returns `Platforms.UNKNOWN` to
-     * indicate no constraint.
-     */
-    Platform[] notPlatform() default {};
-
-    /**
      * The side(s) the plugin is supposed to run on. Normally you only use one, but there are case
      * where abstract code can run in many environments.
      */
@@ -53,6 +44,6 @@ public @interface AConstraint {
     /** Minecraft versions this constraint is valid for. */
     Versions version() default @Versions;
 
-    /** Minecraft versions this constraint is NOT valid for. */
-    Versions notVersion() default @Versions;
+    /** Whether to invert the constraint logic. */
+    boolean invert() default false;
 }

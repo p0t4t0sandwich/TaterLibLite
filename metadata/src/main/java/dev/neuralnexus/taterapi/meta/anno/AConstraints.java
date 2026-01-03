@@ -18,4 +18,7 @@ import java.lang.annotation.Target;
 public @interface AConstraints {
     /** The list of constraints that must be met */
     AConstraint[] value();
+
+    /** The list of constraints where at least one must be met */
+    AConstraint[] or() default {};
 }
