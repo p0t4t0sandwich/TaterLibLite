@@ -533,27 +533,6 @@ public record Constraint(
     }
 
     /**
-     * Creates a version is constraint.
-     *
-     * @param version the {@link MinecraftVersion}
-     * @return a {@link Constraint.Builder} instance valid for the specified version
-     */
-    public static Constraint.Builder versionIs(final @NonNull MinecraftVersion version) {
-        return builder().version(version);
-    }
-
-    /**
-     * Creates a version is constraint.
-     *
-     * @param version the {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
-     * @return a {@link Constraint.Builder} instance valid for the specified version
-     */
-    public static Constraint.Builder versionIs(
-            final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion version) {
-        return builder().version(version);
-    }
-
-    /**
      * Evaluator class for evaluating {@link Constraint} instances against the current environment.
      */
     public static final class Evaluator {
