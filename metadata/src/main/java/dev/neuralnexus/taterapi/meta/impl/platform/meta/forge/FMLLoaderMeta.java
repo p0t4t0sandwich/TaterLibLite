@@ -108,7 +108,7 @@ final class FMLLoaderMeta implements Platform.Meta {
 
     @Override
     public @NonNull String apiVersion() {
-        if (minecraftVersion().isOlderThan(MinecraftVersions.V17)) {
+        if (this.minecraftVersion().lessThan(MinecraftVersions.V17)) {
             return ForgeVersion_13_16.forgeVersion();
         }
         return ForgeVersion_17_21.forgeVersion();
@@ -178,7 +178,7 @@ final class FMLLoaderMeta implements Platform.Meta {
     @Override
     public @NonNull Logger logger(final @NonNull String modId) {
         final MinecraftVersion version = this.minecraftVersion();
-        if (version.isOlderThan(MinecraftVersions.V18_2)) {
+        if (version.lessThan(MinecraftVersions.V18_2)) {
             return new ApacheLogger(modId);
         }
         return new Slf4jLogger(modId);
@@ -233,7 +233,7 @@ final class FMLLoaderMeta implements Platform.Meta {
                         Platforms.FORGE),
                 new ModResourceImpl(
                         () -> {
-                            if (this.minecraftVersion().isAtLeast(MinecraftVersions.V17_1)) {
+                            if (this.minecraftVersion().noLessThan(MinecraftVersions.V17_1)) {
                                 return container
                                         .getModInfo()
                                         .getOwningFile()
@@ -256,7 +256,7 @@ final class FMLLoaderMeta implements Platform.Meta {
                         Platforms.FORGE),
                 new ModResourceImpl(
                         () -> {
-                            if (this.minecraftVersion().isAtLeast(MinecraftVersions.V17_1)) {
+                            if (this.minecraftVersion().noLessThan(MinecraftVersions.V17_1)) {
                                 return info.getOwningFile().getFile().getFilePath();
                             }
                             return ((ModFileInfo) info.getOwningFile()).getFile().getFilePath();

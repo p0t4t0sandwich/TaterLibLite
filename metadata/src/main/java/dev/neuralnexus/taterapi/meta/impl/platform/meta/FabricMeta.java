@@ -112,7 +112,7 @@ public final class FabricMeta implements Platform.Meta {
     @Override
     public @NonNull Logger logger(final @NonNull String modId) {
         final MinecraftVersion version = this.minecraftVersion();
-        if (version.isOlderThan(MinecraftVersions.V18)) {
+        if (version.lessThan(MinecraftVersions.V18)) {
             return new ApacheLogger(modId);
         }
         return new Slf4jLogger(modId);

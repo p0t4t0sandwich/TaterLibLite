@@ -455,7 +455,7 @@ public interface MetaAPI {
      * @return True if Brigadier is supported, false otherwise
      */
     default boolean isBrigadierSupported() {
-        return this.version().isAtLeast(MinecraftVersions.V13)
+        return this.version().noLessThan(MinecraftVersions.V13)
                 || this.isPlatformPresent(Platforms.VELOCITY)
                 || ReflectionUtil.checkForClass("com.mojang.brigadier.CommandDispatcher");
     }

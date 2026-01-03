@@ -166,89 +166,45 @@ public interface VersionComparable<T extends VersionComparable<?>> extends Compa
     boolean parseRange(final @NonNull String rangeString);
 
     /**
-     * Check if the version is newer than another version
+     * Check if the version is greater than another version
      *
      * @param version The version to compare
-     * @return True if the version is newer
+     * @return True if the version is greater
      */
-    default boolean isNewerThan(final @NonNull String version) {
-        Objects.requireNonNull(version, "version cannot be null");
-        return compare(this.version(), version) > 0;
-    }
-
-    /**
-     * Check if the version is newer than another version
-     *
-     * @param version The version to compare
-     * @return True if the version is newer
-     */
-    default boolean isNewerThan(final @NonNull T version) {
+    default boolean greaterThan(final @NonNull T version) {
         Objects.requireNonNull(version, "version cannot be null");
         return this.compareTo(version) > 0;
     }
 
     /**
-     * Check if the version is at least another version
+     * Check if the version is no less than another version
      *
      * @param version The version to compare
-     * @return True if the version is at least
+     * @return True if the version is no less
      */
-    default boolean isAtLeast(final @NonNull String version) {
-        Objects.requireNonNull(version, "version cannot be null");
-        return compare(this.version(), version) >= 0;
-    }
-
-    /**
-     * Check if the version is at least another version
-     *
-     * @param version The version to compare
-     * @return True if the version is at least
-     */
-    default boolean isAtLeast(final @NonNull T version) {
+    default boolean noLessThan(final @NonNull T version) {
         Objects.requireNonNull(version, "version cannot be null");
         return this.compareTo(version) >= 0;
     }
 
     /**
-     * Check if the version is older than another version
+     * Check if the version is less than another version
      *
      * @param version The version to compare
-     * @return True if the version is older
+     * @return True if the version is less
      */
-    default boolean isOlderThan(final @NonNull String version) {
-        Objects.requireNonNull(version, "version cannot be null");
-        return compare(this.version(), version) < 0;
-    }
-
-    /**
-     * Check if the version is older than another version
-     *
-     * @param version The version to compare
-     * @return True if the version is older
-     */
-    default boolean isOlderThan(final @NonNull T version) {
+    default boolean lessThan(final @NonNull T version) {
         Objects.requireNonNull(version, "version cannot be null");
         return this.compareTo(version) < 0;
     }
 
     /**
-     * Check if the version is at most another version
+     * Check if the version is no greater than another version
      *
      * @param version The version to compare
-     * @return True if the version is at most
+     * @return True if the version is no greater
      */
-    default boolean isAtMost(final @NonNull String version) {
-        Objects.requireNonNull(version, "version cannot be null");
-        return compare(this.version(), version) <= 0;
-    }
-
-    /**
-     * Check if the version is at most another version
-     *
-     * @param version The version to compare
-     * @return True if the version is at most
-     */
-    default boolean isAtMost(final @NonNull T version) {
+    default boolean noGreaterThan(final @NonNull T version) {
         Objects.requireNonNull(version, "version cannot be null");
         return this.compareTo(version) <= 0;
     }
