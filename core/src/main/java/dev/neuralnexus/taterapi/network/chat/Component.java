@@ -46,34 +46,24 @@ public final class Component {
         Class<?> clazz;
         Class<?> rType;
         try { // Component.literal(String)
-            if (Constraint.builder().max(MinecraftVersions.V8_9).result()) {
+            if (Constraint.noGreaterThan(MinecraftVersions.V8_9).result()) {
                 clazz = Class.forName("net.minecraft.util.ChatComponentText");
                 newLiteral = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
-            } else if (Constraint.builder()
-                    .min(MinecraftVersions.V9)
-                    .max(MinecraftVersions.V13_2).result()) {
+            } else if (Constraint.range(MinecraftVersions.V9, MinecraftVersions.V13_2).result()) {
                 clazz = Class.forName("net.minecraft.util.text.TextComponentString");
                 newLiteral = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
-            } else if (Constraint.builder()
-                    .min(MinecraftVersions.V14)
-                    .max(MinecraftVersions.V16_5).result()) {
+            } else if (Constraint.range(MinecraftVersions.V14, MinecraftVersions.V16_5).result()) {
                 clazz = Class.forName("net.minecraft.util.text.StringTextComponent");
                 newLiteral = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
-            } else if (Constraint.builder()
-                    .min(MinecraftVersions.V17)
-                    .max(MinecraftVersions.V18_2).result()) {
+            } else if (Constraint.range(MinecraftVersions.V17, MinecraftVersions.V18_2).result()) {
                 clazz = Class.forName("net.minecraft.network.chat.TextComponent");
                 newLiteral = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
-            } else if (Constraint.builder()
-                    .mappings(Mappings.SEARGE)
-                    .min(MinecraftVersions.V19)
-                    .max(MinecraftVersions.V20_4).result()) {
+            } else if (Constraint.range(MinecraftVersions.V19, MinecraftVersions.V20_4)
+                    .mappings(Mappings.SEARGE).result()) {
                 clazz = Class.forName("net.minecraft.network.chat.Component");
                 rType = Class.forName("net.minecraft.network.chat.MutableComponent");
                 newLiteral = lookup.findStatic(clazz, "m_237113_", MethodType.methodType(rType, String.class));
-            } else if (Constraint.builder()
-                    .mappings(Mappings.MOJANG)
-                    .min(MinecraftVersions.V19).result()) {
+            } else if (Constraint.noLessThan(MinecraftVersions.V19).mappings(Mappings.MOJANG).result()) {
                 clazz = Class.forName("net.minecraft.network.chat.Component");
                 rType = Class.forName("net.minecraft.network.chat.MutableComponent");
                 newLiteral = lookup.findStatic(clazz, "literal", MethodType.methodType(rType, String.class));
@@ -86,34 +76,23 @@ public final class Component {
         }
 
         try { // Component.translatable(String)
-            if (Constraint.builder().max(MinecraftVersions.V8_9).result()) {
+            if (Constraint.noGreaterThan(MinecraftVersions.V8_9).result()) {
                 clazz = Class.forName("net.minecraft.util.ChatComponentTranslation");
                 newTranslatable = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class, Object[].class));
-            } else if (Constraint.builder()
-                    .min(MinecraftVersions.V9)
-                    .max(MinecraftVersions.V13_2).result()) {
+            } else if (Constraint.range(MinecraftVersions.V9, MinecraftVersions.V13_2).result()) {
                 clazz = Class.forName("net.minecraft.util.text.TextComponentTranslation");
                 newTranslatable = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class, Object[].class));
-            } else if (Constraint.builder()
-                    .min(MinecraftVersions.V14)
-                    .max(MinecraftVersions.V16_5).result()) {
+            } else if (Constraint.range(MinecraftVersions.V14, MinecraftVersions.V16_5).result()) {
                 clazz = Class.forName("net.minecraft.util.text.TranslationTextComponent");
                 newTranslatable = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class, Object[].class));
-            } else if (Constraint.builder()
-                    .min(MinecraftVersions.V17)
-                    .max(MinecraftVersions.V18_2).result()) {
+            } else if (Constraint.range(MinecraftVersions.V17, MinecraftVersions.V18_2).result()) {
                 clazz = Class.forName("net.minecraft.network.chat.TranslatableComponent");
                 newTranslatable = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
-            } else if (Constraint.builder()
-                    .mappings(Mappings.SEARGE)
-                    .min(MinecraftVersions.V19)
-                    .max(MinecraftVersions.V20_4).result()) {
+            } else if (Constraint.range(MinecraftVersions.V19, MinecraftVersions.V20_4).mappings(Mappings.SEARGE).result()) {
                 clazz = Class.forName("net.minecraft.network.chat.Component");
                 rType = Class.forName("net.minecraft.network.chat.MutableComponent");
                 newTranslatable = lookup.findStatic(clazz, "m_237115_", MethodType.methodType(rType, String.class));
-            } else if (Constraint.builder()
-                    .mappings(Mappings.MOJANG)
-                    .min(MinecraftVersions.V19).result()) {
+            } else if (Constraint.noLessThan(MinecraftVersions.V19).mappings(Mappings.MOJANG).result()) {
                 clazz = Class.forName("net.minecraft.network.chat.Component");
                 rType = Class.forName("net.minecraft.network.chat.MutableComponent");
                 newTranslatable = lookup.findStatic(clazz, "translatable", MethodType.methodType(rType, String.class));

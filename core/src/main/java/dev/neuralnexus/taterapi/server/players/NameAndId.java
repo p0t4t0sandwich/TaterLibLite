@@ -65,7 +65,7 @@ public record NameAndId(@NonNull String name, @NonNull UUID id) {
         final String name;
         final String id;
         // com.mojang:authlib:7.0.0 or newer
-        if (Constraint.builder().min(MinecraftVersions.V21_9).result()) {
+        if (Constraint.noLessThan(MinecraftVersions.V21_9).result()) {
             name = "name";
             id = "id";
         } else {

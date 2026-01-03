@@ -230,11 +230,8 @@ public final class EntrypointLoader<T extends Entrypoint> {
 
         // https://github.com/McModLauncher/modlauncher/issues/39#issuecomment-683487396
         final boolean serviceLoaderBroken =
-                Constraint.builder()
+                Constraint.range(MinecraftVersions.V14_2, MinecraftVersions.V16_2)
                         .platform(Platforms.FORGE)
-                        .min(MinecraftVersions.V14_2)
-                        .max(MinecraftVersions.V16_2)
-                        .build()
                         .result();
         if (serviceLoaderBroken || this.useOtherProviders) {
             this.entrypoints.addAll(this.loadProviderClasses());

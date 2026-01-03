@@ -390,7 +390,7 @@ public record Constraint(
      * @param max the maximum {@link MinecraftVersion}
      * @return a {@link Constraint.Builder} instance representing the version range
      */
-    public static Constraint.Builder versionInRange(
+    public static Constraint.Builder range(
             final boolean minInclusive,
             final @NonNull MinecraftVersion min,
             final boolean maxInclusive,
@@ -407,7 +407,7 @@ public record Constraint(
      * @param max the maximum {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
      * @return a {@link Constraint.Builder} instance representing the version range
      */
-    public static Constraint.Builder versionInRange(
+    public static Constraint.Builder range(
             final boolean minInclusive,
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion min,
             final boolean maxInclusive,
@@ -422,7 +422,7 @@ public record Constraint(
      * @param max the maximum {@link MinecraftVersion}
      * @return a {@link Constraint.Builder} instance representing the version range
      */
-    public static Constraint.Builder versionInRange(
+    public static Constraint.Builder range(
             final @NonNull MinecraftVersion min, final @NonNull MinecraftVersion max) {
         return builder().min(min).max(max);
     }
@@ -434,7 +434,7 @@ public record Constraint(
      * @param max the maximum {@link dev.neuralnexus.taterapi.meta.enums.MinecraftVersion}
      * @return a {@link Constraint.Builder} instance representing the version range
      */
-    public static Constraint.Builder versionInRange(
+    public static Constraint.Builder range(
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion min,
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion max) {
         return builder().min(min).max(max);
