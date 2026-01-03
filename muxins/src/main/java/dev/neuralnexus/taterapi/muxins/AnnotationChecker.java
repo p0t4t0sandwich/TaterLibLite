@@ -18,6 +18,7 @@ import dev.neuralnexus.taterapi.meta.anno.AConstraints;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.enums.Platform;
 
+import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
 
@@ -31,7 +32,7 @@ public final class AnnotationChecker {
 
     private AnnotationChecker() {}
 
-    public static boolean isConstraintAnnotationNode(AnnotationNode node) {
+    public static boolean isConstraintAnnotationNode(final @NonNull AnnotationNode node) {
         return CONSTRAINT_DESC.equals(node.desc) || CONSTRAINTS_DESC.equals(node.desc);
     }
 
@@ -42,8 +43,9 @@ public final class AnnotationChecker {
      * @param verbose If the method should log the result
      * @return If the constraint is met
      */
-    public static boolean checkAnnotation(AnnotationNode annotation, boolean verbose) {
-        boolean debug = Constraint.Evaluator.DEBUG;
+    public static boolean checkAnnotation(
+            final @NonNull AnnotationNode annotation, final boolean verbose) {
+        final boolean debug = Constraint.Evaluator.DEBUG;
         Constraint.Evaluator.DEBUG = verbose;
 
         if (CONSTRAINT_DESC.equals(annotation.desc)) {
@@ -55,12 +57,19 @@ public final class AnnotationChecker {
                 return false;
             }
         } else if (CONSTRAINTS_DESC.equals(annotation.desc)) {
-            List<AnnotationNode> constraintNodes = getValue(annotation, "value", true);
-            Constraints constraints =
-                    new Constraints(
-                            constraintNodes.stream()
-                                    .map(AnnotationChecker::toConstraint)
-                                    .collect(Collectors.toUnmodifiableSet()));
+            final List<AnnotationNode> constraintNodes = getValue(annotation, "value", true);
+            final List<AnnotationNode> orConstraintNodes = getValue(annotation, "or", true);
+            final Constraints constraints =
+                    Constraints.builder()
+                            .and(
+                                    constraintNodes.stream()
+                                            .map(AnnotationChecker::toConstraint)
+                                            .collect(Collectors.toUnmodifiableSet()))
+                            .or(
+                                    orConstraintNodes.stream()
+                                            .map(AnnotationChecker::toConstraint)
+                                            .collect(Collectors.toUnmodifiableSet()))
+                            .build();
             if (!constraints.result()) {
                 if (verbose) {
                     logger.info(ansiParser("§4Skipping mixin §9 constraints not met."));
@@ -82,8 +91,10 @@ public final class AnnotationChecker {
      * @return If the mixin should be applied
      */
     public static boolean checkAnnotations(
-            List<AnnotationNode> annotations, String mixinClassName, boolean verbose) {
-        for (AnnotationNode node : annotations) {
+            final List<@NonNull AnnotationNode> annotations,
+            final @NonNull String mixinClassName,
+            final boolean verbose) {
+        for (final AnnotationNode node : annotations) {
             if (CONSTRAINT_DESC.equals(node.desc)) {
                 if (!checkConstraint(mixinClassName, node, verbose)) {
                     return false;
@@ -106,8 +117,10 @@ public final class AnnotationChecker {
      * @return If the mixin should be applied
      */
     public static boolean checkConstraint(
-            String mixinClassName, AnnotationNode annotation, boolean verbose) {
-        boolean debug = Constraint.Evaluator.DEBUG;
+            final @NonNull String mixinClassName,
+            final @NonNull AnnotationNode annotation,
+            final boolean verbose) {
+        final boolean debug = Constraint.Evaluator.DEBUG;
         Constraint.Evaluator.DEBUG = verbose;
 
         if (!toConstraint(annotation).result()) {
@@ -132,16 +145,25 @@ public final class AnnotationChecker {
      * @return If the mixin should be applied
      */
     public static boolean checkConstraints(
-            String mixinClassName, AnnotationNode annotation, boolean verbose) {
-        boolean debug = Constraint.Evaluator.DEBUG;
+            final @NonNull String mixinClassName,
+            final @NonNull AnnotationNode annotation,
+            final boolean verbose) {
+        final boolean debug = Constraint.Evaluator.DEBUG;
         Constraint.Evaluator.DEBUG = verbose;
 
-        List<AnnotationNode> constraintNodes = getValue(annotation, "value", true);
-        Constraints constraints =
-                new Constraints(
-                        constraintNodes.stream()
-                                .map(AnnotationChecker::toConstraint)
-                                .collect(Collectors.toUnmodifiableSet()));
+        final List<AnnotationNode> constraintNodes = getValue(annotation, "value", true);
+        final List<AnnotationNode> orConstraintNodes = getValue(annotation, "or", true);
+        final Constraints constraints =
+                Constraints.builder()
+                        .and(
+                                constraintNodes.stream()
+                                        .map(AnnotationChecker::toConstraint)
+                                        .collect(Collectors.toUnmodifiableSet()))
+                        .or(
+                                orConstraintNodes.stream()
+                                        .map(AnnotationChecker::toConstraint)
+                                        .collect(Collectors.toUnmodifiableSet()))
+                        .build();
         if (!constraints.result()) {
             if (verbose) {
                 logger.info(
@@ -157,12 +179,12 @@ public final class AnnotationChecker {
         return true;
     }
 
-    private static Constraint toConstraint(AnnotationNode annotation) {
+    private static Constraint toConstraint(final @NonNull AnnotationNode annotation) {
         // deps
-        List<AnnotationNode> depNodes = getValue(annotation, "deps", true);
-        List<String> deps =
+        final List<AnnotationNode> depNodes = getValue(annotation, "deps", true);
+        final List<String> deps =
                 depNodes.stream().<String>map(d -> getValue(d, "value", String.class)).toList();
-        List<String> depsAliases =
+        final List<String> depsAliases =
                 depNodes.stream()
                         .flatMap(
                                 d -> {
@@ -171,57 +193,36 @@ public final class AnnotationChecker {
                                 })
                         .toList();
 
-        // notDeps
-        List<AnnotationNode> notDepNodes = getValue(annotation, "notDeps", true);
-        List<String> notDeps =
-                notDepNodes.stream().<String>map(d -> getValue(d, "value", String.class)).toList();
-        List<String> notDepsAliases =
-                notDepNodes.stream()
-                        .flatMap(
-                                d -> {
-                                    List<String> aliases = getValue(d, "aliases", true);
-                                    return aliases != null ? aliases.stream() : null;
-                                })
-                        .toList();
-
-        Mappings maps = getValue(annotation, "mappings", Mappings.class, Mappings.NONE);
-        List<Platform> plats = getValue(annotation, "platform", true, Platform.class);
-        List<Platform> notPlats = getValue(annotation, "notPlatform", true, Platform.class);
-        List<Side> sides = getValue(annotation, "side", true, Side.class);
+        final Mappings maps = getValue(annotation, "mappings", Mappings.class, Mappings.NONE);
+        final List<Platform> plats = getValue(annotation, "platform", true, Platform.class);
+        final List<Side> sides = getValue(annotation, "side", true, Side.class);
 
         // version
-        AnnotationNode versionNode = getValue(annotation, "version", AnnotationNode.class);
-        List<MinecraftVersion> versions =
+        final AnnotationNode versionNode = getValue(annotation, "version", AnnotationNode.class);
+        final List<MinecraftVersion> versions =
                 getValue(versionNode, "value", true, MinecraftVersion.class);
-        MinecraftVersion min =
+        final boolean minInclusive = getValue(versionNode, "minInclusive", boolean.class);
+        final MinecraftVersion min =
                 getValue(versionNode, "min", MinecraftVersion.class, MinecraftVersion.UNKNOWN);
-        MinecraftVersion max =
+        final boolean maxInclusive = getValue(versionNode, "maxInclusive", boolean.class);
+        final MinecraftVersion max =
                 getValue(versionNode, "max", MinecraftVersion.class, MinecraftVersion.UNKNOWN);
 
-        // notVersion
-        AnnotationNode notVersionNode = getValue(annotation, "notVersion", AnnotationNode.class);
-        List<MinecraftVersion> notVersions =
-                getValue(notVersionNode, "value", true, MinecraftVersion.class);
-        MinecraftVersion notMin =
-                getValue(notVersionNode, "min", MinecraftVersion.class, MinecraftVersion.UNKNOWN);
-        MinecraftVersion notMax =
-                getValue(notVersionNode, "max", MinecraftVersion.class, MinecraftVersion.UNKNOWN);
+        // invert
+        final boolean invert = getValue(annotation, "invert", boolean.class);
 
         return Constraint.builder()
                 .deps(deps)
                 .deps(depsAliases)
-                .notDeps(notDeps)
-                .notDeps(notDepsAliases)
                 .mappings(maps)
-                .platform(plats.stream().map(Platform::ref).toList())
-                .notPlatform(notPlats.stream().map(Platform::ref).toList())
+                .platform(plats.toArray(Platform[]::new))
                 .side(sides)
-                .version(versions.stream().map(MinecraftVersion::ref).toList())
-                .min(min.ref())
-                .max(max.ref())
-                .notVersion(notVersions.stream().map(MinecraftVersion::ref).toList())
-                .notMin(notMin.ref())
-                .notMax(notMax.ref())
+                .version(versions.toArray(MinecraftVersion[]::new))
+                .minInclusive(minInclusive)
+                .min(min)
+                .maxInclusive(maxInclusive)
+                .max(max)
+                .invert(invert)
                 .build();
     }
 }

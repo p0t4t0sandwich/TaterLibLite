@@ -205,9 +205,11 @@ public record Constraint(
          */
         public Builder platform(
                 final dev.neuralnexus.taterapi.meta.enums.@NonNull Platform... platform) {
-            Collections.addAll(this.platform, Stream.of(platform)
-                    .map(dev.neuralnexus.taterapi.meta.enums.Platform::ref)
-                    .toArray(Platform[]::new));
+            Collections.addAll(
+                    this.platform,
+                    Stream.of(platform)
+                            .map(dev.neuralnexus.taterapi.meta.enums.Platform::ref)
+                            .toArray(Platform[]::new));
             return this;
         }
 
@@ -263,9 +265,11 @@ public record Constraint(
          */
         public Builder version(
                 final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion... version) {
-            Collections.addAll(this.version, Stream.of(version)
-                    .map(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion::ref)
-                    .toArray(MinecraftVersion[]::new));
+            Collections.addAll(
+                    this.version,
+                    Stream.of(version)
+                            .map(dev.neuralnexus.taterapi.meta.enums.MinecraftVersion::ref)
+                            .toArray(MinecraftVersion[]::new));
             return this;
         }
 

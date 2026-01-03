@@ -4,9 +4,8 @@
  */
 package dev.neuralnexus.taterapi.meta;
 
-import dev.neuralnexus.taterapi.meta.anno.AConstraint;
-
 import dev.neuralnexus.taterapi.meta.anno.AConstraints;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
@@ -21,14 +20,18 @@ public final class Constraints {
     private boolean evaluated = false;
     private boolean result;
 
-    public Constraints(final Collection<@NonNull Constraint> and, final Collection<@NonNull Constraint> or) {
+    public Constraints(
+            final Collection<@NonNull Constraint> and, final Collection<@NonNull Constraint> or) {
         this.and = Collections.unmodifiableCollection(and);
         this.or = Collections.unmodifiableCollection(or);
     }
 
     public static @NonNull Constraints from(final @NonNull AConstraints constraints) {
         return builder()
-                .and(Stream.of(constraints.value()).map(Constraint::from).toArray(Constraint[]::new))
+                .and(
+                        Stream.of(constraints.value())
+                                .map(Constraint::from)
+                                .toArray(Constraint[]::new))
                 .or(Stream.of(constraints.or()).map(Constraint::from).toArray(Constraint[]::new))
                 .build();
     }
@@ -41,7 +44,8 @@ public final class Constraints {
     public boolean result() {
         if (!this.evaluated) {
             final boolean andResult = this.and.stream().allMatch(Constraint::result);
-            final boolean orResult = this.or.isEmpty() || this.or.stream().anyMatch(Constraint::result);
+            final boolean orResult =
+                    this.or.isEmpty() || this.or.stream().anyMatch(Constraint::result);
             this.result = andResult && orResult;
             this.evaluated = true;
         }
@@ -55,11 +59,14 @@ public final class Constraints {
 
     /** Builder class for constructing {@link Constraints} instances. */
     public static class Builder {
-        private final Set<@NonNull Constraint> and = Collections.newSetFromMap(new ConcurrentHashMap<>());
-        private final Set<@NonNull Constraint> or = Collections.newSetFromMap(new ConcurrentHashMap<>());
+        private final Set<@NonNull Constraint> and =
+                Collections.newSetFromMap(new ConcurrentHashMap<>());
+        private final Set<@NonNull Constraint> or =
+                Collections.newSetFromMap(new ConcurrentHashMap<>());
 
         /**
          * Adds "and" constraints to the builder.
+         *
          * @param constraints the constraints to add
          * @return the builder
          */
@@ -70,6 +77,7 @@ public final class Constraints {
 
         /**
          * Adds "and" constraints to the builder.
+         *
          * @param constraints the constraints to add
          * @return the builder
          */
@@ -80,6 +88,7 @@ public final class Constraints {
 
         /**
          * Adds "or" constraints to the builder.
+         *
          * @param constraints the constraints to add
          * @return the builder
          */
@@ -90,6 +99,7 @@ public final class Constraints {
 
         /**
          * Adds "or" constraints to the builder.
+         *
          * @param constraints the constraints to add
          * @return the builder
          */
@@ -100,6 +110,7 @@ public final class Constraints {
 
         /**
          * Builds the Constraints object.
+         *
          * @return the Constraints object
          */
         public Constraints build() {
@@ -108,6 +119,7 @@ public final class Constraints {
 
         /**
          * Builds the Constraints object and evaluates the result.
+         *
          * @return the result of the Constraints evaluation
          */
         public boolean result() {
