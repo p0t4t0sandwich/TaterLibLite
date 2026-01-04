@@ -15,6 +15,7 @@ import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.Side;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.AConstraints;
+import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.enums.Platform;
 
@@ -23,7 +24,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /** Checks annotations on mixins */
 public final class AnnotationChecker {
@@ -57,18 +57,18 @@ public final class AnnotationChecker {
                 return false;
             }
         } else if (CONSTRAINTS_DESC.equals(annotation.desc)) {
-            final List<AnnotationNode> constraintNodes = getValue(annotation, "value", true);
-            final List<AnnotationNode> orConstraintNodes = getValue(annotation, "or", true);
+            final List<AnnotationNode> and = getValue(annotation, "value", true);
+            final List<AnnotationNode> or = getValue(annotation, "or", true);
             final Constraints constraints =
                     Constraints.builder()
                             .and(
-                                    constraintNodes.stream()
+                                    and.stream()
                                             .map(AnnotationChecker::toConstraint)
-                                            .collect(Collectors.toUnmodifiableSet()))
+                                            .toArray(Constraint[]::new))
                             .or(
-                                    orConstraintNodes.stream()
+                                    or.stream()
                                             .map(AnnotationChecker::toConstraint)
-                                            .collect(Collectors.toUnmodifiableSet()))
+                                            .toArray(Constraint[]::new))
                             .build();
             if (!constraints.result()) {
                 if (verbose) {
@@ -151,18 +151,18 @@ public final class AnnotationChecker {
         final boolean debug = Constraint.Evaluator.DEBUG;
         Constraint.Evaluator.DEBUG = verbose;
 
-        final List<AnnotationNode> constraintNodes = getValue(annotation, "value", true);
-        final List<AnnotationNode> orConstraintNodes = getValue(annotation, "or", true);
+        final List<AnnotationNode> and = getValue(annotation, "value", true);
+        final List<AnnotationNode> or = getValue(annotation, "or", true);
         final Constraints constraints =
                 Constraints.builder()
                         .and(
-                                constraintNodes.stream()
+                                and.stream()
                                         .map(AnnotationChecker::toConstraint)
-                                        .collect(Collectors.toUnmodifiableSet()))
+                                        .toArray(Constraint[]::new))
                         .or(
-                                orConstraintNodes.stream()
+                                or.stream()
                                         .map(AnnotationChecker::toConstraint)
-                                        .collect(Collectors.toUnmodifiableSet()))
+                                        .toArray(Constraint[]::new))
                         .build();
         if (!constraints.result()) {
             if (verbose) {
@@ -201,15 +201,15 @@ public final class AnnotationChecker {
         final AnnotationNode versionNode = getValue(annotation, "version", AnnotationNode.class);
         final List<MinecraftVersion> versions =
                 getValue(versionNode, "value", true, MinecraftVersion.class);
-        final boolean minInclusive = getValue(versionNode, "minInclusive", boolean.class);
+        final boolean minInclusive = getValue(versionNode, "minInclusive", Versions.class);
         final MinecraftVersion min =
                 getValue(versionNode, "min", MinecraftVersion.class, MinecraftVersion.UNKNOWN);
-        final boolean maxInclusive = getValue(versionNode, "maxInclusive", boolean.class);
+        final boolean maxInclusive = getValue(versionNode, "maxInclusive", Versions.class);
         final MinecraftVersion max =
                 getValue(versionNode, "max", MinecraftVersion.class, MinecraftVersion.UNKNOWN);
 
         // invert
-        final boolean invert = getValue(annotation, "invert", boolean.class);
+        final boolean invert = getValue(annotation, "invert", AConstraint.class);
 
         return Constraint.builder()
                 .deps(deps)
