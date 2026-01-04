@@ -22,7 +22,8 @@ public final class Identifier {
     @SuppressWarnings("unchecked")
     public static <T> @NonNull T identifier(final @NonNull String id) {
         try {
-            return (T) newIdentifier.invokeExact(id);
+            // Can't invokeExact because of the duck typing
+            return (T) newIdentifier.invoke(id);
         } catch (final Throwable e) {
             throw new RuntimeException(e);
         }

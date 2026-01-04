@@ -24,7 +24,8 @@ public final class Component {
     @SuppressWarnings("unchecked")
     public static <T> @NonNull T literal(final @NonNull String text) {
         try {
-            return (T) newLiteral.invokeExact(text);
+            // Can't invokeExact because of the duck typing
+            return (T) newLiteral.invoke(text);
         } catch (final Throwable e) {
             throw new RuntimeException(e);
         }
