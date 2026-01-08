@@ -6,7 +6,11 @@ package dev.neuralnexus.taterapi.util;
 
 import org.spongepowered.asm.service.MixinService;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /** Helper/wrapper class to prevent ClassNotFound errors when Mixin is not present. */
 public final class MixinServiceUtil {
@@ -15,20 +19,63 @@ public final class MixinServiceUtil {
      *
      * @return The Minecraft asString.
      */
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public static String mcVersion() throws ClassNotFoundException, IOException {
         // Fine to do since obfuscated situations are covered by Forge
         // Reflect to get SharedConstants.VERSION_STRING
-        return (String)
-                MixinService.getService()
-                        .getBytecodeProvider()
-                        .getClassNode("net.minecraft.SharedConstants")
-                        .fields
-                        .stream()
-                        .filter(field -> field.name.equals("VERSION_STRING"))
-                        .findFirst()
-                        .get()
-                        .value;
+        // If SharedConstants.VERSION_STRING doesn't exist, fall back to the version.json
+        final var ref = new Object() {
+            String mcVersion = null;
+        };
+        MixinService.getService()
+                .getBytecodeProvider()
+                .getClassNode("net.minecraft.SharedConstants")
+                .fields
+                .stream()
+                .filter(field -> field.name.equals("VERSION_STRING"))
+                .findFirst().ifPresentOrElse(fieldNode -> ref.mcVersion = (String) fieldNode.value, () -> {
+                    try {
+                        ref.mcVersion = parseMcJson();
+                    } catch (ClassNotFoundException | IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        return ref.mcVersion;
+    }
+
+    private static String parseMcJson() throws ClassNotFoundException, IOException {
+        Class<?> sharedConstants = MixinService.getService().getClassProvider().findClass("net.minecraft.SharedConstants");
+
+        // Parse the json included in modern versions of Minecraft
+        // SharedConstants is going to get sacrificed, but no one should have a Mixin in that anyway
+        try (InputStream is = sharedConstants
+                .getClassLoader()
+                .getResourceAsStream("version.json")) {
+
+            if (is == null) {
+                throw new IllegalStateException("version.json not found in JAR");
+            }
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(is, StandardCharsets.UTF_8)
+            );
+
+            // Read second line for version id
+            reader.readLine();
+            String secondLine = reader.readLine();
+
+            if (secondLine == null) {
+                throw new IllegalStateException("version.json is malformed");
+            }
+
+            int firstQuote = secondLine.indexOf('"', secondLine.indexOf(':'));
+            int secondQuote = secondLine.indexOf('"', firstQuote + 1);
+
+            if (firstQuote == -1 || secondQuote == -1) {
+                throw new IllegalStateException("Could not parse version id");
+            }
+
+            return secondLine.substring(firstQuote + 1, secondQuote);
+        }
     }
 
     /**
