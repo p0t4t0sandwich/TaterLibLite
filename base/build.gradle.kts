@@ -6,8 +6,9 @@ base {
 }
 
 dependencies {
-    compileOnly(libs.mixin)
     compileOnly(libs.asm.tree)
+    compileOnly(libs.gson)
+    compileOnly(libs.mixin)
 }
 
 tasks.jar {

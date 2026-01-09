@@ -11,6 +11,7 @@ annotations = { group = "org.jetbrains", name = "annotations", version = "26.0.2
 asm-tree = { group = "org.ow2.asm", name = "asm-tree", version = "6.2" }
 brigadier = { group = "com.mojang", name = "brigadier", version = "1.0.18" }
 guava = { group = "com.google.guava", name = "guava", version = "33.3.1-jre" }
+gson = { group = "com.google.code.gson", name = "gson", version = "2.13.2" }
 ignite-api = { group = "space.vectrix.ignite", name = "ignite-api", version = "1.1.0" }
 jspecify = { group = "org.jspecify", name = "jspecify", version = "1.0.0" }
 mixin = { group = "org.spongepowered", name = "mixin", version = "0.8.5-SNAPSHOT" }

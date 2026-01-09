@@ -4,6 +4,9 @@
  */
 package dev.neuralnexus.taterapi.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import org.spongepowered.asm.service.MixinService;
 
 import java.io.BufferedReader;
@@ -42,39 +45,28 @@ public final class MixinServiceUtil {
         return ref.mcVersion;
     }
 
+    private static final Gson GSON = new GsonBuilder().create();
+
     private static String parseMcJson() throws ClassNotFoundException, IOException {
+        // TODO: Update to use reflection as a fallback if Mixin is not present
         Class<?> sharedConstants = MixinService.getService().getClassProvider().findClass("net.minecraft.SharedConstants");
 
         // Parse the json included in modern versions of Minecraft
         // SharedConstants is going to get sacrificed, but no one should have a Mixin in that anyway
-        try (InputStream is = sharedConstants
+        try (final InputStream is = sharedConstants
                 .getClassLoader()
                 .getResourceAsStream("version.json")) {
-
             if (is == null) {
                 throw new IllegalStateException("version.json not found in JAR");
             }
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(is, StandardCharsets.UTF_8)
-            );
-
-            // Read second line for version id
-            reader.readLine();
-            String secondLine = reader.readLine();
-
-            if (secondLine == null) {
-                throw new IllegalStateException("version.json is malformed");
+            // Get "id" from the json
+            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                JsonObject jsonObject = GSON.fromJson(reader, JsonObject.class);
+                return jsonObject.get("id").getAsString();
+            } catch (IOException e) {
+                throw new IOException("Failed to read version.json", e);
             }
-
-            int firstQuote = secondLine.indexOf('"', secondLine.indexOf(':'));
-            int secondQuote = secondLine.indexOf('"', firstQuote + 1);
-
-            if (firstQuote == -1 || secondQuote == -1) {
-                throw new IllegalStateException("Could not parse version id");
-            }
-
-            return secondLine.substring(firstQuote + 1, secondQuote);
         }
     }
 
