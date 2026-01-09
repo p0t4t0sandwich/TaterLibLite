@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  */
 public record Constraint(
         Collection<@NonNull String> deps,
-        @NonNull Mappings mappings,
+        Collection<@NonNull Mappings> mappings,
         Collection<@NonNull Platform> platform,
         Collection<@NonNull Side> side,
         Collection<@NonNull MinecraftVersion> version,
@@ -131,7 +131,7 @@ public record Constraint(
     /** Builder class for constructing {@link Constraint} instances. */
     public static final class Builder {
         private final Set<@NonNull String> deps = new HashSet<>();
-        private @NonNull Mappings mappings = Mappings.NONE;
+        private final Set<@NonNull Mappings> mappings = new HashSet<>();
         private final Set<@NonNull Platform> platform = new HashSet<>();
         private final Set<@NonNull Side> side = new HashSet<>();
         private final Set<@NonNull MinecraftVersion> version = new HashSet<>();
@@ -170,8 +170,19 @@ public record Constraint(
          * @param mappings the required {@link Mappings}
          * @return the current {@link Builder} instance
          */
-        public Builder mappings(final @NonNull Mappings mappings) {
-            this.mappings = mappings;
+        public Builder mappings(final Collection<@NonNull Mappings> mappings) {
+            this.mappings.addAll(mappings);
+            return this;
+        }
+
+        /**
+         * Sets the mappings required for the constraint to be satisfied.
+         *
+         * @param mappings the required {@link Mappings}
+         * @return the current {@link Builder} instance
+         */
+        public Builder mappings(final @NonNull Mappings... mappings) {
+            Collections.addAll(this.mappings, mappings);
             return this;
         }
 
@@ -577,10 +588,10 @@ public record Constraint(
          * @return true if the mappings constraints are satisfied, false otherwise
          */
         public static boolean evalMappings(final @NonNull Constraint constraint) {
-            if (constraint.mappings() == Mappings.NONE) {
+            if (constraint.mappings().isEmpty() || constraint.mappings().contains(Mappings.NONE)) {
                 return true;
             }
-            if (MAPPINGS != constraint.mappings()) {
+            if (!constraint.mappings().contains(MAPPINGS)) {
                 if (DEBUG) {
                     logger.debug(
                             "Mappings constraint failed. Required: "

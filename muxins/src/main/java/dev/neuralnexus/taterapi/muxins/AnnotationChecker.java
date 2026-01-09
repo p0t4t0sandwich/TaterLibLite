@@ -193,7 +193,7 @@ public final class AnnotationChecker {
                                 })
                         .toList();
 
-        final Mappings maps = getValue(annotation, "mappings", Mappings.class, Mappings.NONE);
+        final List<Mappings> maps = getValue(annotation, "mappings", true, Mappings.class);
         final List<Platform> plats = getValue(annotation, "platform", true, Platform.class);
         final List<Side> sides = getValue(annotation, "side", true, Side.class);
 

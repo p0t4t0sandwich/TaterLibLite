@@ -27,7 +27,7 @@ public @interface AConstraint {
      * The mappings this constraint is valid for. Default returns `Mappings.NONE` to indicate no
      * constraint.
      */
-    Mappings mappings() default Mappings.NONE;
+    Mappings[] mappings() default {};
 
     /**
      * The platform this constraint is valid for. Default returns `Platforms.UNKNOWN` to indicate no
