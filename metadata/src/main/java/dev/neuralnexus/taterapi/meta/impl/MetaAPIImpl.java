@@ -25,6 +25,17 @@ import dev.neuralnexus.taterapi.meta.impl.platform.meta.VelocityMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.bukkit.BukkitMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.forge.ForgeData;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.sponge.SpongeData;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.BungeeCordMCVProvider;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.FabricMCVProvider;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.ForgeCPWMCVProvider;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.ForgeFMLMCVProvider;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.ForgeMCFMCVProvider;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.NeoForgeMCVProvider;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.PaperMCVProvider;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.SpongeLegacyMCVProvider;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.SpongeModernMCVProvider;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.VanillaMCVProvider;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.VelocityMCVProvider;
 import dev.neuralnexus.taterapi.reflecto.MappingEntry;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
 
@@ -225,12 +236,23 @@ public final class MetaAPIImpl implements MetaAPI {
         return lookupAll().stream().anyMatch(Platform.Meta::isClient);
     }
 
+    private MinecraftVersion cachedVersion = MinecraftVersions.UNKNOWN;
+
     @Override
     public @NonNull MinecraftVersion version() {
-        return lookupAll().stream()
-                .map(Platform.Meta::minecraftVersion)
-                .findFirst()
-                .orElse(MinecraftVersions.UNKNOWN);
+        if (cachedVersion != MinecraftVersions.UNKNOWN) {
+            return cachedVersion;
+        }
+        cachedVersion =
+                Platforms.get().stream()
+                        .map(MetaAPIImpl::lookupMCV)
+                        .flatMap(Collection::stream)
+                        .filter(MinecraftVersion.Provider::shouldProvide)
+                        .map(MinecraftVersion.Provider::get)
+                        .filter(version -> version != MinecraftVersions.UNKNOWN)
+                        .max(MinecraftVersion::compareTo)
+                        .orElse(MinecraftVersions.UNKNOWN);
+        return cachedVersion;
     }
 
     @Override
@@ -304,8 +326,11 @@ public final class MetaAPIImpl implements MetaAPI {
                 // TODO: Add Babric and CursedFabric checks
                 if (this.version().lessThan(MinecraftVersions.V14)) {
                     mappings = Mappings.LEGACY_INTERMEDIARY;
-                } else {
+                } else if (this.version()
+                        .isInRange(MinecraftVersions.V14, MinecraftVersions.V21_11)) {
                     mappings = Mappings.YARN_INTERMEDIARY;
+                } else {
+                    mappings = Mappings.MOJANG;
                 }
                 // Check SpongeVanilla
             } else if (api.isPlatformPresent(Platforms.SPONGE)) {
@@ -322,14 +347,18 @@ public final class MetaAPIImpl implements MetaAPI {
             } else if (api.isPlatformPresent(Platforms.SPIGOT)) {
                 if (this.version().lessThan(MinecraftVersions.V18)) {
                     mappings = Mappings.LEGACY_SPIGOT;
-                } else {
+                } else if (this.version().noGreaterThan(MinecraftVersions.V21_11)) {
                     mappings = Mappings.SPIGOT;
+                } else {
+                    mappings = Mappings.MOJANG;
                 }
                 // Check Bukkit
             } else if (api.isPlatformPresent(Platforms.BUKKIT)) {
                 mappings = Mappings.OFFICIAL;
-            } else {
+            } else if (this.version().noGreaterThan(MinecraftVersions.V21_11)) {
                 mappings = Mappings.OFFICIAL;
+            } else {
+                mappings = Mappings.MOJANG;
             }
         }
         return Objects.requireNonNull(mappings, "Mappings are null after initialization");
@@ -408,5 +437,27 @@ public final class MetaAPIImpl implements MetaAPI {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
+    }
+
+    public static Collection<MinecraftVersion.Provider> lookupMCV(final Platform platform) {
+        if (MetaAPI.isNeoForgeBased(platform)) {
+            return Collections.singleton(new NeoForgeMCVProvider());
+        } else if (MetaAPI.isForgeBased(platform)) {
+            return List.of(
+                    new ForgeFMLMCVProvider(),
+                    new ForgeMCFMCVProvider(),
+                    new ForgeCPWMCVProvider());
+        } else if (MetaAPI.isFabricBased(platform)) {
+            return Collections.singleton(new FabricMCVProvider());
+        } else if (platform == Platforms.SPONGE) {
+            return List.of(new SpongeLegacyMCVProvider(), new SpongeModernMCVProvider());
+        } else if (MetaAPI.isBukkitBased(platform)) {
+            return Collections.singleton(new PaperMCVProvider());
+        } else if (MetaAPI.isBungeeCordBased(platform)) {
+            return Collections.singleton(new BungeeCordMCVProvider());
+        } else if (platform == Platforms.VELOCITY) {
+            return Collections.singleton(new VelocityMCVProvider());
+        }
+        return Collections.singleton(new VanillaMCVProvider());
     }
 }

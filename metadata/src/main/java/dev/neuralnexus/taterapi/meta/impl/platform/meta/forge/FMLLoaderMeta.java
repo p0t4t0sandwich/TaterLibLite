@@ -9,6 +9,7 @@ import static dev.neuralnexus.taterapi.util.ReflectionUtil.checkForClass;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.ApacheLogger;
 import dev.neuralnexus.taterapi.logger.impl.Slf4jLogger;
+import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.ModContainer;
@@ -78,37 +79,13 @@ final class FMLLoaderMeta implements Platform.Meta {
     }
 
     @Override
-    public @NonNull MinecraftVersion minecraftVersion() {
-        String version = "Unknown";
-        try {
-            try {
-                // Reflect to get FMLLoader.versionInfo().mcVersion()
-                Object versionInfoObject = FMLLoader.class.getMethod("versionInfo").invoke(null);
-                version =
-                        (String)
-                                versionInfoObject
-                                        .getClass()
-                                        .getMethod("mcVersion")
-                                        .invoke(versionInfoObject);
-            } catch (ReflectiveOperationException e) {
-                // Reflect to get private FMLLoader.mcVersion
-                Field mcVersionField = FMLLoader.class.getDeclaredField("mcVersion");
-                mcVersionField.setAccessible(true);
-                version = (String) mcVersionField.get(null);
-            }
-        } catch (ReflectiveOperationException ignored) {
-        }
-        return MinecraftVersion.of(version);
-    }
-
-    @Override
     public @NonNull String loaderVersion() {
         return LauncherVersion.getVersion();
     }
 
     @Override
     public @NonNull String apiVersion() {
-        if (this.minecraftVersion().lessThan(MinecraftVersions.V17)) {
+        if (MetaAPI.instance().version().lessThan(MinecraftVersions.V17)) {
             return ForgeVersion_13_16.forgeVersion();
         }
         return ForgeVersion_17_21.forgeVersion();
@@ -118,7 +95,7 @@ final class FMLLoaderMeta implements Platform.Meta {
     @Override
     public @NonNull <T> Collection<ModContainer<T>> mods() {
         if (ModList.get() != null) {
-            final MinecraftVersion version = this.minecraftVersion();
+            final MinecraftVersion version = MetaAPI.instance().version();
             if (version.isInRange(MinecraftVersions.V13, MinecraftVersions.V21_3)) {
                 if (modsField == null) {
                     try {
@@ -177,8 +154,7 @@ final class FMLLoaderMeta implements Platform.Meta {
 
     @Override
     public @NonNull Logger logger(final @NonNull String modId) {
-        final MinecraftVersion version = this.minecraftVersion();
-        if (version.lessThan(MinecraftVersions.V18_2)) {
+        if (MetaAPI.instance().version().lessThan(MinecraftVersions.V18_2)) {
             return new ApacheLogger(modId);
         }
         return new Slf4jLogger(modId);
@@ -233,7 +209,7 @@ final class FMLLoaderMeta implements Platform.Meta {
                         Platforms.FORGE),
                 new ModResourceImpl(
                         () -> {
-                            if (this.minecraftVersion().noLessThan(MinecraftVersions.V17_1)) {
+                            if (MetaAPI.instance().version().noLessThan(MinecraftVersions.V17_1)) {
                                 return container
                                         .getModInfo()
                                         .getOwningFile()
@@ -256,7 +232,7 @@ final class FMLLoaderMeta implements Platform.Meta {
                         Platforms.FORGE),
                 new ModResourceImpl(
                         () -> {
-                            if (this.minecraftVersion().noLessThan(MinecraftVersions.V17_1)) {
+                            if (MetaAPI.instance().version().noLessThan(MinecraftVersions.V17_1)) {
                                 return info.getOwningFile().getFile().getFilePath();
                             }
                             return ((ModFileInfo) info.getOwningFile()).getFile().getFilePath();

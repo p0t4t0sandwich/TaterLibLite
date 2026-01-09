@@ -6,7 +6,6 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.Slf4jLogger;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
@@ -57,11 +56,6 @@ public final class NeoForgeMeta implements Platform.Meta {
     @Override
     public boolean isClient() {
         return NeoForgeData.dist().isClient();
-    }
-
-    @Override
-    public @NonNull MinecraftVersion minecraftVersion() {
-        return MinecraftVersion.of(NeoForgeData.versionInfo().mcVersion());
     }
 
     @Override

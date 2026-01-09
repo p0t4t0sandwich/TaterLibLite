@@ -9,7 +9,6 @@ import cpw.mods.fml.common.Loader;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.ApacheLogger;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
@@ -57,17 +56,6 @@ final class CPWLoaderMeta implements Platform.Meta {
     @Override
     public boolean isClient() {
         return FMLCommonHandler.instance().getSide().isClient();
-    }
-
-    @Override
-    public @NonNull MinecraftVersion minecraftVersion() {
-        String version = "Unknown";
-        try {
-            // Reflect to get cpw.mods.fml.common.Loader.MC_VERSION
-            version = (String) Loader.class.getField("MC_VERSION").get(null);
-        } catch (ReflectiveOperationException ignored) {
-        }
-        return MinecraftVersion.of(version);
     }
 
     @Override

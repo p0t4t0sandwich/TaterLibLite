@@ -7,7 +7,7 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.ApacheLogger;
 import dev.neuralnexus.taterapi.logger.impl.Slf4jLogger;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
@@ -60,18 +60,6 @@ public final class FabricMeta implements Platform.Meta {
     }
 
     @Override
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
-    public @NonNull MinecraftVersion minecraftVersion() {
-        return MinecraftVersion.of(
-                FabricLoader.getInstance()
-                        .getModContainer("minecraft")
-                        .get()
-                        .getMetadata()
-                        .getVersion()
-                        .getFriendlyString());
-    }
-
-    @Override
     public @NonNull String loaderVersion() {
         Optional<net.fabricmc.loader.api.ModContainer> container =
                 FabricLoader.getInstance().getModContainer("fabric-loader");
@@ -111,8 +99,7 @@ public final class FabricMeta implements Platform.Meta {
 
     @Override
     public @NonNull Logger logger(final @NonNull String modId) {
-        final MinecraftVersion version = this.minecraftVersion();
-        if (version.lessThan(MinecraftVersions.V18)) {
+        if (MetaAPI.instance().version().lessThan(MinecraftVersions.V18)) {
             return new ApacheLogger(modId);
         }
         return new Slf4jLogger(modId);

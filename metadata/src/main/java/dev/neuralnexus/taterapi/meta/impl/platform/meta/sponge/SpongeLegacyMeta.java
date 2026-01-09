@@ -6,20 +6,15 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta.sponge;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.Slf4jLogger;
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraftServer;
-import dev.neuralnexus.taterapi.meta.impl.platform.meta.FabricMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModContainerImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModInfoImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModResourceImpl;
-import dev.neuralnexus.taterapi.meta.impl.platform.meta.forge.ForgeData;
 
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.api.Sponge;
@@ -66,28 +61,6 @@ final class SpongeLegacyMeta implements Platform.Meta {
     @Override
     public boolean isClient() {
         return this.side().isClient();
-    }
-
-    @Override
-    public @NonNull MinecraftVersion minecraftVersion() {
-        try {
-            return Sponge.getPluginManager()
-                    .getPlugin("minecraft")
-                    .map(p -> p.getVersion().toString())
-                    .map(MinecraftVersion::of)
-                    .orElse(MinecraftVersions.UNKNOWN);
-        } catch (IllegalStateException ignored) {
-        }
-        if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
-            Platform.Meta forge = ForgeData.create();
-            if (forge != null) {
-                return forge.minecraftVersion();
-            }
-        } else if (MetaAPI.instance().isPlatformPresent(Platforms.FABRIC)) {
-            return new FabricMeta().minecraftVersion();
-        }
-        // TODO: Old SpongeVanilla support
-        throw new IllegalStateException("NEEDS TO BE IMPLEMENTED ON OLDER SPONGEVANILLA");
     }
 
     @Override

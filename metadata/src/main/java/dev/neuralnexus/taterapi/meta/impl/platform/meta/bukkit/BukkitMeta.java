@@ -5,12 +5,9 @@
 package dev.neuralnexus.taterapi.meta.impl.platform.meta.bukkit;
 
 import static dev.neuralnexus.taterapi.util.PathUtils.getPluginsFolder;
-import static dev.neuralnexus.taterapi.util.ReflectionUtil.checkForMethod;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.JavaLogger;
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
@@ -85,19 +82,6 @@ public final class BukkitMeta implements Platform.Meta {
     }
 
     @Override
-    public @NonNull MinecraftVersion minecraftVersion() {
-        if (MetaAPI.instance().isHybrid()) {
-            return BukkitHybridMeta.minecraftVersion();
-        }
-        String version = Bukkit.getVersion();
-        if (MetaAPI.instance().isPlatformPresent(Platforms.PAPER)
-                && checkForMethod("org.bukkit.Bukkit", "getMinecraftVersion")) {
-            version = PaperMeta.getMinecraftVersion();
-        }
-        return MinecraftVersion.of(version);
-    }
-
-    @Override
     public @NonNull String loaderVersion() {
         return Bukkit.getBukkitVersion();
     }
@@ -131,9 +115,6 @@ public final class BukkitMeta implements Platform.Meta {
 
     @Override
     public @NonNull Logger logger(final @NonNull String modId) {
-        if (MetaAPI.instance().isHybrid()) {
-            return BukkitHybridMeta.logger(modId);
-        }
         return new JavaLogger(modId, Bukkit.getLogger());
     }
 

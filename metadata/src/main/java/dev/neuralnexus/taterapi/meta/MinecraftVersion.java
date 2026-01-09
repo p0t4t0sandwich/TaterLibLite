@@ -14,6 +14,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public interface MinecraftVersion extends VersionComparable<MinecraftVersion> {
     /**
@@ -24,17 +25,6 @@ public interface MinecraftVersion extends VersionComparable<MinecraftVersion> {
      */
     static MinecraftVersion of(String version) {
         return MinecraftVersions.of(version);
-    }
-
-    /**
-     * Get the "path" string version of the string representation <br>
-     * Not that useful in practice, used for TaterLoader's reflection util.
-     *
-     * @return The path string representation of the version
-     */
-    @ApiStatus.Internal
-    default String getPathString() {
-        return "v" + this.toString().replace(".", "_");
     }
 
     /**
@@ -62,6 +52,20 @@ public interface MinecraftVersion extends VersionComparable<MinecraftVersion> {
         MinecraftVersion end =
                 range.end() == null ? MinecraftVersions.UNKNOWN : MinecraftVersions.of(range.end());
         return this.isInRange(range.startInclusive(), start, range.endInclusive(), end);
+    }
+
+    /**
+     * Represents a provider for Minecraft versions, returns MinecraftVersions.UNKNOWN instead of
+     * null if no version can be found
+     */
+    @FunctionalInterface
+    interface Provider extends Supplier<MinecraftVersion> {
+        default boolean shouldProvide() {
+            return true;
+        }
+
+        @Override
+        @NonNull MinecraftVersion get();
     }
 
     /** Represents the metadata for a Minecraft version */

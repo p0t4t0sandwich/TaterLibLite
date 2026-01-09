@@ -7,13 +7,11 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta;
 import static dev.neuralnexus.taterapi.util.PathUtils.getPluginsFolder;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.Slf4jLogger;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
@@ -54,11 +52,6 @@ public final class VelocityMeta implements Platform.Meta {
     @Override
     public boolean isClient() {
         return false;
-    }
-
-    @Override
-    public @NonNull MinecraftVersion minecraftVersion() {
-        return MinecraftVersion.of(ProtocolVersion.MAXIMUM_VERSION.toString());
     }
 
     @Override

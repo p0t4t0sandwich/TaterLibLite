@@ -6,7 +6,6 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
@@ -66,11 +65,6 @@ public final class IgniteMeta implements Platform.Meta {
     @Override
     public boolean isClient() {
         return this.underlyingPlatform().isClient();
-    }
-
-    @Override
-    public @NonNull MinecraftVersion minecraftVersion() {
-        return this.underlyingPlatform().minecraftVersion();
     }
 
     @Override

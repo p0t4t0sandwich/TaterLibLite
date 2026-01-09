@@ -7,8 +7,6 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta.sponge;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.ApacheLogger;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
@@ -20,7 +18,6 @@ import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModContainerImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModInfoImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModResourceImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.NeoForgeMeta;
-import dev.neuralnexus.taterapi.meta.impl.platform.meta.VanillaMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.forge.ForgeData;
 import dev.neuralnexus.taterapi.util.PathUtils;
 
@@ -67,29 +64,6 @@ final class SpongeModernMeta implements Platform.Meta {
     @Override
     public boolean isClient() {
         return this.side().isClient();
-    }
-
-    @Override
-    public @NonNull MinecraftVersion minecraftVersion() {
-        try {
-            return Sponge.pluginManager()
-                    .plugin("minecraft")
-                    .map(p -> p.metadata().version().toString())
-                    .map(MinecraftVersion::of)
-                    .orElse(MinecraftVersions.UNKNOWN);
-        } catch (IllegalStateException ignored) {
-        }
-        if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
-            Platform.Meta forge = ForgeData.create();
-            if (forge != null) {
-                return forge.minecraftVersion();
-            }
-        } else if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE)) {
-            return new NeoForgeMeta().minecraftVersion();
-        } else if (MetaAPI.instance().isPlatformPresent(Platforms.FABRIC)) {
-            return new FabricMeta().minecraftVersion();
-        }
-        return new VanillaMeta().minecraftVersion();
     }
 
     @Override

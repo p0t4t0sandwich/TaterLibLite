@@ -6,18 +6,16 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.SystemLogger;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Side;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
 import dev.neuralnexus.taterapi.meta.impl.WMinecraftServer;
-import dev.neuralnexus.taterapi.util.MixinServiceUtil;
+import dev.neuralnexus.taterapi.meta.impl.version.provider.VanillaMCVProvider;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -74,23 +72,13 @@ public final class VanillaMeta implements Platform.Meta {
     }
 
     @Override
-    public @NonNull MinecraftVersion minecraftVersion() {
-        String version = "Unknown";
-        try {
-            version = MixinServiceUtil.mcVersion();
-        } catch (ClassNotFoundException | IOException ignored) {
-        }
-        return MinecraftVersion.of(version);
-    }
-
-    @Override
     public @NonNull String loaderVersion() {
-        return minecraftVersion().toString();
+        return new VanillaMCVProvider().get().toString();
     }
 
     @Override
     public @NonNull String apiVersion() {
-        return minecraftVersion().toString();
+        return new VanillaMCVProvider().get().toString();
     }
 
     @Override

@@ -159,14 +159,6 @@ public interface Platform {
         boolean isClient();
 
         /**
-         * Get the running Minecraft asString
-         *
-         * @return The running Minecraft asString
-         */
-        @Deprecated
-        @NonNull MinecraftVersion minecraftVersion();
-
-        /**
          * Get the modloader asString
          *
          * @return the modloader asString

@@ -8,7 +8,6 @@ import static dev.neuralnexus.taterapi.util.PathUtils.getPluginsFolder;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.JavaLogger;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
@@ -51,12 +50,6 @@ public final class BungeeCordMeta implements Platform.Meta {
     @Override
     public boolean isClient() {
         return false;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public @NonNull MinecraftVersion minecraftVersion() {
-        return MinecraftVersion.of(ProxyServer.getInstance().getGameVersion());
     }
 
     @Override
