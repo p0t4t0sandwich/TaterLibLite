@@ -18,7 +18,6 @@ import dev.neuralnexus.taterapi.meta.platform.Sponge;
 import dev.neuralnexus.taterapi.meta.platform.Vanilla;
 import dev.neuralnexus.taterapi.meta.platform.Velocity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -159,19 +158,21 @@ public final class Platforms
      *
      * @return The primary platform
      */
-    private static dev.neuralnexus.taterapi.meta.enums.Platform detectPrimary() {
+    public static dev.neuralnexus.taterapi.meta.enums.Platform detectPrimary() {
         final dev.neuralnexus.taterapi.meta.enums.Platform primary;
         if (platforms.contains(BUNGEECORD)) { // Check proxies
             primary = dev.neuralnexus.taterapi.meta.enums.Platform.BUNGEECORD;
         } else if (platforms.contains(VELOCITY)) {
             primary = dev.neuralnexus.taterapi.meta.enums.Platform.VELOCITY;
-        } else if (platforms.contains(FORGE) && platforms.contains(FABRIC)) { // Check for Connector and Kilt
+        } else if (platforms.contains(FORGE)
+                && platforms.contains(FABRIC)) { // Check for Connector and Kilt
             if (new FabricMeta().isModLoaded("kilt")) {
                 primary = dev.neuralnexus.taterapi.meta.enums.Platform.FABRIC;
             } else if (ForgeData.create().isModLoaded("connector")) {
                 primary = dev.neuralnexus.taterapi.meta.enums.Platform.FORGE;
             } else {
-                throw new IllegalArgumentException("Both Forge and Fabric platforms detected, but neither Connector nor Kilt found. Cannot determine primary platform.");
+                throw new IllegalArgumentException(
+                        "Both Forge and Fabric platforms detected, but neither Connector nor Kilt found. Cannot determine primary platform.");
             }
         } else if (platforms.contains(NEOFORGE)
                 && platforms.contains(FABRIC)
@@ -195,14 +196,12 @@ public final class Platforms
         return primary;
     }
 
-    /**
-     * Layers the detected platforms based on their relationships
-     */
+    /** Layers the detected platforms based on their relationships */
     private static void layerPlatforms() {
         layered.clear();
 
         final dev.neuralnexus.taterapi.meta.enums.Platform primary = detectPrimary();
-        switch(primary) {
+        switch (primary) {
             case FABRIC -> {
                 layered.add(FABRIC);
                 if (platforms.contains(SPONGE)) { // Loofah

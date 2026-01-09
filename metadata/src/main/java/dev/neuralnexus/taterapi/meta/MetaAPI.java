@@ -10,7 +10,6 @@ import dev.neuralnexus.taterapi.util.ReflectionUtil;
 
 import net.minecraft.server.MinecraftServer;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
