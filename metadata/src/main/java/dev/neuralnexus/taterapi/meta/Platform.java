@@ -163,6 +163,7 @@ public interface Platform {
          *
          * @return The running Minecraft asString
          */
+        @Deprecated
         @NonNull MinecraftVersion minecraftVersion();
 
         /**
