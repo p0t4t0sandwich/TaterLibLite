@@ -4,7 +4,7 @@
  */
 package dev.neuralnexus.taterapi.mixin;
 
-import dev.neuralnexus.taterapi.Wrapped;
+import dev.neuralnexus.taterapi.adapter.Wrapped;
 import dev.neuralnexus.taterapi.event.Cancellable;
 
 /**
