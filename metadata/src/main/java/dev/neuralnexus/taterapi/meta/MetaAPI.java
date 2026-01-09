@@ -26,35 +26,8 @@ public interface MetaAPI {
     // ----------------------------- Platform -----------------------------
 
     /**
-     * Get the primary platform that the environment is running
-     *
-     * @return The platform
-     * @throws NoPrimaryPlatformException if the primary platform is not detected
-     */
-    @NonNull Platform primaryPlatform() throws NoPrimaryPlatformException;
-
-    /**
-     * Set the primary platform that the environment is running
-     *
-     * @param platform The platform
-     * @throws RedefinePrimaryPlatformException if the primary platform is already defined
-     */
-    @ApiStatus.Internal
-    void setPrimaryPlatform(@NonNull Platform platform) throws RedefinePrimaryPlatformException;
-
-    /**
-     * Check if a platform is the same as the one identified as the primary platform
-     *
-     * @param platform The platform to check
-     * @return True, if they match, false otherwise
-     * @throws NoPrimaryPlatformException if the primary platform is not detected
-     */
-    boolean isPrimaryPlatform(@NonNull Platform platform) throws NoPrimaryPlatformException;
-
-    /**
-     * Get the platform the environment is running, returns the primary platform, or the first
-     * platform in the list of detected platforms. Essentially a more lenient alternative to {@link
-     * MetaAPI#primaryPlatform()}
+     * Get the platform the environment is running, returns the primary platform, which is the first
+     * platform in the list of detected platforms.
      *
      * @return The platform
      * @throws NoPlatformException if there is no platform detected

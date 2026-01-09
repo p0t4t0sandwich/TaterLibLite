@@ -5,6 +5,9 @@
 package dev.neuralnexus.taterapi.meta;
 
 import dev.neuralnexus.taterapi.meta.impl.platform.PlatformImpl;
+import dev.neuralnexus.taterapi.meta.impl.platform.meta.FabricMeta;
+import dev.neuralnexus.taterapi.meta.impl.platform.meta.NeoForgeMeta;
+import dev.neuralnexus.taterapi.meta.impl.platform.meta.forge.ForgeData;
 import dev.neuralnexus.taterapi.meta.platform.Bukkit;
 import dev.neuralnexus.taterapi.meta.platform.BungeeCord;
 import dev.neuralnexus.taterapi.meta.platform.Fabric;
@@ -15,7 +18,9 @@ import dev.neuralnexus.taterapi.meta.platform.Sponge;
 import dev.neuralnexus.taterapi.meta.platform.Vanilla;
 import dev.neuralnexus.taterapi.meta.platform.Velocity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +29,7 @@ public final class Platforms
         implements Bukkit, BungeeCord, Fabric, Forge, Hybrid, Misc, Sponge, Vanilla, Velocity {
     public static final Platform UNKNOWN = new PlatformImpl("Unknown");
     private static final Set<Platform> platforms = new HashSet<>();
+    private static final Set<Platform> layered = new LinkedHashSet<>();
 
     /**
      * Returns all platforms that are available.
@@ -34,7 +40,10 @@ public final class Platforms
         if (platforms.isEmpty()) {
             detectPlatforms(true);
         }
-        return platforms;
+        if (layered.isEmpty()) {
+            layerPlatforms();
+        }
+        return layered;
     }
 
     /**
@@ -68,8 +77,6 @@ public final class Platforms
             platforms.addAll(List.of(MOHIST, FORGE));
         } else if (CATSERVER.detect(force)) {
             platforms.addAll(List.of(CATSERVER, FORGE));
-        } else if (MAGMA.detect(force)) {
-            platforms.addAll(List.of(MAGMA, FORGE));
         } else if (KETTING.detect(force)) {
             platforms.addAll(List.of(KETTING, FORGE));
         } else if (FORGE.detect(force)) {
@@ -127,6 +134,8 @@ public final class Platforms
         // Hybrid
         if (ARCLIGHT.detect(force)) {
             platforms.add(ARCLIGHT);
+        } else if (MAGMA.detect(force)) {
+            platforms.add(MAGMA);
         }
 
         // Sponge
@@ -142,6 +151,150 @@ public final class Platforms
         // Ignite
         if (IGNITE.detect(force)) {
             platforms.add(IGNITE);
+        }
+    }
+
+    /**
+     * Detects the primary platform based on the available platforms.
+     *
+     * @return The primary platform
+     */
+    private static dev.neuralnexus.taterapi.meta.enums.Platform detectPrimary() {
+        final dev.neuralnexus.taterapi.meta.enums.Platform primary;
+        if (platforms.contains(BUNGEECORD)) { // Check proxies
+            primary = dev.neuralnexus.taterapi.meta.enums.Platform.BUNGEECORD;
+        } else if (platforms.contains(VELOCITY)) {
+            primary = dev.neuralnexus.taterapi.meta.enums.Platform.VELOCITY;
+        } else if (platforms.contains(FORGE) && platforms.contains(FABRIC)) { // Check for Connector and Kilt
+            if (new FabricMeta().isModLoaded("kilt")) {
+                primary = dev.neuralnexus.taterapi.meta.enums.Platform.FABRIC;
+            } else if (ForgeData.create().isModLoaded("connector")) {
+                primary = dev.neuralnexus.taterapi.meta.enums.Platform.FORGE;
+            } else {
+                throw new IllegalArgumentException("Both Forge and Fabric platforms detected, but neither Connector nor Kilt found. Cannot determine primary platform.");
+            }
+        } else if (platforms.contains(NEOFORGE)
+                && platforms.contains(FABRIC)
+                && new NeoForgeMeta().isModLoaded("connector")) { // Check for Connector
+            primary = dev.neuralnexus.taterapi.meta.enums.Platform.NEOFORGE;
+        } else if (platforms.contains(FORGE)) {
+            primary = dev.neuralnexus.taterapi.meta.enums.Platform.FORGE;
+        } else if (platforms.contains(NEOFORGE)) {
+            primary = dev.neuralnexus.taterapi.meta.enums.Platform.NEOFORGE;
+        } else if (platforms.contains(FABRIC)) {
+            primary = dev.neuralnexus.taterapi.meta.enums.Platform.FABRIC;
+        } else if (platforms.contains(SPONGE)) {
+            primary = dev.neuralnexus.taterapi.meta.enums.Platform.SPONGE;
+        } else if (platforms.contains(PAPER)) {
+            primary = dev.neuralnexus.taterapi.meta.enums.Platform.PAPER;
+        } else if (platforms.contains(BUKKIT)) {
+            primary = dev.neuralnexus.taterapi.meta.enums.Platform.BUKKIT;
+        } else {
+            primary = dev.neuralnexus.taterapi.meta.enums.Platform.UNKNOWN;
+        }
+        return primary;
+    }
+
+    /**
+     * Layers the detected platforms based on their relationships
+     */
+    private static void layerPlatforms() {
+        layered.clear();
+
+        final dev.neuralnexus.taterapi.meta.enums.Platform primary = detectPrimary();
+        switch(primary) {
+            case FABRIC -> {
+                layered.add(FABRIC);
+                if (platforms.contains(SPONGE)) { // Loofah
+                    layered.add(SPONGE);
+                }
+                if (platforms.contains(FORGE)) { // Kilt
+                    layered.add(FORGE);
+                }
+                if (platforms.contains(PAPER)) { // Hybrid Paper
+                    layered.add(PAPER);
+                }
+                layered.add(VANILLA); // Vanilla
+                if (platforms.contains(BUKKIT)) { // Hybrid Bukkit
+                    layered.add(BUKKIT);
+                }
+                layered.addAll(platforms);
+            }
+            case FORGE -> {
+                layered.add(FORGE);
+                if (platforms.contains(SPONGE)) { // SpongeForge
+                    layered.add(SPONGE);
+                }
+                if (platforms.contains(FABRIC)) { // Connector
+                    layered.add(FABRIC);
+                }
+                if (platforms.contains(PAPER)) { // Hybrid Paper
+                    layered.add(PAPER);
+                }
+                layered.add(VANILLA); // Vanilla
+                if (platforms.contains(BUKKIT)) { // Hybrid Bukkit
+                    layered.add(BUKKIT);
+                }
+                layered.addAll(platforms);
+            }
+            case NEOFORGE -> {
+                layered.add(NEOFORGE);
+                if (platforms.contains(SPONGE)) { // SpongeNeo
+                    layered.add(SPONGE);
+                }
+                if (platforms.contains(FABRIC)) { // Connector
+                    layered.add(FABRIC);
+                }
+                if (platforms.contains(PAPER)) { // Hybrid Paper
+                    layered.add(PAPER);
+                }
+                layered.add(VANILLA); // Vanilla
+                if (platforms.contains(BUKKIT)) { // Hybrid Bukkit
+                    layered.add(BUKKIT);
+                }
+                layered.addAll(platforms);
+            }
+            case SPONGE -> {
+                layered.add(SPONGE);
+                if (platforms.contains(PAPER)) { // Sponge on Paper
+                    layered.add(PAPER);
+                }
+                layered.add(VANILLA); // Vanilla
+                if (platforms.contains(PAPER)) { // Soak Paper
+                    layered.add(PAPER);
+                }
+                if (platforms.contains(BUKKIT)) { // Soak Bukkit
+                    layered.add(BUKKIT);
+                }
+                layered.addAll(platforms);
+            }
+            case PAPER -> {
+                layered.add(primary.ref());
+                if (platforms.contains(IGNITE)) { // Ignite
+                    layered.add(IGNITE);
+                }
+                layered.add(VANILLA); // Vanilla
+                if (platforms.contains(BUKKIT)) { // Bukkit
+                    layered.add(BUKKIT);
+                }
+                layered.addAll(platforms);
+            }
+            case BUKKIT -> {
+                layered.add(primary.ref());
+                if (platforms.contains(IGNITE)) { // Ignite
+                    layered.add(IGNITE);
+                }
+                layered.add(VANILLA); // Vanilla
+                layered.addAll(platforms);
+            }
+            case BUNGEECORD, VELOCITY -> { // Proxies
+                layered.add(primary.ref());
+                if (platforms.contains(IGNITE)) { // Ignite
+                    layered.add(IGNITE);
+                }
+                layered.addAll(platforms);
+            }
+            default -> layered.addAll(platforms); // Fallback
         }
     }
 }

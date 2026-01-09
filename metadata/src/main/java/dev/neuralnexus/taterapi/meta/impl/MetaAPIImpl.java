@@ -151,39 +151,9 @@ public final class MetaAPIImpl implements MetaAPI {
 
     // ----------------------------- Platform -----------------------------
 
-    private Platform primaryPlatform;
-
-    @Override
-    public @NonNull Platform primaryPlatform() throws NoPrimaryPlatformException {
-        if (this.primaryPlatform == null) {
-            throw new NoPrimaryPlatformException();
-        }
-        return this.primaryPlatform;
-    }
-
-    @Override
-    public void setPrimaryPlatform(@NonNull Platform platform)
-            throws RedefinePrimaryPlatformException, NullPointerException {
-        Objects.requireNonNull(platform, "Platform cannot be null");
-        if (this.primaryPlatform != null && !this.primaryPlatform.equals(platform)) {
-            throw new RedefinePrimaryPlatformException();
-        }
-        this.primaryPlatform = platform;
-    }
-
-    @Override
-    public boolean isPrimaryPlatform(@NonNull Platform platform)
-            throws NoPrimaryPlatformException, NullPointerException {
-        Objects.requireNonNull(platform, "Platform cannot be null");
-        return this.primaryPlatform() == platform;
-    }
-
     @Override
     public @NonNull Platform platform() throws NoPlatformException {
-        if (this.primaryPlatform == null) {
-            return Platforms.get().stream().findFirst().orElseThrow(NoPlatformException::new);
-        }
-        return this.primaryPlatform;
+        return Platforms.get().stream().findFirst().orElseThrow(NoPlatformException::new);
     }
 
     @Override
