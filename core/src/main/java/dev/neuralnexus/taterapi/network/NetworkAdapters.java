@@ -4,8 +4,8 @@
  */
 package dev.neuralnexus.taterapi.network;
 
-import dev.neuralnexus.taterapi.adapter.AdapterCodec;
-import dev.neuralnexus.taterapi.adapter.AdapterRegistry;
+import dev.neuralnexus.taterapi.registries.AdapterRegistry;
+import dev.neuralnexus.taterapi.serialization.codecs.ReversibleCodec;
 
 import org.jspecify.annotations.NonNull;
 
@@ -16,7 +16,7 @@ public final class NetworkAdapters {
         return REGISTRY;
     }
 
-    public static void register(final @NonNull AdapterCodec<?, ?>... codecs) {
+    public static void register(final @NonNull ReversibleCodec<?, ?>... codecs) {
         REGISTRY.register(codecs);
     }
 }

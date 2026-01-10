@@ -9,11 +9,11 @@ import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readVarInt;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeNullable;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeVarInt;
 
-import dev.neuralnexus.taterapi.adapter.AdapterCodec;
 import dev.neuralnexus.taterapi.network.NetworkAdapters;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.Packet;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
+import dev.neuralnexus.taterapi.serialization.codecs.ReversibleCodec;
 
 import io.netty.buffer.ByteBuf;
 
@@ -27,7 +27,7 @@ public record ServerboundCustomQueryAnswerPacket(
             Packet.codec(
                     ServerboundCustomQueryAnswerPacket::write,
                     ServerboundCustomQueryAnswerPacket::new);
-    public static final AdapterCodec<?, ServerboundCustomQueryAnswerPacket> ADAPTER_CODEC =
+    public static final ReversibleCodec<?, ServerboundCustomQueryAnswerPacket> ADAPTER_CODEC =
             NetworkAdapters.registry().getTo(ServerboundCustomQueryAnswerPacket.class).orElse(null);
 
     public ServerboundCustomQueryAnswerPacket(final int transactionId) {
@@ -48,10 +48,14 @@ public record ServerboundCustomQueryAnswerPacket(
     }
 
     public static <T> @NonNull ServerboundCustomQueryAnswerPacket fromMC(final @NonNull T obj) {
-        return ((AdapterCodec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC).from(obj);
+        return ((ReversibleCodec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC)
+                .encode(obj)
+                .unwrap();
     }
 
     public <T> @NonNull T toMC() {
-        return ((AdapterCodec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC).to(this);
+        return ((ReversibleCodec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC)
+                .decode(this)
+                .unwrap();
     }
 }

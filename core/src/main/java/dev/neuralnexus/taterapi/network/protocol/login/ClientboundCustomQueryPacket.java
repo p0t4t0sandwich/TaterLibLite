@@ -7,11 +7,11 @@ package dev.neuralnexus.taterapi.network.protocol.login;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readVarInt;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeVarInt;
 
-import dev.neuralnexus.taterapi.adapter.AdapterCodec;
 import dev.neuralnexus.taterapi.network.NetworkAdapters;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.Packet;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
+import dev.neuralnexus.taterapi.serialization.codecs.ReversibleCodec;
 
 import io.netty.buffer.ByteBuf;
 
@@ -23,7 +23,7 @@ public record ClientboundCustomQueryPacket(int transactionId, @NonNull CustomQue
     public static final StreamCodec<ByteBuf, ClientboundCustomQueryPacket> STREAM_CODEC =
             Packet.codec(ClientboundCustomQueryPacket::write, ClientboundCustomQueryPacket::new);
 
-    public static final AdapterCodec<?, ClientboundCustomQueryPacket> ADAPTER_CODEC =
+    public static final ReversibleCodec<?, ClientboundCustomQueryPacket> ADAPTER_CODEC =
             NetworkAdapters.registry().getTo(ClientboundCustomQueryPacket.class).orElse(null);
 
     private ClientboundCustomQueryPacket(final @NonNull ByteBuf buf) {
@@ -36,10 +36,14 @@ public record ClientboundCustomQueryPacket(int transactionId, @NonNull CustomQue
     }
 
     public static <T> @NonNull ClientboundCustomQueryPacket fromMC(final @NonNull T obj) {
-        return ((AdapterCodec<T, ClientboundCustomQueryPacket>) ADAPTER_CODEC).from(obj);
+        return ((ReversibleCodec<T, ClientboundCustomQueryPacket>) ADAPTER_CODEC)
+                .encode(obj)
+                .unwrap();
     }
 
     public <T> @NonNull T toMC() {
-        return ((AdapterCodec<T, ClientboundCustomQueryPacket>) ADAPTER_CODEC).to(this);
+        return ((ReversibleCodec<T, ClientboundCustomQueryPacket>) ADAPTER_CODEC)
+                .decode(this)
+                .unwrap();
     }
 }
