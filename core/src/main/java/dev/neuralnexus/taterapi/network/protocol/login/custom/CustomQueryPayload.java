@@ -19,32 +19,7 @@ import org.jspecify.annotations.NonNull;
 
 public interface CustomQueryPayload {
     StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryPayload> DEFAULT_CODEC =
-            CustomQueryPayload.codec(
-                    (final String identifier) ->
-                            new StreamCodec<>() {
-                                @Override
-                                public CustomQueryPayload decode(final @NonNull ByteBuf buffer) {
-                                    final ByteBuf data = readPayload(buffer);
-                                    return new CustomQueryPayload() {
-                                        @Override
-                                        public @NonNull String id() {
-                                            return identifier;
-                                        }
-
-                                        @Override
-                                        public @NonNull ByteBuf data() {
-                                            return data;
-                                        }
-                                    };
-                                }
-
-                                @Override
-                                public void encode(
-                                        final @NonNull ByteBuf buffer,
-                                        final @NonNull CustomQueryPayload value) {
-                                    buffer.writeBytes(value.data().slice());
-                                }
-                            });
+            CustomQueryPayload.codec(CustomQueryPayload::codec);
 
     @NonNull String id();
 
@@ -55,6 +30,33 @@ public interface CustomQueryPayload {
                     final @NonNull StreamMemberEncoder<B, T> encoder,
                     final @NonNull StreamDecoder<B, T> decoder) {
         return StreamCodec.ofMember(encoder, decoder);
+    }
+
+    static <B extends ByteBuf> StreamCodec<B, CustomQueryPayload> codec(
+            final @NonNull String identifier) {
+        return new StreamCodec<>() {
+            @Override
+            public CustomQueryPayload decode(final @NonNull B buffer) {
+                final ByteBuf data = readPayload(buffer);
+                return new CustomQueryPayload() {
+                    @Override
+                    public @NonNull String id() {
+                        return identifier;
+                    }
+
+                    @Override
+                    public @NonNull ByteBuf data() {
+                        return data;
+                    }
+                };
+            }
+
+            @Override
+            public void encode(
+                    final @NonNull ByteBuf buffer, final @NonNull CustomQueryPayload value) {
+                buffer.writeBytes(value.data().slice());
+            }
+        };
     }
 
     static <B extends ByteBuf> StreamCodec<B, CustomQueryPayload> codec(
@@ -76,19 +78,21 @@ public interface CustomQueryPayload {
                 codec.encode(buffer, (T) payload);
             }
 
-            public void encode(@NonNull B buffer, @NonNull CustomQueryPayload payload) {
+            public void encode(final @NonNull B buffer, final @NonNull CustomQueryPayload payload) {
                 this.writeCap(buffer, payload.id(), payload);
             }
 
-            public CustomQueryPayload decode(@NonNull B buffer) {
+            public CustomQueryPayload decode(final @NonNull B buffer) {
                 final String id = readResourceLocation(buffer);
                 return this.findCodec(id).decode(buffer);
             }
         };
     }
 
+    @SuppressWarnings("unused")
     @FunctionalInterface
     interface FallbackProvider<B extends ByteBuf> {
-        StreamCodec<? super ByteBuf, ? extends CustomQueryPayload> create(final String identifier);
+        StreamCodec<? super ByteBuf, ? extends CustomQueryPayload> create(
+                final @NonNull String identifier);
     }
 }
