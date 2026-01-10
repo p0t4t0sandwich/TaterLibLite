@@ -26,7 +26,7 @@ public record ServerboundCustomQueryAnswerPacket(
     public static final StreamCodec<ByteBuf, ServerboundCustomQueryAnswerPacket> STREAM_CODEC =
             Packet.codec(
                     ServerboundCustomQueryAnswerPacket::write,
-                    ServerboundCustomQueryAnswerPacket::new);
+                    ServerboundCustomQueryAnswerPacket::read);
     public static final ReversibleCodec<?, ServerboundCustomQueryAnswerPacket> ADAPTER_CODEC =
             NetworkAdapters.registry().getTo(ServerboundCustomQueryAnswerPacket.class).orElse(null);
 
@@ -34,17 +34,16 @@ public record ServerboundCustomQueryAnswerPacket(
         this(transactionId, null);
     }
 
-    private ServerboundCustomQueryAnswerPacket(final @NonNull ByteBuf buf) {
-        this(readVarInt(buf), readNullable(buf, CustomQueryAnswerPayload.DEFAULT_CODEC));
+    private static ServerboundCustomQueryAnswerPacket read(final @NonNull ByteBuf buf) {
+        final int transactionId = readVarInt(buf);
+        final CustomQueryAnswerPayload payload =
+                readNullable(buf, CustomQueryAnswerPayload.codec(transactionId));
+        return new ServerboundCustomQueryAnswerPacket(transactionId, payload);
     }
 
-    @SuppressWarnings("DataFlowIssue")
     private void write(final @NonNull ByteBuf buf) {
         writeVarInt(buf, this.transactionId);
-        writeNullable(
-                buf,
-                this.payload,
-                ((StreamCodec<ByteBuf, CustomQueryAnswerPayload>) this.payload.codec()));
+        writeNullable(buf, this.payload, CustomQueryAnswerPayload.codec(this.transactionId));
     }
 
     public static <T> @NonNull ServerboundCustomQueryAnswerPacket fromMC(final @NonNull T obj) {

@@ -4,6 +4,7 @@
  */
 package dev.neuralnexus.taterapi.network.protocol.login.custom;
 
+import dev.neuralnexus.taterapi.network.NetworkRegistry;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.codec.StreamDecoder;
 import dev.neuralnexus.taterapi.network.codec.StreamMemberEncoder;
@@ -13,25 +14,22 @@ import io.netty.buffer.ByteBuf;
 import org.jspecify.annotations.NonNull;
 
 public interface CustomQueryAnswerPayload {
-    StreamCodec<@NonNull ByteBuf, ? extends @NonNull CustomQueryAnswerPayload> DEFAULT_CODEC =
-            CustomQueryAnswerPayloadImpl.STREAM_CODEC;
+    StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryAnswerPayload> DEFAULT_CODEC =
+            CustomQueryAnswerPayload.codec(
+                    (value, buffer) -> buffer.writeBytes(value.data().slice()),
+                    buffer -> buffer::slice);
 
     @NonNull ByteBuf data();
-
-    default @NonNull StreamCodec<@NonNull ByteBuf, ? extends @NonNull CustomQueryAnswerPayload>
-            codec() {
-        return DEFAULT_CODEC;
-    }
-
-    default <T extends @NonNull CustomQueryAnswerPayload> T as(
-            final @NonNull StreamDecoder<@NonNull ByteBuf, T> codec) {
-        return codec.decode(this.data());
-    }
 
     static <B extends @NonNull ByteBuf, T extends @NonNull CustomQueryAnswerPayload>
             StreamCodec<B, T> codec(
                     final @NonNull StreamMemberEncoder<B, T> encoder,
                     final @NonNull StreamDecoder<B, T> decoder) {
         return StreamCodec.ofMember(encoder, decoder);
+    }
+
+    static <B extends ByteBuf> StreamCodec<? super B, ? extends CustomQueryAnswerPayload> codec(
+            final int transactionId) {
+        return NetworkRegistry.getQueryAnswerPayloadCodec(transactionId).orElse(DEFAULT_CODEC);
     }
 }

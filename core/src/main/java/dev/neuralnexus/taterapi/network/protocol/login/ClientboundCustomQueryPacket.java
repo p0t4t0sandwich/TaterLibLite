@@ -21,18 +21,20 @@ import org.jspecify.annotations.NonNull;
 public record ClientboundCustomQueryPacket(int transactionId, @NonNull CustomQueryPayload payload)
         implements Packet {
     public static final StreamCodec<ByteBuf, ClientboundCustomQueryPacket> STREAM_CODEC =
-            Packet.codec(ClientboundCustomQueryPacket::write, ClientboundCustomQueryPacket::new);
+            Packet.codec(ClientboundCustomQueryPacket::write, ClientboundCustomQueryPacket::read);
 
     public static final ReversibleCodec<?, ClientboundCustomQueryPacket> ADAPTER_CODEC =
             NetworkAdapters.registry().getTo(ClientboundCustomQueryPacket.class).orElse(null);
 
-    private ClientboundCustomQueryPacket(final @NonNull ByteBuf buf) {
-        this(readVarInt(buf), CustomQueryPayload.DEFAULT_CODEC.decode(buf));
+    private static @NonNull ClientboundCustomQueryPacket read(final @NonNull ByteBuf buf) {
+        final int transactionId = readVarInt(buf);
+        final CustomQueryPayload payload = CustomQueryPayload.DEFAULT_CODEC.decode(buf);
+        return new ClientboundCustomQueryPacket(transactionId, payload);
     }
 
     private void write(final @NonNull ByteBuf buf) {
         writeVarInt(buf, this.transactionId);
-        ((StreamCodec<ByteBuf, CustomQueryPayload>) this.payload.codec()).encode(buf, this.payload);
+        CustomQueryPayload.DEFAULT_CODEC.encode(buf, this.payload);
     }
 
     public static <T> @NonNull ClientboundCustomQueryPacket fromMC(final @NonNull T obj) {
