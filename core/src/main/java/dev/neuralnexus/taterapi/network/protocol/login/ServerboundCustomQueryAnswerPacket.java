@@ -9,49 +9,50 @@ import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readVarInt;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeNullable;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeVarInt;
 
-import dev.neuralnexus.taterapi.adapter.AdapterCodec;
-import dev.neuralnexus.taterapi.network.NetworkAdapters;
+import dev.neuralnexus.taterapi.network.NetworkRegistry;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.Packet;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
+import dev.neuralnexus.taterapi.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-@SuppressWarnings("unchecked")
 public record ServerboundCustomQueryAnswerPacket(
         int transactionId, @Nullable CustomQueryAnswerPayload payload) implements Packet {
     public static final StreamCodec<ByteBuf, ServerboundCustomQueryAnswerPacket> STREAM_CODEC =
             Packet.codec(
                     ServerboundCustomQueryAnswerPacket::write,
-                    ServerboundCustomQueryAnswerPacket::new);
-    public static final AdapterCodec<?, ServerboundCustomQueryAnswerPacket> ADAPTER_CODEC =
-            NetworkAdapters.registry().getTo(ServerboundCustomQueryAnswerPacket.class).orElse(null);
+                    ServerboundCustomQueryAnswerPacket::read);
+
+    public static final Codec<?, ServerboundCustomQueryAnswerPacket> ADAPTER_CODEC =
+            NetworkRegistry.adapters().getTo(ServerboundCustomQueryAnswerPacket.class).orElse(null);
 
     public ServerboundCustomQueryAnswerPacket(final int transactionId) {
         this(transactionId, null);
     }
 
-    private ServerboundCustomQueryAnswerPacket(final @NonNull ByteBuf buf) {
-        this(readVarInt(buf), readNullable(buf, CustomQueryAnswerPayload.DEFAULT_CODEC));
+    private static ServerboundCustomQueryAnswerPacket read(final @NonNull ByteBuf buf) {
+        final int transactionId = readVarInt(buf);
+        final CustomQueryAnswerPayload payload =
+                readNullable(buf, CustomQueryAnswerPayload.codec(transactionId));
+        return new ServerboundCustomQueryAnswerPacket(transactionId, payload);
     }
 
-    @SuppressWarnings("DataFlowIssue")
     private void write(final @NonNull ByteBuf buf) {
         writeVarInt(buf, this.transactionId);
-        writeNullable(
-                buf,
-                this.payload,
-                ((StreamCodec<ByteBuf, CustomQueryAnswerPayload>) this.payload.codec()));
+        writeNullable(buf, this.payload, CustomQueryAnswerPayload.codec(this.transactionId));
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> @NonNull ServerboundCustomQueryAnswerPacket fromMC(final @NonNull T obj) {
-        return ((AdapterCodec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC).from(obj);
+        return ((Codec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC).encode(obj).unwrap();
     }
 
+    @SuppressWarnings("unchecked")
     public <T> @NonNull T toMC() {
-        return ((AdapterCodec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC).to(this);
+        return ((Codec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC).decode(this).unwrap();
     }
 }

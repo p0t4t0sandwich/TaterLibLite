@@ -4,7 +4,7 @@
  */
 package dev.neuralnexus.taterapi.meta;
 
-import dev.neuralnexus.taterapi.adapter.Wrapped;
+import dev.neuralnexus.taterapi.Wrapped;
 import dev.neuralnexus.taterapi.meta.version.VersionComparable;
 
 public interface ModContainer<T> extends VersionComparable<ModContainer<T>>, Wrapped<T> {

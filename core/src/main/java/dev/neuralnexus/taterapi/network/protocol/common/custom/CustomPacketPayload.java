@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Dylan Sperrer - dylan@neuralnexus.dev
  * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
  */
-package dev.neuralnexus.taterapi.network.protocol.login.custom;
+package dev.neuralnexus.taterapi.network.protocol.common.custom;
 
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readPayload;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readResourceLocation;
@@ -17,28 +17,28 @@ import io.netty.buffer.ByteBuf;
 
 import org.jspecify.annotations.NonNull;
 
-public interface CustomQueryPayload {
-    StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryPayload> DEFAULT_CODEC =
-            CustomQueryPayload.codec(CustomQueryPayload::codec);
+public interface CustomPacketPayload {
+    StreamCodec<@NonNull ByteBuf, @NonNull CustomPacketPayload> DEFAULT_CODEC =
+            CustomPacketPayload.codec(CustomPacketPayload::codec);
 
     @NonNull String id();
 
     @NonNull ByteBuf data();
 
-    static <B extends @NonNull ByteBuf, T extends @NonNull CustomQueryPayload>
+    static <B extends @NonNull ByteBuf, T extends @NonNull CustomPacketPayload>
             StreamCodec<B, T> codec(
                     final @NonNull StreamMemberEncoder<B, T> encoder,
                     final @NonNull StreamDecoder<B, T> decoder) {
         return StreamCodec.ofMember(encoder, decoder);
     }
 
-    static <B extends ByteBuf> StreamCodec<B, CustomQueryPayload> codec(
+    static <B extends ByteBuf> StreamCodec<B, CustomPacketPayload> codec(
             final @NonNull String identifier) {
         return new StreamCodec<>() {
             @Override
-            public CustomQueryPayload decode(final @NonNull B buffer) {
+            public CustomPacketPayload decode(final @NonNull B buffer) {
                 final ByteBuf data = readPayload(buffer);
-                return new CustomQueryPayload() {
+                return new CustomPacketPayload() {
                     @Override
                     public @NonNull String id() {
                         return identifier;
@@ -53,36 +53,37 @@ public interface CustomQueryPayload {
 
             @Override
             public void encode(
-                    final @NonNull ByteBuf buffer, final @NonNull CustomQueryPayload value) {
+                    final @NonNull ByteBuf buffer, final @NonNull CustomPacketPayload value) {
                 buffer.writeBytes(value.data().slice());
             }
         };
     }
 
-    static <B extends ByteBuf> StreamCodec<B, CustomQueryPayload> codec(
-            final CustomQueryPayload.FallbackProvider<B> fallbackprovider) {
+    static <B extends ByteBuf> StreamCodec<B, CustomPacketPayload> codec(
+            final CustomPacketPayload.FallbackProvider<B> fallbackprovider) {
         return new StreamCodec<>() {
-            private StreamCodec<? super B, ? extends CustomQueryPayload> findCodec(
+            private StreamCodec<? super B, ? extends CustomPacketPayload> findCodec(
                     final @NonNull String identifier) {
-                return NetworkRegistry.getQueryPayloadCodec(identifier)
+                return NetworkRegistry.getCustomPayloadCodec(identifier)
                         .orElse(fallbackprovider.create(identifier));
             }
 
             @SuppressWarnings("unchecked")
-            private <T extends CustomQueryPayload> void writeCap(
+            private <T extends CustomPacketPayload> void writeCap(
                     final @NonNull B buffer,
                     final @NonNull String id,
-                    final @NonNull CustomQueryPayload payload) {
+                    final @NonNull CustomPacketPayload payload) {
                 writeResourceLocation(buffer, id);
                 final StreamCodec<B, T> codec = (StreamCodec<B, T>) this.findCodec(id);
                 codec.encode(buffer, (T) payload);
             }
 
-            public void encode(final @NonNull B buffer, final @NonNull CustomQueryPayload payload) {
+            public void encode(
+                    final @NonNull B buffer, final @NonNull CustomPacketPayload payload) {
                 this.writeCap(buffer, payload.id(), payload);
             }
 
-            public CustomQueryPayload decode(final @NonNull B buffer) {
+            public CustomPacketPayload decode(final @NonNull B buffer) {
                 final String id = readResourceLocation(buffer);
                 return this.findCodec(id).decode(buffer);
             }
@@ -92,7 +93,7 @@ public interface CustomQueryPayload {
     @SuppressWarnings("unused")
     @FunctionalInterface
     interface FallbackProvider<B extends ByteBuf> {
-        StreamCodec<? super ByteBuf, ? extends CustomQueryPayload> create(
+        StreamCodec<? super ByteBuf, ? extends CustomPacketPayload> create(
                 final @NonNull String identifier);
     }
 }
