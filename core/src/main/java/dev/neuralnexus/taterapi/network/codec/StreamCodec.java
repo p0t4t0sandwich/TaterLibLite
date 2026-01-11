@@ -6,6 +6,8 @@ package dev.neuralnexus.taterapi.network.codec;
 
 import org.jspecify.annotations.NonNull;
 
+import java.util.function.Function;
+
 public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B, V> {
     static <B, V> StreamCodec<B, V> of(StreamEncoder<B, V> encoder, StreamDecoder<B, V> decoder) {
         return new StreamCodec<>() {
@@ -32,6 +34,22 @@ public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B,
             @Override
             public void encode(final @NonNull B buffer, final @NonNull V value) {
                 encoder.encode(value, buffer);
+            }
+        };
+    }
+
+    default <O> StreamCodec<B, O> map(
+            final Function<? super V, ? extends O> mapDecode,
+            final Function<? super O, ? extends V> mapEncode) {
+        return new StreamCodec<>() {
+            @Override
+            public O decode(@NonNull B buffer) {
+                return mapDecode.apply(StreamCodec.this.decode(buffer));
+            }
+
+            @Override
+            public void encode(@NonNull B buffer, @NonNull O value) {
+                StreamCodec.this.encode(buffer, mapEncode.apply(value));
             }
         };
     }
