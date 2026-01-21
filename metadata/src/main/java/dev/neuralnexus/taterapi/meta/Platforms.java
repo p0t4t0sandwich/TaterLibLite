@@ -168,7 +168,7 @@ public final class Platforms
                 && platforms.contains(FABRIC)) { // Check for Connector and Kilt
             if (new FabricMeta().isModLoaded("kilt")) {
                 primary = dev.neuralnexus.taterapi.meta.enums.Platform.FABRIC;
-            } else if (ForgeData.create().isModLoaded("connector")) {
+            } else if (ForgeData.create().isModLoaded("connector", "connectormod")) {
                 primary = dev.neuralnexus.taterapi.meta.enums.Platform.FORGE;
             } else {
                 throw new IllegalArgumentException(
