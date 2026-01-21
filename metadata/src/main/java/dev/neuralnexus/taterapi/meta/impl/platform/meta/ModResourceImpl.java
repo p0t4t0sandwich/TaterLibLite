@@ -61,6 +61,9 @@ public class ModResourceImpl implements ModResource {
         } catch (ProviderNotFoundException e) {
             this.logger.error("No provider found for URI: " + uri, e);
             throw e;
+        } catch (Exception e) {
+            this.logger.error("Failed to create FileSystem for URI: " + uri, e);
+            throw e;
         }
 
         this.refCount = 1;
