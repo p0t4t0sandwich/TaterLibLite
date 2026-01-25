@@ -14,10 +14,12 @@ import org.jspecify.annotations.NonNull;
 
 public final class PaperMCVProvider implements MinecraftVersion.Provider {
     @Override
+    public boolean shouldProvide() {
+        return checkForMethod("org.bukkit.Bukkit", "getMinecraftVersion");
+    }
+
+    @Override
     public @NonNull MinecraftVersion get() {
-        if (checkForMethod("org.bukkit.Bukkit", "getMinecraftVersion")) {
-            return MinecraftVersion.of(Bukkit.getMinecraftVersion());
-        }
-        return MinecraftVersions.UNKNOWN;
+        return MinecraftVersion.of(Bukkit.getMinecraftVersion());
     }
 }
