@@ -14,4 +14,9 @@ public interface Fabric {
     // Fabric+Bukkit Hybrids
     Platform CARDBOARD = new PlatformImpl("Cardboard", "org.cardboardpowered.CardboardConfig");
     Platform BANNER = new PlatformImpl("Banner", "com.mohistmc.banner.BannerMCStart");
+    Platform TAIYITIST =
+            new PlatformImpl(
+                    "Taiyitist",
+                    "com.taiyitistmc.TaiyitistMain",
+                    "org.teneted.taiyitist.TaiyitistMain");
 }

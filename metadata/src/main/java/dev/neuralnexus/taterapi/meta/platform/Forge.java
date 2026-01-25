@@ -39,4 +39,5 @@ public interface Forge {
 
     // Forge+NeoForge Hybrids
     Platform YOUER = new PlatformImpl("Youer", "com.mohistmc.launcher.youer.Main");
+    Platform NEOTENET = new PlatformImpl("NeoTenet", "org.teneted.neotenet.NeoTenet");
 }

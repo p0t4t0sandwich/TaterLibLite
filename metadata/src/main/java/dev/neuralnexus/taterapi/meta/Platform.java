@@ -73,7 +73,9 @@ public interface Platform {
     }
 
     default boolean isFabricHybrid() {
-        return this.equals(Platforms.CARDBOARD) || this.equals(Platforms.BANNER);
+        return this.equals(Platforms.CARDBOARD)
+                || this.equals(Platforms.BANNER)
+                || this.equals(Platforms.TAIYITIST);
     }
 
     default boolean isForge() {

@@ -85,6 +85,8 @@ public final class Platforms
         // NeoForge
         if (YOUER.detect(force)) {
             platforms.addAll(List.of(YOUER, NEOFORGE));
+        } else if (NEOTENET.detect(force)) {
+            platforms.addAll(List.of(NEOTENET, NEOFORGE));
         } else if (NEOFORGE.detect(force)) {
             platforms.add(NEOFORGE);
         }
@@ -97,6 +99,8 @@ public final class Platforms
             platforms.addAll(List.of(CARDBOARD, FABRIC));
         } else if (BANNER.detect(force)) {
             platforms.addAll(List.of(BANNER, FABRIC));
+        } else if (TAIYITIST.detect(force)) {
+            platforms.addAll(List.of(TAIYITIST, FABRIC));
         } else if (FABRIC.detect(force)) {
             platforms.add(FABRIC);
         }

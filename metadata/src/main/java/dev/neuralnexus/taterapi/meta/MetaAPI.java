@@ -349,13 +349,15 @@ public interface MetaAPI {
     }
 
     /**
-     * Check if the platform is Forge based
+     * Check if the platform is a Fabric hybrid
      *
      * @param platform The platform
-     * @return True if the platform is Forge based, false otherwise
+     * @return True if the platform is a Fabric hybrid, false otherwise
      */
     static boolean isFabricHybrid(Platform platform) {
-        return platform == Platforms.CARDBOARD || platform == Platforms.BANNER;
+        return platform == Platforms.CARDBOARD
+                || platform == Platforms.BANNER
+                || platform == Platforms.TAIYITIST;
     }
 
     /**
@@ -404,7 +406,7 @@ public interface MetaAPI {
      * @return True if the platform is NeoForge based, false otherwise
      */
     static boolean isNeoForgeHybrid(Platform platform) {
-        return platform == Platforms.YOUER;
+        return platform == Platforms.YOUER || platform == Platforms.NEOTENET;
     }
 
     /**

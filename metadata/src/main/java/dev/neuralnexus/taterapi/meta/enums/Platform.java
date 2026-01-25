@@ -27,6 +27,7 @@ public enum Platform {
     QUILT(Platforms.QUILT),
     CARDBOARD(Platforms.CARDBOARD),
     BANNER(Platforms.BANNER),
+    TAIYITIST(Platforms.TAIYITIST),
 
     FORGE(Platforms.FORGE),
     GOLDENFORGE(Platforms.GOLDENFORGE),
@@ -42,6 +43,7 @@ public enum Platform {
     KETTING(Platforms.KETTING),
 
     YOUER(Platforms.YOUER),
+    NEOTENET(Platforms.NEOTENET),
 
     ARCLIGHT(Platforms.ARCLIGHT),
 
