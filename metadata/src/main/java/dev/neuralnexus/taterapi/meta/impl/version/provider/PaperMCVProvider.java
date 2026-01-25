@@ -7,7 +7,6 @@ package dev.neuralnexus.taterapi.meta.impl.version.provider;
 import static dev.neuralnexus.taterapi.util.ReflectionUtil.checkForMethod;
 
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import org.bukkit.Bukkit;
 import org.jspecify.annotations.NonNull;
