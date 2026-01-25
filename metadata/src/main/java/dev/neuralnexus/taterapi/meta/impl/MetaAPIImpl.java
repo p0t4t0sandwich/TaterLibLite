@@ -34,7 +34,6 @@ import dev.neuralnexus.taterapi.meta.impl.version.provider.NeoForgeMCVProvider;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.PaperMCVProvider;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.SpongeLegacyMCVProvider;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.SpongeModernMCVProvider;
-import dev.neuralnexus.taterapi.meta.impl.version.provider.VanillaMCVProvider;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.VelocityMCVProvider;
 import dev.neuralnexus.taterapi.reflecto.MappingEntry;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
@@ -46,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /** Class implementing the metadata cache and other useful shortcuts. */
 public final class MetaAPIImpl implements MetaAPI {
@@ -432,7 +432,14 @@ public final class MetaAPIImpl implements MetaAPI {
      * @return The Platform's metadata
      */
     public static List<Platform.Meta> lookupAll() {
-        return Platforms.get().stream()
+        Set<Platform> platforms = Platforms.get();
+
+        // TODO: Implement lifecycle hook for Arclight late-Bukkit registration
+        if (platforms.contains(Platforms.ARCLIGHT)) {
+            platforms.remove(Platforms.BUKKIT);
+            platforms.remove(Platforms.PAPER);
+        }
+        return platforms.stream()
                 .map(MetaAPIImpl::lookup)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -451,13 +458,16 @@ public final class MetaAPIImpl implements MetaAPI {
             return Collections.singleton(new FabricMCVProvider());
         } else if (platform == Platforms.SPONGE) {
             return List.of(new SpongeLegacyMCVProvider(), new SpongeModernMCVProvider());
-        } else if (MetaAPI.isBukkitBased(platform)) {
+        } else if (MetaAPI.isBukkitBased(platform) && !platform.equals(Platforms.ARCLIGHT)) {
+            // TODO: Implement lifecycle hook for Arclight late-Bukkit registration
             return Collections.singleton(new PaperMCVProvider());
         } else if (MetaAPI.isBungeeCordBased(platform)) {
             return Collections.singleton(new BungeeCordMCVProvider());
         } else if (platform == Platforms.VELOCITY) {
             return Collections.singleton(new VelocityMCVProvider());
         }
-        return Collections.singleton(new VanillaMCVProvider());
+        // TODO: Implement lifecycle hook to add providers later
+        // Collections.singleton(new VanillaMCVProvider());
+        return Collections.emptySet();
     }
 }
