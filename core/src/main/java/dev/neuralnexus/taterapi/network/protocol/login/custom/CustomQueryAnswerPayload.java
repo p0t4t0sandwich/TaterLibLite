@@ -4,6 +4,8 @@
  */
 package dev.neuralnexus.taterapi.network.protocol.login.custom;
 
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readPayload;
+
 import dev.neuralnexus.taterapi.network.NetworkRegistry;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.codec.StreamDecoder;
@@ -16,8 +18,12 @@ import org.jspecify.annotations.NonNull;
 public interface CustomQueryAnswerPayload {
     StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryAnswerPayload> DEFAULT_CODEC =
             CustomQueryAnswerPayload.codec(
-                    (value, buffer) -> buffer.writeBytes(value.data().slice()),
-                    buffer -> buffer::slice);
+                    (value, buf) -> buf.writeBytes(readPayload(value.data())),
+                    // TODO: Discover why simplifying this further causes deserialization issues
+                    buffer -> {
+                        final ByteBuf data = readPayload(buffer);
+                        return () -> data;
+                    });
 
     @NonNull ByteBuf data();
 
