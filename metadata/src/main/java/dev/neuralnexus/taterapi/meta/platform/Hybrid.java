@@ -12,5 +12,8 @@ public interface Hybrid {
             new PlatformImpl(
                     "Arclight",
                     "io.izzel.arclight.api.Arclight",
-                    "io.izzel.arclight.common.ArclightMain");
+                    "io.izzel.arclight.common.ArclightMain",
+                    "io.izzel.arclight.forge.ArclightMod",
+                    "io.izzel.arclight.neoforge.ArclightMod",
+                    "io.izzel.arclight.fabric.ArclightModEntrypoint");
 }
