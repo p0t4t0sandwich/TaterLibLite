@@ -10,13 +10,4 @@ import dev.neuralnexus.taterapi.meta.impl.platform.PlatformImpl;
 public interface Fabric {
     Platform FABRIC = new PlatformImpl("Fabric", "net.fabricmc.loader.api.FabricLoader");
     Platform QUILT = new PlatformImpl("Quilt", "net.quiltservertools.quilt.api.QuiltServer");
-
-    // Fabric+Bukkit Hybrids
-    Platform CARDBOARD = new PlatformImpl("Cardboard", "org.cardboardpowered.CardboardConfig");
-    Platform BANNER = new PlatformImpl("Banner", "com.mohistmc.banner.BannerMCStart");
-    Platform TAIYITIST =
-            new PlatformImpl(
-                    "Taiyitist",
-                    "com.taiyitistmc.TaiyitistMain",
-                    "org.teneted.taiyitist.TaiyitistMain");
 }

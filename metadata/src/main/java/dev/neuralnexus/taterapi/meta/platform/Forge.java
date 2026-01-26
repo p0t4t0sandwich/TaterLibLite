@@ -17,27 +17,4 @@ public interface Forge {
     Platform GOLDENFORGE =
             new PlatformImpl("GoldenForge", "org.goldenforgelauncher.GoldenForgeEntryPoint");
     Platform NEOFORGE = new PlatformImpl("NeoForge", "net.neoforged.neoforge.common.NeoForge");
-
-    // Forge+Bukkit Hybrids
-    Platform MCPCPLUSPLUS = new PlatformImpl("MCPC++", "not.defined"); // TODO: Find a MCPC++ class
-    Platform CAULDRON = new PlatformImpl("Cauldron", "net.minecraftforge.cauldron.CauldronConfig");
-    Platform KCAULDRON =
-            new PlatformImpl("KCauldron", "net.minecraftforge.kcauldron.KCauldronConfig");
-    Platform THERMOS = new PlatformImpl("Thermos", "thermos.ThermosConfig");
-    Platform CRUCIBLE = new PlatformImpl("Crucible", "io.github.crucible.CrucibleConfig");
-    Platform MOHIST =
-            new PlatformImpl("Mohist", "com.mohistmc.MohistMC", "com.mohistmc.MohistMCStart");
-    Platform CATSERVER =
-            new PlatformImpl(
-                    "CatServer", "catserver.server.CatServerLaunch", "org.foxserver.FoxServer");
-    Platform MAGMA =
-            new PlatformImpl(
-                    "Magma",
-                    "org.magmafoundation.magma.Magma",
-                    "org.magmafoundation.magma.MagmaStart");
-    Platform KETTING = new PlatformImpl("Ketting", "org.kettingpowered.ketting.core.Ketting");
-
-    // Forge+NeoForge Hybrids
-    Platform YOUER = new PlatformImpl("Youer", "com.mohistmc.launcher.youer.Main");
-    Platform NEOTENET = new PlatformImpl("NeoTenet", "org.teneted.neotenet.NeoTenet");
 }
