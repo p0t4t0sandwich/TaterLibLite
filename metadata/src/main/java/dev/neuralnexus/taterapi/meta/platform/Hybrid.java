@@ -47,6 +47,8 @@ public interface Hybrid {
     Platform KETTING = new PlatformImpl("Ketting", "org.kettingpowered.ketting.core.Ketting");
 
     // NeoForge+Bukkit Hybrids
-    Platform YOUER = new PlatformImpl("Youer", "com.mohistmc.launcher.youer.Main");
+    Platform YOUER =
+            new PlatformImpl(
+                    "Youer", "com.mohistmc.launcher.youer.Main", "com.mohistmc.youer.Youer");
     Platform NEOTENET = new PlatformImpl("NeoTenet", "org.teneted.neotenet.NeoTenet");
 }
