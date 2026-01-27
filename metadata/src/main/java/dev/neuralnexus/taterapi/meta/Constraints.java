@@ -87,6 +87,21 @@ public final class Constraints {
         }
 
         /**
+         * Adds "and" constraints to the builder.
+         *
+         * @param constraints the constraints to add
+         * @return the builder
+         */
+        public Builder and(final Constraint.@NonNull Builder... constraints) {
+            Collections.addAll(
+                    this.and,
+                    Stream.of(constraints)
+                            .map(Constraint.Builder::build)
+                            .toArray(Constraint[]::new));
+            return this;
+        }
+
+        /**
          * Adds "or" constraints to the builder.
          *
          * @param constraints the constraints to add
@@ -105,6 +120,21 @@ public final class Constraints {
          */
         public Builder or(final @NonNull Constraint... constraints) {
             Collections.addAll(this.or, constraints);
+            return this;
+        }
+
+        /**
+         * Adds "or" constraints to the builder.
+         *
+         * @param constraints the constraints to add
+         * @return the builder
+         */
+        public Builder or(final Constraint.@NonNull Builder... constraints) {
+            Collections.addAll(
+                    this.or,
+                    Stream.of(constraints)
+                            .map(Constraint.Builder::build)
+                            .toArray(Constraint[]::new));
             return this;
         }
 
