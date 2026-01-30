@@ -36,14 +36,6 @@ import java.util.stream.Collectors;
 public final class BukkitMeta implements Platform.Meta {
     private static Field pluginFileField;
 
-    static {
-        try {
-            pluginFileField = JavaPlugin.class.getDeclaredField("file");
-            pluginFileField.setAccessible(true);
-        } catch (final NoSuchFieldException ignored) {
-        }
-    }
-
     @Override
     public @NonNull Object server() {
         return Bukkit.getServer();
@@ -151,6 +143,14 @@ public final class BukkitMeta implements Platform.Meta {
     }
 
     private @NonNull ModContainer<Plugin> toContainer(final @NonNull Plugin plugin) {
+        if (pluginFileField == null) {
+            try {
+                pluginFileField = JavaPlugin.class.getDeclaredField("file");
+                pluginFileField.setAccessible(true);
+            } catch (final NoSuchFieldException ignored) {
+            }
+        }
+
         return new ModContainerImpl<>(
                 plugin,
                 new ModInfoImpl(
