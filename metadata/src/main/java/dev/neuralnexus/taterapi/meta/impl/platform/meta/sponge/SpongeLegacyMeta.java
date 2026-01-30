@@ -21,6 +21,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -82,17 +83,25 @@ final class SpongeLegacyMeta implements Platform.Meta {
     @SuppressWarnings("unchecked")
     @Override
     public @NonNull <T> Collection<ModContainer<T>> mods() {
-        return Sponge.getPluginManager().getPlugins().stream()
-                .map(pc -> (ModContainer<T>) this.toContainer(pc))
-                .collect(Collectors.toList());
+        try {
+            return Sponge.getPluginManager().getPlugins().stream()
+                    .map(pc -> (ModContainer<T>) this.toContainer(pc))
+                    .collect(Collectors.toList());
+        } catch (final Exception e) { // TODO: Find a better way to avoid this
+            return Collections.emptyList();
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public @NonNull <T> Optional<ModContainer<T>> mod(@NonNull String modId) {
-        return Sponge.getPluginManager()
-                .getPlugin(modId)
-                .map(pc -> (ModContainer<T>) this.toContainer(pc));
+        try {
+            return Sponge.getPluginManager()
+                    .getPlugin(modId)
+                    .map(pc -> (ModContainer<T>) this.toContainer(pc));
+        } catch (final Exception e) { // TODO: Find a better way to avoid this
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -102,24 +111,32 @@ final class SpongeLegacyMeta implements Platform.Meta {
 
     @Override
     public boolean isModLoaded(final @NonNull String... modId) {
-        for (final String id : modId) {
-            if (Sponge.getPluginManager().isLoaded(id)
-                    || Sponge.getPluginManager().isLoaded(id.toLowerCase(Locale.ROOT))) {
-                return true;
+        try {
+            for (final String id : modId) {
+                if (Sponge.getPluginManager().isLoaded(id)
+                        || Sponge.getPluginManager().isLoaded(id.toLowerCase(Locale.ROOT))) {
+                    return true;
+                }
             }
+            return false;
+        } catch (final Exception e) { // TODO: Find a better way to avoid this
+            return false;
         }
-        return false;
     }
 
     @Override
     public boolean areModsLoaded(final @NonNull String... modId) {
-        for (final String id : modId) {
-            if (!Sponge.getPluginManager().isLoaded(id)
-                    && !Sponge.getPluginManager().isLoaded(id.toLowerCase(Locale.ROOT))) {
-                return false;
+        try {
+            for (final String id : modId) {
+                if (!Sponge.getPluginManager().isLoaded(id)
+                        && !Sponge.getPluginManager().isLoaded(id.toLowerCase(Locale.ROOT))) {
+                    return false;
+                }
             }
+            return true;
+        } catch (final Exception e) { // TODO: Find a better way to avoid this
+            return true;
         }
-        return true;
     }
 
     private @NonNull ModContainer<PluginContainer> toContainer(

@@ -26,6 +26,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.plugin.PluginContainer;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,9 +86,13 @@ final class SpongeModernMeta implements Platform.Meta {
     @SuppressWarnings("unchecked")
     @Override
     public @NonNull <T> Collection<ModContainer<T>> mods() {
-        return Sponge.pluginManager().plugins().stream()
-                .map(pc -> (ModContainer<T>) this.toContainer(pc))
-                .collect(Collectors.toList());
+        try {
+            return Sponge.pluginManager().plugins().stream()
+                    .map(pc -> (ModContainer<T>) this.toContainer(pc))
+                    .collect(Collectors.toList());
+        } catch (final Exception e) { // TODO: Find a better way to avoid this
+            return Collections.emptyList();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -109,9 +114,13 @@ final class SpongeModernMeta implements Platform.Meta {
                 return Optional.empty();
             }
         }
-        return Sponge.pluginManager()
-                .plugin(modId)
-                .map(pc -> (ModContainer<T>) this.toContainer(pc));
+        try {
+            return Sponge.pluginManager()
+                    .plugin(modId)
+                    .map(pc -> (ModContainer<T>) this.toContainer(pc));
+        } catch (final Exception e) { // TODO: Find a better way to avoid this
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -121,24 +130,32 @@ final class SpongeModernMeta implements Platform.Meta {
 
     @Override
     public boolean isModLoaded(final @NonNull String... modId) {
-        for (final String id : modId) {
-            if (Sponge.pluginManager().plugin(id).isPresent()
-                    || Sponge.pluginManager().plugin(id.toLowerCase(Locale.ROOT)).isPresent()) {
-                return true;
+        try {
+            for (final String id : modId) {
+                if (Sponge.pluginManager().plugin(id).isPresent()
+                        || Sponge.pluginManager().plugin(id.toLowerCase(Locale.ROOT)).isPresent()) {
+                    return true;
+                }
             }
+            return false;
+        } catch (final Exception e) { // TODO: Find a better way to avoid this
+            return false;
         }
-        return false;
     }
 
     @Override
     public boolean areModsLoaded(final @NonNull String... modId) {
-        for (final String id : modId) {
-            if (Sponge.pluginManager().plugin(id).isEmpty()
-                    && Sponge.pluginManager().plugin(id.toLowerCase(Locale.ROOT)).isEmpty()) {
-                return false;
+        try {
+            for (final String id : modId) {
+                if (Sponge.pluginManager().plugin(id).isEmpty()
+                        && Sponge.pluginManager().plugin(id.toLowerCase(Locale.ROOT)).isEmpty()) {
+                    return false;
+                }
             }
+            return true;
+        } catch (final Exception e) { // TODO: Find a better way to avoid this
+            return true;
         }
-        return true;
     }
 
     private @NonNull ModContainer<PluginContainer> toContainer(
