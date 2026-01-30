@@ -412,7 +412,8 @@ public final class MetaAPIImpl implements MetaAPI {
             return Optional.of(new FabricMeta());
         } else if (platform == Platforms.SPONGE) {
             return Optional.ofNullable(SpongeData.create());
-        } else if (MetaAPI.isBukkitBased(platform)) {
+        } else if (MetaAPI.isBukkitBased(platform) && !platform.equals(Platforms.ARCLIGHT)) {
+            // TODO: Implement lifecycle hook for Arclight late-Bukkit registration
             return Optional.of(new BukkitMeta());
         } else if (MetaAPI.isBungeeCordBased(platform)) {
             return Optional.of(new BungeeCordMeta());
@@ -458,8 +459,7 @@ public final class MetaAPIImpl implements MetaAPI {
             return Collections.singleton(new FabricMCVProvider());
         } else if (platform == Platforms.SPONGE) {
             return List.of(new SpongeLegacyMCVProvider(), new SpongeModernMCVProvider());
-        } else if (MetaAPI.isBukkitBased(platform) && !platform.equals(Platforms.ARCLIGHT)) {
-            // TODO: Implement lifecycle hook for Arclight late-Bukkit registration
+        } else if (MetaAPI.isBukkitBased(platform)) {
             return Collections.singleton(new PaperMCVProvider());
         } else if (MetaAPI.isBungeeCordBased(platform)) {
             return Collections.singleton(new BungeeCordMCVProvider());
