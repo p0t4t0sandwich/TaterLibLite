@@ -17,6 +17,9 @@ public interface Hybrid {
                     "io.izzel.arclight.forge.ArclightMod",
                     "io.izzel.arclight.neoforge.ArclightMod",
                     "io.izzel.arclight.fabric.ArclightModEntrypoint");
+    // Forge-only Arclight Fork
+    Platform LUMINARA =
+            new PlatformImpl("Luminara", "io.izzel.arclight.common.mod.command.LuminaraCommand");
 
     // Fabric+Bukkit Hybrids
     Platform CARDBOARD = new PlatformImpl("Cardboard", "org.cardboardpowered.CardboardConfig");

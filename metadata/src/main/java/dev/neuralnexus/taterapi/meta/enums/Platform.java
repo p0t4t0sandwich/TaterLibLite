@@ -46,6 +46,7 @@ public enum Platform {
     NEOTENET(Platforms.NEOTENET),
 
     ARCLIGHT(Platforms.ARCLIGHT),
+    LUMINARA(Platforms.LUMINARA),
 
     SPONGE(Platforms.SPONGE),
 

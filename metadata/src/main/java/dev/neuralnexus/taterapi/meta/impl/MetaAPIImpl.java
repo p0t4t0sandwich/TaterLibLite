@@ -412,7 +412,9 @@ public final class MetaAPIImpl implements MetaAPI {
             return Optional.of(new FabricMeta());
         } else if (platform == Platforms.SPONGE) {
             return Optional.ofNullable(SpongeData.create());
-        } else if (MetaAPI.isBukkitBased(platform) && !platform.equals(Platforms.ARCLIGHT)) {
+        } else if (MetaAPI.isBukkitBased(platform)
+                && !platform.equals(Platforms.ARCLIGHT)
+                && !platform.equals(Platforms.LUMINARA)) {
             // TODO: Implement lifecycle hook for Arclight late-Bukkit registration
             return Optional.of(new BukkitMeta());
         } else if (MetaAPI.isBungeeCordBased(platform)) {
@@ -436,8 +438,9 @@ public final class MetaAPIImpl implements MetaAPI {
         Set<Platform> platforms = Platforms.get();
 
         // TODO: Implement lifecycle hook for Arclight late-Bukkit registration
-        if (platforms.contains(Platforms.ARCLIGHT)) {
+        if (platforms.contains(Platforms.ARCLIGHT) || platforms.contains(Platforms.LUMINARA)) {
             platforms.remove(Platforms.BUKKIT);
+            platforms.remove(Platforms.SPIGOT);
             platforms.remove(Platforms.PAPER);
         }
         return platforms.stream()
