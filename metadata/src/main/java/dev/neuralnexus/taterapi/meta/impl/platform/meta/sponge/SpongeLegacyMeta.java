@@ -135,7 +135,7 @@ final class SpongeLegacyMeta implements Platform.Meta {
             }
             return true;
         } catch (final Exception e) { // TODO: Find a better way to avoid this
-            return true;
+            return false;
         }
     }
 

@@ -154,7 +154,7 @@ final class SpongeModernMeta implements Platform.Meta {
             }
             return true;
         } catch (final Exception e) { // TODO: Find a better way to avoid this
-            return true;
+            return false;
         }
     }
 
