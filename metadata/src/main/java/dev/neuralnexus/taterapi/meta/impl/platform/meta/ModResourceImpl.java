@@ -22,7 +22,9 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 
 public class ModResourceImpl implements ModResource {
@@ -54,8 +56,15 @@ public class ModResourceImpl implements ModResource {
             uri = this.path().toUri();
         }
 
+        // Special case for SecureJarHandler's union file system
+        // https://github.com/McModLauncher/securejarhandler/blob/main/src/main/java/cpw/mods/niofs/union/UnionFileSystemProvider.java#L81
+        Map<String, BiPredicate<String, Path>> env = Collections.emptyMap();
+        if (uri.getScheme().equals("union")) {
+            env = Map.of("filter", (p, b) -> true);
+        }
+
         try {
-            this.fileSystem = new FSWrapper(FileSystems.newFileSystem(uri, Collections.emptyMap()));
+            this.fileSystem = new FSWrapper(FileSystems.newFileSystem(uri, env));
         } catch (FileSystemAlreadyExistsException e) {
             this.fileSystem = FileSystems.getFileSystem(uri);
         } catch (ProviderNotFoundException e) {
