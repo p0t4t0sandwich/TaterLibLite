@@ -57,7 +57,7 @@ public final class MixinServiceUtil {
         Class<?> sharedConstants =
                 MixinService.getService()
                         .getClassProvider()
-                        .findClass("net.minecraft.SharedConstants");
+                        .findClass("net.minecraft.SharedConstants", false);
 
         // Parse the json included in modern versions of Minecraft
         // SharedConstants is going to get sacrificed, but no one should have a Mixin in that anyway
