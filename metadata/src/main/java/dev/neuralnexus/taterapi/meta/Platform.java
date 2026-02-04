@@ -161,16 +161,16 @@ public interface Platform {
         boolean isClient();
 
         /**
-         * Get the modloader asString
+         * Get the modloader version
          *
-         * @return the modloader asString
+         * @return the modloader version
          */
         @NonNull String loaderVersion();
 
         /**
-         * Get the modloader API asString
+         * Get the modloader API version
          *
-         * @return the modloader API asString
+         * @return the modloader API version
          */
         @NonNull String apiVersion();
 

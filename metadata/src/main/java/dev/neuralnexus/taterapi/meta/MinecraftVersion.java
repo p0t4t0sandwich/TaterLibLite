@@ -77,7 +77,7 @@ public interface MinecraftVersion extends VersionComparable<MinecraftVersion> {
         /**
          * Get the protocol version of the Minecraft server. 0 if unknown
          *
-         * @return The protocol asString
+         * @return The protocol version
          */
         int protocol();
 

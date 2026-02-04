@@ -19,9 +19,9 @@ import java.nio.charset.StandardCharsets;
 /** Helper/wrapper class to prevent ClassNotFound errors when Mixin is not present. */
 public final class MixinServiceUtil {
     /**
-     * Returns the Minecraft asString.
+     * Returns the Minecraft version.
      *
-     * @return The Minecraft asString.
+     * @return The Minecraft version.
      */
     public static String mcVersion() throws ClassNotFoundException, IOException {
         // Fine to do since obfuscated situations are covered by Forge
@@ -84,6 +84,7 @@ public final class MixinServiceUtil {
      * @param className The class name
      */
     public static void checkForClass(String className) throws IOException, ClassNotFoundException {
+        // TODO: Wrapper for old mixin that returns org.spongepowered.asm.lib.tree.ClassNode
         MixinService.getService().getBytecodeProvider().getClassNode(className);
     }
 
@@ -95,6 +96,7 @@ public final class MixinServiceUtil {
      */
     public static void checkForMethod(String className, String methodName)
             throws IOException, ClassNotFoundException, NoSuchMethodException {
+        // TODO: Wrapper for old mixin that returns org.spongepowered.asm.lib.tree.ClassNode
         MixinService.getService().getBytecodeProvider().getClassNode(className).methods.stream()
                 .filter(method -> method.name.equals(methodName))
                 .findFirst()

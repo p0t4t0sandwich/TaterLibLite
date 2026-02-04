@@ -21,7 +21,7 @@ public final class MinecraftVersions
     /**
      * Create a MinecraftVersion from a string.
      *
-     * @param version The asString to create
+     * @param version The version to create
      * @return The MinecraftVersion
      */
     static MinecraftVersion of(String version) {
