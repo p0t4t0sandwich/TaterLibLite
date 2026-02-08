@@ -8,12 +8,17 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import org.jspecify.annotations.NonNull;
+import org.spongepowered.asm.service.IClassBytecodeProvider;
 import org.spongepowered.asm.service.MixinService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.nio.charset.StandardCharsets;
 
 /** Helper/wrapper class to prevent ClassNotFound errors when Mixin is not present. */
@@ -43,7 +48,7 @@ public final class MixinServiceUtil {
                         () -> {
                             try {
                                 ref.mcVersion = parseMcJson();
-                            } catch (ClassNotFoundException | IOException e) {
+                            } catch (final ClassNotFoundException | IOException e) {
                                 throw new RuntimeException(e);
                             }
                         });
@@ -72,7 +77,7 @@ public final class MixinServiceUtil {
                     new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
                 JsonObject jsonObject = GSON.fromJson(reader, JsonObject.class);
                 return jsonObject.get("id").getAsString();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new IOException("Failed to read version.json", e);
             }
         }
@@ -83,8 +88,16 @@ public final class MixinServiceUtil {
      *
      * @param className The class name
      */
-    public static void checkForClass(String className) throws IOException, ClassNotFoundException {
-        // TODO: Wrapper for old mixin that returns org.spongepowered.asm.lib.tree.ClassNode
+    public static void checkForClass(@NonNull final String className)
+            throws IOException, ClassNotFoundException {
+        if (checkForOldMixin()) {
+            try {
+                checkForOldMixinClass(className);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            return;
+        }
         MixinService.getService().getBytecodeProvider().getClassNode(className);
     }
 
@@ -94,12 +107,41 @@ public final class MixinServiceUtil {
      * @param className The class name
      * @param methodName The method name
      */
-    public static void checkForMethod(String className, String methodName)
+    public static void checkForMethod(
+            @NonNull final String className, @NonNull final String methodName)
             throws IOException, ClassNotFoundException, NoSuchMethodException {
-        // TODO: Wrapper for old mixin that returns org.spongepowered.asm.lib.tree.ClassNode
+        if (checkForOldMixin()) {
+            throw new UnsupportedOperationException(
+                    "Old Mixin versions do not support checking a ClassNode's fields/methods");
+        }
         MixinService.getService().getBytecodeProvider().getClassNode(className).methods.stream()
                 .filter(method -> method.name.equals(methodName))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchMethodException("Method not found"));
+    }
+
+    private static MethodHandle getClassNodeHandle;
+
+    /** Check for old Mixin versions */
+    @SuppressWarnings("JavaLangInvokeHandleSignature")
+    public static boolean checkForOldMixin() {
+        try {
+            Class<?> clazz = Class.forName("org.spongepowered.asm.lib.tree.ClassNode");
+            if (getClassNodeHandle == null) {
+                MethodType methodType = MethodType.methodType(clazz, String.class);
+                getClassNodeHandle =
+                        MethodHandles.lookup()
+                                .findVirtual(
+                                        IClassBytecodeProvider.class, "getClassNode", methodType);
+            }
+            return true;
+        } catch (final ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
+            return false;
+        }
+    }
+
+    /** Check for classes using old Mixin versions */
+    public static void checkForOldMixinClass(@NonNull final String className) throws Throwable {
+        getClassNodeHandle.invoke(MixinService.getService().getBytecodeProvider(), className);
     }
 }
