@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /** Class implementing the metadata cache and other useful shortcuts. */
 public final class MetaAPIImpl implements MetaAPI {
@@ -243,15 +244,29 @@ public final class MetaAPIImpl implements MetaAPI {
         if (cachedVersion != MinecraftVersions.UNKNOWN) {
             return cachedVersion;
         }
-        cachedVersion =
+        Collection<MinecraftVersion.Provider> providers =
                 Platforms.get().stream()
                         .map(MetaAPIImpl::lookupMCV)
                         .flatMap(Collection::stream)
                         .filter(MinecraftVersion.Provider::shouldProvide)
-                        .map(MinecraftVersion.Provider::get)
-                        .filter(version -> version != MinecraftVersions.UNKNOWN)
-                        .max(MinecraftVersion::compareTo)
-                        .orElse(MinecraftVersions.UNKNOWN);
+                        .collect(Collectors.toSet());
+
+        // Lazily iterate through providers and exit when the first non-UNKNOWN version is found
+        for (final MinecraftVersion.Provider provider : providers) {
+            try {
+                MinecraftVersion version = provider.get();
+                if (version != MinecraftVersions.UNKNOWN) {
+                    cachedVersion = version;
+                    break;
+                }
+            } catch (final Throwable e) {
+                Logger.create("MetaAPI")
+                        .warn(
+                                "Failed to get Minecraft version from provider: "
+                                        + provider.getClass().getName(),
+                                e);
+            }
+        }
         return cachedVersion;
     }
 
