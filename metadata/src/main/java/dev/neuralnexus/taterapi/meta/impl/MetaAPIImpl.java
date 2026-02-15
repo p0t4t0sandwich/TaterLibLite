@@ -310,6 +310,8 @@ public final class MetaAPIImpl implements MetaAPI {
             if (api.isProxy()) {
                 mappings = Mappings.NONE;
                 // Check for FFAPI, Connector, and Kilt
+            } else if (api.version().greaterThan(MinecraftVersions.V21_11)) {
+                mappings = Mappings.MOJANG;
             } else if (api.isMixedForgeFabric()) {
                 if (api.isModLoaded(Platforms.FABRIC, "kilt")) {
                     mappings = Mappings.YARN_INTERMEDIARY;
@@ -341,11 +343,8 @@ public final class MetaAPIImpl implements MetaAPI {
                 // TODO: Add Babric and CursedFabric checks
                 if (this.version().lessThan(MinecraftVersions.V14)) {
                     mappings = Mappings.LEGACY_INTERMEDIARY;
-                } else if (this.version()
-                        .isInRange(MinecraftVersions.V14, MinecraftVersions.V21_11)) {
+                } else if (this.version().noLessThan(MinecraftVersions.V14)) {
                     mappings = Mappings.YARN_INTERMEDIARY;
-                } else {
-                    mappings = Mappings.MOJANG;
                 }
                 // Check SpongeVanilla
             } else if (api.isPlatformPresent(Platforms.SPONGE)) {
@@ -362,18 +361,12 @@ public final class MetaAPIImpl implements MetaAPI {
             } else if (api.isPlatformPresent(Platforms.SPIGOT)) {
                 if (this.version().lessThan(MinecraftVersions.V18)) {
                     mappings = Mappings.LEGACY_SPIGOT;
-                } else if (this.version().noGreaterThan(MinecraftVersions.V21_11)) {
+                } else if (this.version().noLessThan(MinecraftVersions.V18)) {
                     mappings = Mappings.SPIGOT;
-                } else {
-                    mappings = Mappings.MOJANG;
                 }
                 // Check Bukkit
             } else if (api.isPlatformPresent(Platforms.BUKKIT)) {
                 mappings = Mappings.OFFICIAL;
-            } else if (this.version().noGreaterThan(MinecraftVersions.V21_11)) {
-                mappings = Mappings.OFFICIAL;
-            } else {
-                mappings = Mappings.MOJANG;
             }
         }
         return Objects.requireNonNull(mappings, "Mappings are null after initialization");
