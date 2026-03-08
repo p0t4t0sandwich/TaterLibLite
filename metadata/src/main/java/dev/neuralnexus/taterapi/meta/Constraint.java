@@ -730,11 +730,11 @@ public record Constraint(
                 logger.debug("Evaluating constraint: " + constraint);
             }
             boolean result =
-                    evalDeps(constraint)
-                            && evalMappings(constraint)
+                    evalSide(constraint)
                             && evalPlatform(constraint)
-                            && evalSide(constraint)
-                            && evalVersion(constraint);
+                            && evalVersion(constraint)
+                            && evalMappings(constraint)
+                            && evalDeps(constraint);
             if (constraint.invert()) {
                 result = !result;
             }
