@@ -9,9 +9,9 @@ import dev.neuralnexus.taterapi.logger.impl.SystemLogger;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Side;
-import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
-import dev.neuralnexus.taterapi.meta.impl.WMinecraftServer;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.VanillaMCVProvider;
+import dev.neuralnexus.taterapi.wrap.client.WMinecraft;
+import dev.neuralnexus.taterapi.wrap.server.WMinecraftServer;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;

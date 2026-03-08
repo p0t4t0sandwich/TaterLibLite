@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Dylan Sperrer - dylan@neuralnexus.dev
  * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
  */
-package dev.neuralnexus.taterapi.reflecto.two;
+package dev.neuralnexus.taterapi.reflecto;
 
 import org.jspecify.annotations.NonNull;
 
@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public record Parent(@NonNull String alias, @NonNull Class<?> clazz) {
+public record MappingClass(@NonNull String alias, @NonNull Class<?> clazz) {
     public static @NonNull Builder builder(
             final @NonNull String alias, final MappingEntry.@NonNull Builder... builders) {
         List<MappingEntry> entries = new ArrayList<>();
@@ -44,7 +44,7 @@ public record Parent(@NonNull String alias, @NonNull Class<?> clazz) {
             return this;
         }
 
-        public @NonNull Parent build() {
+        public @NonNull MappingClass build() {
             String entryValue = null;
             for (final MappingEntry entry : entries) {
                 if (entryValue != null) {
@@ -59,7 +59,7 @@ public record Parent(@NonNull String alias, @NonNull Class<?> clazz) {
                 throw new IllegalStateException("No valid mapping found for member: " + alias);
             }
             try {
-                return new Parent(alias, Class.forName(entryValue));
+                return new MappingClass(alias, Class.forName(entryValue));
             } catch (final ClassNotFoundException e) {
                 throw new RuntimeException("Failed to load class for parent: " + alias, e);
             }

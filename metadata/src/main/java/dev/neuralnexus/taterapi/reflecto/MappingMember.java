@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Dylan Sperrer - dylan@neuralnexus.dev
  * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
  */
-package dev.neuralnexus.taterapi.reflecto.two;
+package dev.neuralnexus.taterapi.reflecto;
 
 import org.jspecify.annotations.NonNull;
 
@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public record Member(
+public record MappingMember(
         @NonNull String alias,
-        @NonNull Parent parent,
+        @NonNull MappingClass parent,
         @NonNull String mapping,
         @NonNull Type type,
         @NonNull Access access,
@@ -73,14 +73,16 @@ public record Member(
         throw new UnsupportedOperationException("Constructor resolution not implemented yet");
     }
 
-    public static Builder builder(
-            final @NonNull String alias, final @NonNull Parent parent, final @NonNull Type type) {
+    public static Builder member(
+            final @NonNull String alias,
+            final @NonNull MappingClass parent,
+            final @NonNull Type type) {
         return new Builder(alias, parent, type);
     }
 
     public static class Builder {
         private final String alias;
-        private final Parent parent;
+        private final MappingClass parent;
         private final Type type;
         private Access access = Access.PUBLIC;
         private Modifier modifier = Modifier.NONE;
@@ -89,7 +91,7 @@ public record Member(
 
         public Builder(
                 final @NonNull String alias,
-                final @NonNull Parent parent,
+                final @NonNull MappingClass parent,
                 final @NonNull Type type) {
             this.alias = alias;
             this.parent = parent;
@@ -123,7 +125,7 @@ public record Member(
             return this;
         }
 
-        public @NonNull Member build() {
+        public @NonNull MappingMember build() {
             MappingEntry mEntry = null;
             for (final MappingEntry entry : mappingEntries) {
                 if (mEntry != null) {
@@ -141,7 +143,7 @@ public record Member(
                     mEntry.methodType() != MethodType.methodType(void.class)
                             ? mEntry.methodType()
                             : methodType;
-            return new Member(alias, parent, mEntry.value(), type, access, modifier, mt);
+            return new MappingMember(alias, parent, mEntry.value(), type, access, modifier, mt);
         }
     }
 

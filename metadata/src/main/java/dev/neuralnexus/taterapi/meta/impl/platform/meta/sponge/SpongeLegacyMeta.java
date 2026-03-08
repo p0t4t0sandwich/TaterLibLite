@@ -10,11 +10,11 @@ import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
-import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
-import dev.neuralnexus.taterapi.meta.impl.WMinecraftServer;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModContainerImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModInfoImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModResourceImpl;
+import dev.neuralnexus.taterapi.wrap.client.WMinecraft;
+import dev.neuralnexus.taterapi.wrap.server.WMinecraftServer;
 
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.api.Sponge;

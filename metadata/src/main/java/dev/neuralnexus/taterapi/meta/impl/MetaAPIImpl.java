@@ -4,7 +4,16 @@
  */
 package dev.neuralnexus.taterapi.meta.impl;
 
+import static dev.neuralnexus.taterapi.reflecto.MappingClass.builder;
+import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
+import static dev.neuralnexus.taterapi.reflecto.MappingMember.member;
 import static dev.neuralnexus.taterapi.util.ReflectionUtil.checkForClass;
+import static dev.neuralnexus.taterapi.wrap.client.WMinecraft.GET_INSTANCE;
+import static dev.neuralnexus.taterapi.wrap.client.WMinecraft.GET_SERVER;
+import static dev.neuralnexus.taterapi.wrap.client.WMinecraft.HAS_SERVER;
+import static dev.neuralnexus.taterapi.wrap.client.WMinecraft.MINECRAFT;
+import static dev.neuralnexus.taterapi.wrap.server.WMinecraftServer.IS_DEDICATED_SERVER;
+import static dev.neuralnexus.taterapi.wrap.server.WMinecraftServer.MINECRAFT_SERVER;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.SystemLogger;
@@ -35,11 +44,12 @@ import dev.neuralnexus.taterapi.meta.impl.version.provider.PaperMCVProvider;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.SpongeLegacyMCVProvider;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.SpongeModernMCVProvider;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.VelocityMCVProvider;
-import dev.neuralnexus.taterapi.reflecto.MappingEntry;
+import dev.neuralnexus.taterapi.reflecto.MappingMember;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
 
 import org.jspecify.annotations.NonNull;
 
+import java.lang.invoke.MethodType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -61,103 +71,85 @@ public final class MetaAPIImpl implements MetaAPI {
 
     private static Mappings mappings;
 
-    static Reflecto.MappingStore store;
+    static boolean reflectionInitialized = false;
 
     private MetaAPIImpl() {}
 
     private void initReflection() {
+        reflectionInitialized = true;
+
         // Don't reflect on proxies or in server-only environments
         if (!Platforms.get().isEmpty() // Avoids errors in unit tests
                 && !this.isProxy()
                 && !this.isPlatformPresent(Platforms.BUKKIT)) {
-            store = Reflecto.instance().getStore(this);
+
+            var mcServer =
+                    builder(
+                                    MINECRAFT_SERVER,
+                                    entry("net.minecraft.server.MinecraftServer").constant(true))
+                            .build();
+            var mcServer_isDedicatedServer =
+                    member(IS_DEDICATED_SERVER, mcServer, MappingMember.Type.METHOD)
+                            .methodType(MethodType.methodType(boolean.class))
+                            .mappings(
+                                    entry(Mappings.MOJANG, "isDedicatedServer"),
+                                    entry(Mappings.SEARGE, "m_6982_"),
+                                    entry(Mappings.LEGACY_SEARGE, "func_71262_S"),
+                                    entry(Mappings.YARN_INTERMEDIARY, "method_3816"),
+                                    entry(Mappings.LEGACY_INTERMEDIARY, "method_2983"));
+            Reflecto.register(mcServer_isDedicatedServer);
 
             if (this.isClient()) {
-                var minecraft =
-                        MappingEntry.builder("Minecraft")
-                                .official("net.minecraft.client.Minecraft")
-                                .mojang("net.minecraft.client.Minecraft")
-                                .searge("net.minecraft.client.Minecraft")
-                                .legacySearge("net.minecraft.client.Minecraft")
-                                .mcp("net.minecraft.client.Minecraft")
-                                .yarnIntermediary("net.minecraft.class_310")
-                                .legacyIntermediary("net.minecraft.class_1600");
+                var mcClient =
+                        builder(
+                                        MINECRAFT,
+                                        entry(
+                                                "net.minecraft.client.Minecraft",
+                                                Mappings.MOJANG,
+                                                Mappings.SEARGE,
+                                                Mappings.LEGACY_SEARGE),
+                                        entry(
+                                                Mappings.YARN_INTERMEDIARY,
+                                                "net.minecraft.class_310"),
+                                        entry(
+                                                Mappings.LEGACY_INTERMEDIARY,
+                                                "net.minecraft.class_1600"))
+                                .build();
 
-                var minecraft_getInstance =
-                        MappingEntry.builder("getInstance")
-                                .parentEntry(minecraft)
-                                .mojang("getInstance")
-                                .searge("m_91087_")
-                                .legacySearge("func_71410_x")
-                                .mcp("getInstance")
-                                .mcp(
-                                        "getMinecraft",
-                                        MinecraftVersions.UNKNOWN,
-                                        MinecraftVersions.V12_2)
-                                .yarnIntermediary("method_1551")
-                                .legacyIntermediary("method_2965");
+                var mcClient_getInstance =
+                        member(GET_INSTANCE, mcClient, MappingMember.Type.METHOD)
+                                .methodType(MethodType.methodType(mcClient.clazz()))
+                                .mappings(
+                                        entry(Mappings.MOJANG, "getInstance"),
+                                        entry(Mappings.SEARGE, "m_91087_"),
+                                        entry(Mappings.LEGACY_SEARGE, "func_71410_x"),
+                                        entry(Mappings.YARN_INTERMEDIARY, "method_1551"),
+                                        entry(Mappings.LEGACY_INTERMEDIARY, "method_2965"));
 
-                var minecraft_hasServer =
-                        MappingEntry.builder("hasServer")
-                                .parentEntry(minecraft)
-                                .mojang("hasSingleplayerServer")
-                                .searge("m_91091_")
-                                .legacySearge("func_71356_B")
-                                .mcp("isSingleplayer")
-                                .yarnIntermediary("method_1496")
-                                .legacyIntermediary("method_2908");
+                var mcClient_hasServer =
+                        member(HAS_SERVER, mcClient, MappingMember.Type.METHOD)
+                                .methodType(MethodType.methodType(boolean.class))
+                                .mappings(
+                                        entry(Mappings.MOJANG, "hasSingleplayerServer"),
+                                        entry(Mappings.SEARGE, "m_91091_"),
+                                        entry(Mappings.LEGACY_SEARGE, "func_71356_B"),
+                                        entry(Mappings.YARN_INTERMEDIARY, "method_1496"),
+                                        entry(Mappings.LEGACY_INTERMEDIARY, "method_2908"));
 
-                var minecraft_getServer =
-                        MappingEntry.builder("getServer")
-                                .parentEntry(minecraft)
-                                .official("getSingleplayerServer")
-                                .mojang("getSingleplayerServer")
-                                .searge("m_91092_")
-                                .legacySearge("func_71401_C")
-                                .mcp("getIntegratedServer")
-                                .yarnIntermediary("method_1576")
-                                .legacyIntermediary("method_2909");
+                var mcClient_getServer =
+                        member(GET_SERVER, mcClient, MappingMember.Type.METHOD)
+                                .methodType(MethodType.methodType(mcServer.clazz()))
+                                .mappings(
+                                        entry(Mappings.MOJANG, "getSingleplayerServer"),
+                                        entry(Mappings.SEARGE, "m_91092_"),
+                                        entry(Mappings.LEGACY_SEARGE, "func_71401_C"),
+                                        entry(Mappings.YARN_INTERMEDIARY, "method_1576"),
+                                        entry(Mappings.LEGACY_INTERMEDIARY, "method_2909"));
 
-                store.registerClass(minecraft)
-                        .registerMethod(minecraft_getInstance)
-                        .registerMethod(minecraft_hasServer)
-                        .registerMethod(minecraft_getServer);
+                Reflecto.register(mcClient_getInstance);
+                Reflecto.register(mcClient_hasServer);
+                Reflecto.register(mcClient_getServer);
             }
-
-            Logger logger = Logger.create("MetaAPI");
-            logger.debug("Registered Minecraft reflection mappings");
-            logger.debug("|-> getInstance");
-            logger.debug("|-> hasServer");
-            logger.debug("|-> getServer");
-
-            var mcString = "net.minecraft.server.MinecraftServer";
-            var mcServer =
-                    MappingEntry.builder("MinecraftServer")
-                            .official(mcString)
-                            .mojang(mcString)
-                            .spigot(mcString)
-                            .legacySpigot(mcString)
-                            .searge(mcString)
-                            .searge(mcString)
-                            .legacySearge(mcString)
-                            .mcp(mcString)
-                            .yarnIntermediary(mcString)
-                            .legacyIntermediary(mcString);
-
-            var mcServer_isDedicatedServer =
-                    MappingEntry.builder("isDedicatedServer")
-                            .parentEntry(mcServer)
-                            .mojang("isDedicatedServer")
-                            .searge("m_6982_")
-                            .legacySearge("func_71262_S")
-                            .mcp("isDedicatedServer")
-                            .yarnIntermediary("method_3816")
-                            .legacyIntermediary("method_2983");
-
-            store.registerClass(mcServer).registerMethod(mcServer_isDedicatedServer);
-
-            logger.debug("Registered MinecraftServer reflection mappings");
-            logger.debug("|-> isDedicatedServer");
         }
     }
 
@@ -190,7 +182,7 @@ public final class MetaAPIImpl implements MetaAPI {
 
     @Override
     public @NonNull Object server() {
-        if (store == null) {
+        if (!reflectionInitialized) {
             this.initReflection();
         }
         return lookupAll().stream()
@@ -201,7 +193,7 @@ public final class MetaAPIImpl implements MetaAPI {
 
     @Override
     public @NonNull Object client() {
-        if (store == null) {
+        if (!reflectionInitialized) {
             this.initReflection();
         }
         return lookupAll().stream()
@@ -212,7 +204,7 @@ public final class MetaAPIImpl implements MetaAPI {
 
     @Override
     public @NonNull Object minecraft() {
-        if (store == null) {
+        if (!reflectionInitialized) {
             this.initReflection();
         }
         return lookupAll().stream()
@@ -223,7 +215,7 @@ public final class MetaAPIImpl implements MetaAPI {
 
     @Override
     public @NonNull Side side() {
-        if (store == null) {
+        if (!reflectionInitialized) {
             this.initReflection();
         }
         return lookupAll().stream()

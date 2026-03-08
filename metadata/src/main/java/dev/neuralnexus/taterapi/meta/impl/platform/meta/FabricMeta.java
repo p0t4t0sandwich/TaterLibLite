@@ -13,7 +13,7 @@ import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
-import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
+import dev.neuralnexus.taterapi.wrap.client.WMinecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
