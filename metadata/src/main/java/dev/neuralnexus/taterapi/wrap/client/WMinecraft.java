@@ -4,10 +4,21 @@
  */
 package dev.neuralnexus.taterapi.wrap.client;
 
+import static dev.neuralnexus.taterapi.reflecto.MappingClass.builder;
+import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
+import static dev.neuralnexus.taterapi.reflecto.MappingMember.member;
+import static dev.neuralnexus.taterapi.wrap.server.WMinecraftServer.MINECRAFT_SERVER;
+
+import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.Side;
+import dev.neuralnexus.taterapi.reflecto.MappingMember;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
 
+import net.minecraft.server.MinecraftServer;
+
 import org.jspecify.annotations.NonNull;
+
+import java.lang.invoke.MethodType;
 
 public final class WMinecraft {
     public static final String MINECRAFT = "Minecraft";
@@ -15,7 +26,66 @@ public final class WMinecraft {
     public static final String HAS_SERVER = "hasServer";
     public static final String GET_SERVER = "getServer";
 
+    private static boolean initialized = false;
+
+    private static void init() {
+        initialized = true;
+
+        var mcServer =
+                builder(
+                                MINECRAFT_SERVER,
+                                entry("net.minecraft.server.MinecraftServer").constant(true))
+                        .build();
+
+        var mcClient =
+                builder(
+                                MINECRAFT,
+                                entry(
+                                        "net.minecraft.client.Minecraft",
+                                        Mappings.MOJANG,
+                                        Mappings.SEARGE,
+                                        Mappings.LEGACY_SEARGE,
+                                        Mappings.CALAMUS),
+                                entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_310"))
+                        .build();
+
+        var mcClient_getInstance =
+                member(GET_INSTANCE, mcClient, MappingMember.Type.METHOD)
+                        .methodType(MethodType.methodType(mcClient.clazz()))
+                        .mappings(
+                                entry(Mappings.MOJANG, "getInstance"),
+                                entry(Mappings.SEARGE, "m_91087_"),
+                                entry(Mappings.LEGACY_SEARGE, "func_71410_x"),
+                                entry(Mappings.YARN_INTERMEDIARY, "method_1551"),
+                                entry(Mappings.CALAMUS, "m_20213497"));
+
+        var mcClient_hasServer =
+                member(HAS_SERVER, mcClient, MappingMember.Type.METHOD)
+                        .methodType(MethodType.methodType(boolean.class))
+                        .mappings(
+                                entry(Mappings.MOJANG, "hasSingleplayerServer"),
+                                entry(Mappings.SEARGE, "m_91091_"),
+                                entry(Mappings.LEGACY_SEARGE, "func_71356_B"),
+                                entry(Mappings.YARN_INTERMEDIARY, "method_1496"),
+                                entry(Mappings.CALAMUS, "m_10057689"));
+
+        var mcClient_getServer =
+                member(GET_SERVER, mcClient, MappingMember.Type.METHOD)
+                        .methodType(MethodType.methodType(mcServer.clazz()))
+                        .mappings(
+                                entry(Mappings.MOJANG, "getSingleplayerServer"),
+                                entry(Mappings.SEARGE, "m_91092_"),
+                                entry(Mappings.LEGACY_SEARGE, "func_71401_C"),
+                                entry(Mappings.YARN_INTERMEDIARY, "method_1576"),
+                                entry(Mappings.CALAMUS, "m_37046522"));
+
+        Reflecto.register(mcClient_getInstance);
+        Reflecto.register(mcClient_hasServer);
+        Reflecto.register(mcClient_getServer);
+    }
+
     public static <T> @NonNull T getInstance() {
+        if (!initialized) init();
         return Reflecto.invoke(MINECRAFT, GET_INSTANCE, null);
     }
 
@@ -23,7 +93,12 @@ public final class WMinecraft {
         return Reflecto.invoke(MINECRAFT, HAS_SERVER, getInstance());
     }
 
-    public static <T> @NonNull T getServer() {
+    /**
+     * It's fine to use a raw MinecraftServer reference, since it's not remapped.
+     *
+     * @return The MinecraftServer instance
+     */
+    public static @NonNull MinecraftServer getServer() {
         return Reflecto.invoke(MINECRAFT, GET_SERVER, getInstance());
     }
 

@@ -4,16 +4,7 @@
  */
 package dev.neuralnexus.taterapi.meta.impl;
 
-import static dev.neuralnexus.taterapi.reflecto.MappingClass.builder;
-import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
-import static dev.neuralnexus.taterapi.reflecto.MappingMember.member;
 import static dev.neuralnexus.taterapi.util.ReflectionUtil.checkForClass;
-import static dev.neuralnexus.taterapi.wrap.client.WMinecraft.GET_INSTANCE;
-import static dev.neuralnexus.taterapi.wrap.client.WMinecraft.GET_SERVER;
-import static dev.neuralnexus.taterapi.wrap.client.WMinecraft.HAS_SERVER;
-import static dev.neuralnexus.taterapi.wrap.client.WMinecraft.MINECRAFT;
-import static dev.neuralnexus.taterapi.wrap.server.WMinecraftServer.IS_DEDICATED_SERVER;
-import static dev.neuralnexus.taterapi.wrap.server.WMinecraftServer.MINECRAFT_SERVER;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.SystemLogger;
@@ -44,12 +35,9 @@ import dev.neuralnexus.taterapi.meta.impl.version.provider.PaperMCVProvider;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.SpongeLegacyMCVProvider;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.SpongeModernMCVProvider;
 import dev.neuralnexus.taterapi.meta.impl.version.provider.VelocityMCVProvider;
-import dev.neuralnexus.taterapi.reflecto.MappingMember;
-import dev.neuralnexus.taterapi.reflecto.Reflecto;
 
 import org.jspecify.annotations.NonNull;
 
-import java.lang.invoke.MethodType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -71,85 +59,7 @@ public final class MetaAPIImpl implements MetaAPI {
 
     private static Mappings mappings;
 
-    static boolean reflectionInitialized = false;
-
     private MetaAPIImpl() {}
-
-    private void initReflection() {
-        reflectionInitialized = true;
-
-        // Don't reflect on proxies or in server-only environments
-        if (!Platforms.get().isEmpty() // Avoids errors in unit tests
-                && !this.isProxy()
-                && !this.isPlatformPresent(Platforms.BUKKIT)) {
-
-            var mcServer =
-                    builder(
-                                    MINECRAFT_SERVER,
-                                    entry("net.minecraft.server.MinecraftServer").constant(true))
-                            .build();
-            var mcServer_isDedicatedServer =
-                    member(IS_DEDICATED_SERVER, mcServer, MappingMember.Type.METHOD)
-                            .methodType(MethodType.methodType(boolean.class))
-                            .mappings(
-                                    entry(Mappings.MOJANG, "isDedicatedServer"),
-                                    entry(Mappings.SEARGE, "m_6982_"),
-                                    entry(Mappings.LEGACY_SEARGE, "func_71262_S"),
-                                    entry(Mappings.YARN_INTERMEDIARY, "method_3816"),
-                                    entry(Mappings.CALAMUS, "m_45654766"));
-            Reflecto.register(mcServer_isDedicatedServer);
-
-            if (this.isClient()) {
-                var mcClient =
-                        builder(
-                                        MINECRAFT,
-                                        entry(
-                                                "net.minecraft.client.Minecraft",
-                                                Mappings.MOJANG,
-                                                Mappings.SEARGE,
-                                                Mappings.LEGACY_SEARGE,
-                                                Mappings.CALAMUS),
-                                        entry(
-                                                Mappings.YARN_INTERMEDIARY,
-                                                "net.minecraft.class_310"))
-                                .build();
-
-                var mcClient_getInstance =
-                        member(GET_INSTANCE, mcClient, MappingMember.Type.METHOD)
-                                .methodType(MethodType.methodType(mcClient.clazz()))
-                                .mappings(
-                                        entry(Mappings.MOJANG, "getInstance"),
-                                        entry(Mappings.SEARGE, "m_91087_"),
-                                        entry(Mappings.LEGACY_SEARGE, "func_71410_x"),
-                                        entry(Mappings.YARN_INTERMEDIARY, "method_1551"),
-                                        entry(Mappings.CALAMUS, "m_20213497"));
-
-                var mcClient_hasServer =
-                        member(HAS_SERVER, mcClient, MappingMember.Type.METHOD)
-                                .methodType(MethodType.methodType(boolean.class))
-                                .mappings(
-                                        entry(Mappings.MOJANG, "hasSingleplayerServer"),
-                                        entry(Mappings.SEARGE, "m_91091_"),
-                                        entry(Mappings.LEGACY_SEARGE, "func_71356_B"),
-                                        entry(Mappings.YARN_INTERMEDIARY, "method_1496"),
-                                        entry(Mappings.CALAMUS, "m_10057689"));
-
-                var mcClient_getServer =
-                        member(GET_SERVER, mcClient, MappingMember.Type.METHOD)
-                                .methodType(MethodType.methodType(mcServer.clazz()))
-                                .mappings(
-                                        entry(Mappings.MOJANG, "getSingleplayerServer"),
-                                        entry(Mappings.SEARGE, "m_91092_"),
-                                        entry(Mappings.LEGACY_SEARGE, "func_71401_C"),
-                                        entry(Mappings.YARN_INTERMEDIARY, "method_1576"),
-                                        entry(Mappings.CALAMUS, "m_37046522"));
-
-                Reflecto.register(mcClient_getInstance);
-                Reflecto.register(mcClient_hasServer);
-                Reflecto.register(mcClient_getServer);
-            }
-        }
-    }
 
     // ----------------------------- Platform -----------------------------
 
@@ -180,9 +90,6 @@ public final class MetaAPIImpl implements MetaAPI {
 
     @Override
     public @NonNull Object server() {
-        if (!reflectionInitialized) {
-            this.initReflection();
-        }
         return lookupAll().stream()
                 .map(Platform.Meta::server)
                 .findFirst()
@@ -191,9 +98,6 @@ public final class MetaAPIImpl implements MetaAPI {
 
     @Override
     public @NonNull Object client() {
-        if (!reflectionInitialized) {
-            this.initReflection();
-        }
         return lookupAll().stream()
                 .map(Platform.Meta::client)
                 .findFirst()
@@ -202,9 +106,6 @@ public final class MetaAPIImpl implements MetaAPI {
 
     @Override
     public @NonNull Object minecraft() {
-        if (!reflectionInitialized) {
-            this.initReflection();
-        }
         return lookupAll().stream()
                 .map(Platform.Meta::minecraft)
                 .findFirst()
@@ -213,9 +114,6 @@ public final class MetaAPIImpl implements MetaAPI {
 
     @Override
     public @NonNull Side side() {
-        if (!reflectionInitialized) {
-            this.initReflection();
-        }
         return lookupAll().stream()
                 .map(Platform.Meta::side)
                 .findFirst()
