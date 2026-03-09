@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Dylan Sperrer - dylan@neuralnexus.dev
  * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
  */
-package dev.neuralnexus.taterapi.wrap.server;
+package dev.neuralnexus.taterapi.mc.server;
 
 import static dev.neuralnexus.taterapi.reflecto.MappingClass.builder;
 import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
@@ -17,7 +17,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.lang.invoke.MethodType;
 
-public final class WMinecraftServer {
+public final class MinecraftServer {
     public static final String MINECRAFT_SERVER = "MinecraftServer";
     public static final String IS_DEDICATED_SERVER = "isDedicatedServer";
 
