@@ -96,7 +96,7 @@ public final class MetaAPIImpl implements MetaAPI {
                                     entry(Mappings.SEARGE, "m_6982_"),
                                     entry(Mappings.LEGACY_SEARGE, "func_71262_S"),
                                     entry(Mappings.YARN_INTERMEDIARY, "method_3816"),
-                                    entry(Mappings.LEGACY_INTERMEDIARY, "method_2983"));
+                                    entry(Mappings.CALAMUS, "m_45654766"));
             Reflecto.register(mcServer_isDedicatedServer);
 
             if (this.isClient()) {
@@ -107,13 +107,11 @@ public final class MetaAPIImpl implements MetaAPI {
                                                 "net.minecraft.client.Minecraft",
                                                 Mappings.MOJANG,
                                                 Mappings.SEARGE,
-                                                Mappings.LEGACY_SEARGE),
+                                                Mappings.LEGACY_SEARGE,
+                                                Mappings.CALAMUS),
                                         entry(
                                                 Mappings.YARN_INTERMEDIARY,
-                                                "net.minecraft.class_310"),
-                                        entry(
-                                                Mappings.LEGACY_INTERMEDIARY,
-                                                "net.minecraft.class_1600"))
+                                                "net.minecraft.class_310"))
                                 .build();
 
                 var mcClient_getInstance =
@@ -124,7 +122,7 @@ public final class MetaAPIImpl implements MetaAPI {
                                         entry(Mappings.SEARGE, "m_91087_"),
                                         entry(Mappings.LEGACY_SEARGE, "func_71410_x"),
                                         entry(Mappings.YARN_INTERMEDIARY, "method_1551"),
-                                        entry(Mappings.LEGACY_INTERMEDIARY, "method_2965"));
+                                        entry(Mappings.CALAMUS, "m_20213497"));
 
                 var mcClient_hasServer =
                         member(HAS_SERVER, mcClient, MappingMember.Type.METHOD)
@@ -134,7 +132,7 @@ public final class MetaAPIImpl implements MetaAPI {
                                         entry(Mappings.SEARGE, "m_91091_"),
                                         entry(Mappings.LEGACY_SEARGE, "func_71356_B"),
                                         entry(Mappings.YARN_INTERMEDIARY, "method_1496"),
-                                        entry(Mappings.LEGACY_INTERMEDIARY, "method_2908"));
+                                        entry(Mappings.CALAMUS, "m_10057689"));
 
                 var mcClient_getServer =
                         member(GET_SERVER, mcClient, MappingMember.Type.METHOD)
@@ -144,7 +142,7 @@ public final class MetaAPIImpl implements MetaAPI {
                                         entry(Mappings.SEARGE, "m_91092_"),
                                         entry(Mappings.LEGACY_SEARGE, "func_71401_C"),
                                         entry(Mappings.YARN_INTERMEDIARY, "method_1576"),
-                                        entry(Mappings.LEGACY_INTERMEDIARY, "method_2909"));
+                                        entry(Mappings.CALAMUS, "m_37046522"));
 
                 Reflecto.register(mcClient_getInstance);
                 Reflecto.register(mcClient_hasServer);
@@ -334,7 +332,7 @@ public final class MetaAPIImpl implements MetaAPI {
             } else if (api.isPlatformPresent(Platforms.FABRIC)) {
                 // TODO: Add Babric and CursedFabric checks
                 if (this.version().lessThan(MinecraftVersions.V14)) {
-                    mappings = Mappings.LEGACY_INTERMEDIARY;
+                    mappings = Mappings.CALAMUS;
                 } else if (this.version().noLessThan(MinecraftVersions.V14)) {
                     mappings = Mappings.YARN_INTERMEDIARY;
                 }
