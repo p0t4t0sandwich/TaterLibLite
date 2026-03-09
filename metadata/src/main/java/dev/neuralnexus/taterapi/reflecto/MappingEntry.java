@@ -68,6 +68,13 @@ public record MappingEntry(
             return this;
         }
 
+        public @NonNull Builder range(
+                final @NonNull MinecraftVersion min, final @NonNull MinecraftVersion max) {
+            this.min = min;
+            this.max = max;
+            return this;
+        }
+
         public @NonNull Builder min(final @NonNull MinecraftVersion min) {
             this.min = min;
             return this;
