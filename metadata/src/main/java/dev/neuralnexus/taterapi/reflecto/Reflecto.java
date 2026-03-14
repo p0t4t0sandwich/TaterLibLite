@@ -33,12 +33,16 @@ public final class Reflecto {
         }
     }
 
-    public static void register(final MappingMember.@NonNull Builder builder) {
-        register(builder.build());
+    public static void register(final MappingMember.@NonNull Builder... builders) {
+        for (final MappingMember.Builder builder : builders) {
+            register(builder.build());
+        }
     }
 
-    public static void register(final @NonNull MappingMember member) {
-        final MethodHandle mh = member.resolve();
-        handles.put(member.parent().alias() + "." + member.alias(), mh);
+    public static void register(final @NonNull MappingMember... members) {
+        for (final MappingMember member : members) {
+            final MethodHandle mh = member.resolve();
+            handles.put(member.parent().alias() + "." + member.alias(), mh);
+        }
     }
 }

@@ -8,8 +8,11 @@ import static dev.neuralnexus.taterapi.reflecto.MappingClass.builder;
 import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
 import static dev.neuralnexus.taterapi.reflecto.MappingMember.member;
 
+import dev.neuralnexus.taterapi.mc.server.players.PlayerList;
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+import dev.neuralnexus.taterapi.reflecto.MappingClass;
 import dev.neuralnexus.taterapi.reflecto.MappingMember;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
 
@@ -20,30 +23,48 @@ import java.lang.invoke.MethodType;
 public final class MinecraftServer {
     public static final String MINECRAFT_SERVER = "MinecraftServer";
     public static final String IS_DEDICATED_SERVER = "isDedicatedServer";
+    public static final String GET_PLAYER_LIST = "getPlayerList";
+    public static MappingClass mcServerClass;
 
     private static boolean initialized = false;
 
-    private static void init() {
+    // spotless:off
+    public static void init() {
+        if (initialized) return;
         initialized = true;
 
-        var mcServer =
-                builder(
-                                MINECRAFT_SERVER,
-                                entry("net.minecraft.server.MinecraftServer").constant(true))
-                        .build();
+        mcServerClass = builder(MINECRAFT_SERVER,
+                entry("net.minecraft.server.MinecraftServer").constant(true))
+                .build();
 
-        var mcServer_isDedicatedServer =
-                member(IS_DEDICATED_SERVER, mcServer, MappingMember.Type.METHOD)
-                        .methodType(MethodType.methodType(boolean.class))
-                        .mappings(
-                                entry(Mappings.MOJANG, "isDedicatedServer"),
-                                entry(Mappings.SEARGE, "m_6982_"),
-                                entry(Mappings.LEGACY_SEARGE, "func_71262_S"),
-                                entry(Mappings.YARN_INTERMEDIARY, "method_3816"),
-                                entry(Mappings.CALAMUS, "m_45654766"));
+        var isDedicatedServer = member(IS_DEDICATED_SERVER, mcServerClass, MappingMember.Type.METHOD)
+                .methodType(MethodType.methodType(boolean.class))
+                .mappings(
+                        entry(Mappings.MOJANG, "isDedicatedServer"),
+                        entry(Mappings.SEARGE, "m_6982_",
+                                MinecraftVersions.V17),
+                        entry(Mappings.LEGACY_SEARGE, "func_71262_S",
+                                MinecraftVersions.V7, MinecraftVersions.V16_5),
+                        entry(Mappings.YARN_INTERMEDIARY, "method_3816"),
+                        entry(Mappings.CALAMUS, "m_45654766"));
 
-        Reflecto.register(mcServer_isDedicatedServer);
+        PlayerList.init();
+        var getPlayerList = member(GET_PLAYER_LIST, mcServerClass, MappingMember.Type.METHOD)
+                .methodType(MethodType.methodType(PlayerList.playerListClass.clazz()))
+                .mappings(
+                        entry(Mappings.MOJANG, "getPlayerList"),
+                        entry(Mappings.SEARGE, "m_6846_",
+                                MinecraftVersions.V17),
+                        entry(Mappings.LEGACY_SEARGE, "func_184103_al",
+                                MinecraftVersions.V9, MinecraftVersions.V16_5),
+                        entry(Mappings.LEGACY_SEARGE, "func_71203_ab",
+                                MinecraftVersions.V7, MinecraftVersions.V8_9),
+                        entry(Mappings.YARN_INTERMEDIARY, "method_3760"),
+                        entry(Mappings.CALAMUS, "m_49852985"));
+
+        Reflecto.register(isDedicatedServer, getPlayerList);
     }
+    // spotless:on
 
     @SuppressWarnings("unchecked")
     public static <T> @NonNull T getServer() {
@@ -53,5 +74,10 @@ public final class MinecraftServer {
     public static boolean isDedicatedServer(Object server) {
         if (!initialized) init();
         return Reflecto.invoke(MINECRAFT_SERVER, IS_DEDICATED_SERVER, server);
+    }
+
+    public static PlayerList getPlayerList(Object server) {
+        if (!initialized) init();
+        return PlayerList.wrap(Reflecto.invoke(MINECRAFT_SERVER, GET_PLAYER_LIST, server));
     }
 }

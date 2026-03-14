@@ -22,11 +22,11 @@ public record MappingMember(
         @NonNull Modifier modifier,
         @NonNull MethodType methodType) {
     public @NonNull MethodHandle resolve() {
-        return this.resolve(MethodHandles.lookup());
+        return this.resolve(MethodHandles.publicLookup());
     }
 
     public @NonNull MethodHandle resolve(MethodHandles.@NonNull Lookup lookup) {
-        if (access.equals(Access.PRIVATE) && !lookup.lookupClass().equals(this.parent.clazz())) {
+        if (!access.equals(Access.PUBLIC) && !lookup.lookupClass().equals(this.parent.clazz())) {
             try {
                 lookup = MethodHandles.privateLookupIn(this.parent.clazz(), lookup);
             } catch (final IllegalAccessException e) {
@@ -46,7 +46,23 @@ public record MappingMember(
     }
 
     private @NonNull MethodHandle resolveField(final MethodHandles.@NonNull Lookup lookup) {
-        throw new UnsupportedOperationException("Field resolution not implemented yet");
+        try {
+            return switch (modifier) {
+                case NONE, FINAL, SYNTHETIC ->
+                        lookup.findVirtual(this.parent.clazz(), this.mapping, this.methodType);
+                case STATIC ->
+                        lookup.findStatic(this.parent.clazz(), this.mapping, this.methodType);
+            };
+        } catch (final IllegalAccessException | NoSuchMethodException e) {
+            throw new RuntimeException(
+                    "Failed to resolve field: "
+                            + mapping
+                            + " in class: "
+                            + parent
+                            + " for Reflecto member: "
+                            + alias,
+                    e);
+        }
     }
 
     private @NonNull MethodHandle resolveMethod(final MethodHandles.@NonNull Lookup lookup) {
@@ -70,7 +86,16 @@ public record MappingMember(
     }
 
     private @NonNull MethodHandle resolveConstructor(final MethodHandles.@NonNull Lookup lookup) {
-        throw new UnsupportedOperationException("Constructor resolution not implemented yet");
+        try {
+            return lookup.findConstructor(this.parent.clazz(), this.methodType);
+        } catch (final IllegalAccessException | NoSuchMethodException e) {
+            throw new RuntimeException(
+                    "Failed to resolve constructor in class: "
+                            + parent
+                            + " for Reflecto member: "
+                            + alias,
+                    e);
+        }
     }
 
     public static Builder member(
@@ -155,7 +180,9 @@ public record MappingMember(
 
     public enum Access {
         PUBLIC,
-        PRIVATE
+        PRIVATE,
+        PROTECTED,
+        PACKAGE_PRIVATE
     }
 
     public enum Modifier {

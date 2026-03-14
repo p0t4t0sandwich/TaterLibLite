@@ -4,17 +4,16 @@
  */
 package dev.neuralnexus.taterapi.mc.client;
 
-import static dev.neuralnexus.taterapi.mc.server.MinecraftServer.MINECRAFT_SERVER;
 import static dev.neuralnexus.taterapi.reflecto.MappingClass.builder;
 import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
 import static dev.neuralnexus.taterapi.reflecto.MappingMember.member;
 
+import dev.neuralnexus.taterapi.mc.server.MinecraftServer;
 import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Side;
 import dev.neuralnexus.taterapi.reflecto.MappingMember;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
-
-import net.minecraft.server.MinecraftServer;
 
 import org.jspecify.annotations.NonNull;
 
@@ -28,61 +27,52 @@ public final class Minecraft {
 
     private static boolean initialized = false;
 
+    // spotless:off
     private static void init() {
+        if (initialized) return;
         initialized = true;
 
-        var mcServer =
-                builder(
-                                MINECRAFT_SERVER,
-                                entry("net.minecraft.server.MinecraftServer").constant(true))
-                        .build();
+        var mcClient = builder(MINECRAFT,
+                entry(Mappings.MOJANG, "net.minecraft.client.Minecraft"),
+                entry(Mappings.SEARGE, "net.minecraft.client.Minecraft",
+                        MinecraftVersions.V17),
+                entry(Mappings.LEGACY_SEARGE, "net.minecraft.client.Minecraft"),
+                entry(Mappings.CALAMUS, "net.minecraft.client.Minecraft"),
+                entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_310"))
+                .build();
 
-        var mcClient =
-                builder(
-                                MINECRAFT,
-                                entry(
-                                        "net.minecraft.client.Minecraft",
-                                        Mappings.MOJANG,
-                                        Mappings.SEARGE,
-                                        Mappings.LEGACY_SEARGE,
-                                        Mappings.CALAMUS),
-                                entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_310"))
-                        .build();
+        var getInstance = member(GET_INSTANCE, mcClient, MappingMember.Type.METHOD)
+                .methodType(MethodType.methodType(mcClient.clazz()))
+                .mappings(
+                        entry(Mappings.MOJANG, "getInstance"),
+                        entry(Mappings.SEARGE, "m_91087_",
+                                MinecraftVersions.V17),
+                        entry(Mappings.LEGACY_SEARGE, "func_71410_x"),
+                        entry(Mappings.YARN_INTERMEDIARY, "method_1551"),
+                        entry(Mappings.CALAMUS, "m_20213497"));
 
-        var mcClient_getInstance =
-                member(GET_INSTANCE, mcClient, MappingMember.Type.METHOD)
-                        .methodType(MethodType.methodType(mcClient.clazz()))
-                        .mappings(
-                                entry(Mappings.MOJANG, "getInstance"),
-                                entry(Mappings.SEARGE, "m_91087_"),
-                                entry(Mappings.LEGACY_SEARGE, "func_71410_x"),
-                                entry(Mappings.YARN_INTERMEDIARY, "method_1551"),
-                                entry(Mappings.CALAMUS, "m_20213497"));
+        var hasServer = member(HAS_SERVER, mcClient, MappingMember.Type.METHOD)
+                .methodType(MethodType.methodType(boolean.class))
+                .mappings(
+                        entry(Mappings.MOJANG, "hasSingleplayerServer"),
+                        entry(Mappings.SEARGE, "m_91091_"),
+                        entry(Mappings.LEGACY_SEARGE, "func_71356_B"),
+                        entry(Mappings.YARN_INTERMEDIARY, "method_1496"),
+                        entry(Mappings.CALAMUS, "m_10057689"));
 
-        var mcClient_hasServer =
-                member(HAS_SERVER, mcClient, MappingMember.Type.METHOD)
-                        .methodType(MethodType.methodType(boolean.class))
-                        .mappings(
-                                entry(Mappings.MOJANG, "hasSingleplayerServer"),
-                                entry(Mappings.SEARGE, "m_91091_"),
-                                entry(Mappings.LEGACY_SEARGE, "func_71356_B"),
-                                entry(Mappings.YARN_INTERMEDIARY, "method_1496"),
-                                entry(Mappings.CALAMUS, "m_10057689"));
+        MinecraftServer.init();
+        var getServer = member(GET_SERVER, mcClient, MappingMember.Type.METHOD)
+                .methodType(MethodType.methodType(MinecraftServer.mcServerClass.clazz()))
+                .mappings(
+                        entry(Mappings.MOJANG, "getSingleplayerServer"),
+                        entry(Mappings.SEARGE, "m_91092_"),
+                        entry(Mappings.LEGACY_SEARGE, "func_71401_C"),
+                        entry(Mappings.YARN_INTERMEDIARY, "method_1576"),
+                        entry(Mappings.CALAMUS, "m_37046522"));
 
-        var mcClient_getServer =
-                member(GET_SERVER, mcClient, MappingMember.Type.METHOD)
-                        .methodType(MethodType.methodType(mcServer.clazz()))
-                        .mappings(
-                                entry(Mappings.MOJANG, "getSingleplayerServer"),
-                                entry(Mappings.SEARGE, "m_91092_"),
-                                entry(Mappings.LEGACY_SEARGE, "func_71401_C"),
-                                entry(Mappings.YARN_INTERMEDIARY, "method_1576"),
-                                entry(Mappings.CALAMUS, "m_37046522"));
-
-        Reflecto.register(mcClient_getInstance);
-        Reflecto.register(mcClient_hasServer);
-        Reflecto.register(mcClient_getServer);
+        Reflecto.register(getInstance, hasServer, getServer);
     }
+    // spotless:on
 
     public static <T> @NonNull T getInstance() {
         if (!initialized) init();
@@ -98,7 +88,7 @@ public final class Minecraft {
      *
      * @return The MinecraftServer instance
      */
-    public static @NonNull MinecraftServer getServer() {
+    public static net.minecraft.server.MinecraftServer getServer() {
         return Reflecto.invoke(MINECRAFT, GET_SERVER, getInstance());
     }
 
