@@ -62,7 +62,7 @@ public final class Minecraft {
 
         MinecraftServer.init();
         var getServer = member(GET_SERVER, mcClient, MappingMember.Type.METHOD)
-                .methodType(MethodType.methodType(MinecraftServer.mcServerClass.clazz()))
+                .methodType(MethodType.methodType(MinecraftServer.CLASS))
                 .mappings(
                         entry(Mappings.MOJANG, "getSingleplayerServer"),
                         entry(Mappings.SEARGE, "m_91092_"),
@@ -75,8 +75,8 @@ public final class Minecraft {
     // spotless:on
 
     public static <T> @NonNull T getInstance() {
-        if (!initialized) init();
-        return Reflecto.invoke(MINECRAFT, GET_INSTANCE, null);
+        init();
+        return Reflecto.invoke(MINECRAFT, GET_INSTANCE);
     }
 
     public static boolean hasServer() {

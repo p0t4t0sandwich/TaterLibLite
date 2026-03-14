@@ -58,7 +58,7 @@ public sealed class StoredUserEntry implements Wrapped<Object> permits UserWhite
     private final Object storedUserEntry;
 
     StoredUserEntry(final @NonNull Object storedUserList) {
-        if (!initialized) init();
+        init();
         this.storedUserEntry = storedUserList;
     }
 

@@ -25,7 +25,7 @@ public final class UserWhiteListEntry extends StoredUserEntry {
         if (initialized) return;
         initialized = true;
 
-        var userWhiteListEntryClass = builder(USER_WHITE_LIST_ENTRY,
+        var userWhiteListEntry = builder(USER_WHITE_LIST_ENTRY,
                 entry(Mappings.MOJANG, "net.minecraft.server.players.UserWhiteListEntry"),
                 entry(Mappings.SEARGE, "net.minecraft.server.players.UserWhiteListEntry",
                         MinecraftVersions.V17),
@@ -43,7 +43,7 @@ public final class UserWhiteListEntry extends StoredUserEntry {
 
     UserWhiteListEntry(final @NonNull Object userWhiteListEntry) {
         super(userWhiteListEntry);
-        if (!initialized) init();
+        init();
         this.userWhiteListEntry = userWhiteListEntry;
     }
 

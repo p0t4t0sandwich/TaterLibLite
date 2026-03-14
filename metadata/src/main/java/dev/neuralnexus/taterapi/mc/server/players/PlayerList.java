@@ -11,7 +11,6 @@ import static dev.neuralnexus.taterapi.reflecto.MappingMember.member;
 import dev.neuralnexus.taterapi.Wrapped;
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-import dev.neuralnexus.taterapi.reflecto.MappingClass;
 import dev.neuralnexus.taterapi.reflecto.MappingMember;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
 
@@ -22,7 +21,7 @@ import java.lang.invoke.MethodType;
 public final class PlayerList implements Wrapped<Object> {
     public static final String PLAYER_LIST = "PlayerList";
     public static final String GET_WHITELIST = "getWhiteList";
-    public static MappingClass playerListClass;
+    public static Class<?> CLASS;
 
     private static boolean initialized = false;
 
@@ -31,7 +30,7 @@ public final class PlayerList implements Wrapped<Object> {
         if (initialized) return;
         initialized = true;
 
-        playerListClass = builder(PLAYER_LIST,
+        var playerList = builder(PLAYER_LIST,
                 entry(Mappings.MOJANG, "net.minecraft.server.players.PlayerList"),
                 entry(Mappings.SEARGE, "net.minecraft.server.players.PlayerList",
                         MinecraftVersions.V17),
@@ -42,10 +41,11 @@ public final class PlayerList implements Wrapped<Object> {
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3324"),
                 entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_29639016"))
                 .build();
+        CLASS = playerList.clazz();
 
         UserWhiteList.init();
-        var getWhiteList = member(GET_WHITELIST, playerListClass, MappingMember.Type.METHOD)
-                .methodType(MethodType.methodType(UserWhiteList.userWhiteListClass.clazz()))
+        var getWhiteList = member(GET_WHITELIST, playerList, MappingMember.Type.METHOD)
+                .methodType(MethodType.methodType(UserWhiteList.CLASS))
                 .mappings(
                         entry(Mappings.MOJANG, "getPlayerList"),
                         entry(Mappings.SEARGE, "m_6846_",
@@ -64,7 +64,7 @@ public final class PlayerList implements Wrapped<Object> {
     private final Object playerList;
 
     private PlayerList(final @NonNull Object playerList) {
-        if (!initialized) init();
+        init();
         this.playerList = playerList;
     }
 

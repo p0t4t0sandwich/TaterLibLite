@@ -9,7 +9,6 @@ import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-import dev.neuralnexus.taterapi.reflecto.MappingClass;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
 
 import org.jspecify.annotations.NonNull;
@@ -19,7 +18,7 @@ import java.util.Map;
 
 public final class UserWhiteList extends StoredUserList {
     public static final String USER_WHITE_LIST = "UserWhiteList";
-    public static MappingClass userWhiteListClass;
+    public static Class<?> CLASS;
 
     private static boolean initialized = false;
 
@@ -28,7 +27,7 @@ public final class UserWhiteList extends StoredUserList {
         if (initialized) return;
         initialized = true;
 
-        userWhiteListClass = builder(USER_WHITE_LIST,
+        CLASS = builder(USER_WHITE_LIST,
                 entry(Mappings.MOJANG, "net.minecraft.server.players.PlayerList"),
                 entry(Mappings.SEARGE, "net.minecraft.server.players.PlayerList",
                         MinecraftVersions.V17),
@@ -38,7 +37,7 @@ public final class UserWhiteList extends StoredUserList {
                         MinecraftVersions.V7, MinecraftVersions.V8_9),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3324"),
                 entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_29639016"))
-                .build();
+                .build().clazz();
     }
     // spotless:on
 
@@ -46,7 +45,7 @@ public final class UserWhiteList extends StoredUserList {
 
     private UserWhiteList(final @NonNull Object userWhiteList) {
         super(userWhiteList);
-        if (!initialized) init();
+        init();
         this.userWhiteList = userWhiteList;
     }
 

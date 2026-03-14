@@ -12,7 +12,6 @@ import dev.neuralnexus.taterapi.mc.server.players.PlayerList;
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-import dev.neuralnexus.taterapi.reflecto.MappingClass;
 import dev.neuralnexus.taterapi.reflecto.MappingMember;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
 
@@ -24,7 +23,7 @@ public final class MinecraftServer {
     public static final String MINECRAFT_SERVER = "MinecraftServer";
     public static final String IS_DEDICATED_SERVER = "isDedicatedServer";
     public static final String GET_PLAYER_LIST = "getPlayerList";
-    public static MappingClass mcServerClass;
+    public static Class<?> CLASS;
 
     private static boolean initialized = false;
 
@@ -33,11 +32,12 @@ public final class MinecraftServer {
         if (initialized) return;
         initialized = true;
 
-        mcServerClass = builder(MINECRAFT_SERVER,
+        var mcServer = builder(MINECRAFT_SERVER,
                 entry("net.minecraft.server.MinecraftServer").constant(true))
                 .build();
+        CLASS = mcServer.clazz();
 
-        var isDedicatedServer = member(IS_DEDICATED_SERVER, mcServerClass, MappingMember.Type.METHOD)
+        var isDedicatedServer = member(IS_DEDICATED_SERVER, mcServer, MappingMember.Type.METHOD)
                 .methodType(MethodType.methodType(boolean.class))
                 .mappings(
                         entry(Mappings.MOJANG, "isDedicatedServer"),
@@ -49,8 +49,8 @@ public final class MinecraftServer {
                         entry(Mappings.CALAMUS, "m_45654766"));
 
         PlayerList.init();
-        var getPlayerList = member(GET_PLAYER_LIST, mcServerClass, MappingMember.Type.METHOD)
-                .methodType(MethodType.methodType(PlayerList.playerListClass.clazz()))
+        var getPlayerList = member(GET_PLAYER_LIST, mcServer, MappingMember.Type.METHOD)
+                .methodType(MethodType.methodType(PlayerList.CLASS))
                 .mappings(
                         entry(Mappings.MOJANG, "getPlayerList"),
                         entry(Mappings.SEARGE, "m_6846_",
@@ -72,12 +72,12 @@ public final class MinecraftServer {
     }
 
     public static boolean isDedicatedServer(Object server) {
-        if (!initialized) init();
+        init();
         return Reflecto.invoke(MINECRAFT_SERVER, IS_DEDICATED_SERVER, server);
     }
 
     public static PlayerList getPlayerList(Object server) {
-        if (!initialized) init();
+        init();
         return PlayerList.wrap(Reflecto.invoke(MINECRAFT_SERVER, GET_PLAYER_LIST, server));
     }
 }

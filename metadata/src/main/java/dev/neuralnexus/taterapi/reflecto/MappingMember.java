@@ -39,23 +39,44 @@ public record MappingMember(
             }
         }
         return switch (this.type) {
-            case FIELD -> resolveField(lookup);
+            case FIELD_GETTER -> resolveFieldGetter(lookup);
+            case FIELD_SETTER -> resolveFieldSetter(lookup);
             case METHOD -> resolveMethod(lookup);
             case CONSTRUCTOR -> resolveConstructor(lookup);
         };
     }
 
-    private @NonNull MethodHandle resolveField(final MethodHandles.@NonNull Lookup lookup) {
+    private @NonNull MethodHandle resolveFieldGetter(final MethodHandles.@NonNull Lookup lookup) {
         try {
-            return switch (modifier) {
-                case NONE, FINAL, SYNTHETIC ->
-                        lookup.findVirtual(this.parent.clazz(), this.mapping, this.methodType);
-                case STATIC ->
-                        lookup.findStatic(this.parent.clazz(), this.mapping, this.methodType);
-            };
-        } catch (final IllegalAccessException | NoSuchMethodException e) {
+            if (modifier == Modifier.STATIC) {
+                return lookup.findStaticGetter(
+                        this.parent.clazz(), this.mapping, this.methodType.returnType());
+            }
+            return lookup.findGetter(
+                    this.parent.clazz(), this.mapping, this.methodType.returnType());
+        } catch (final IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(
-                    "Failed to resolve field: "
+                    "Failed to resolve field getter: "
+                            + mapping
+                            + " in class: "
+                            + parent
+                            + " for Reflecto member: "
+                            + alias,
+                    e);
+        }
+    }
+
+    private @NonNull MethodHandle resolveFieldSetter(final MethodHandles.@NonNull Lookup lookup) {
+        try {
+            if (modifier == Modifier.STATIC) {
+                return lookup.findStaticSetter(
+                        this.parent.clazz(), this.mapping, this.methodType.parameterType(0));
+            }
+            return lookup.findSetter(
+                    this.parent.clazz(), this.mapping, this.methodType.parameterType(0));
+        } catch (final IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(
+                    "Failed to resolve field setter: "
                             + mapping
                             + " in class: "
                             + parent
@@ -173,7 +194,8 @@ public record MappingMember(
     }
 
     public enum Type {
-        FIELD,
+        FIELD_GETTER,
+        FIELD_SETTER,
         METHOD,
         CONSTRUCTOR
     }

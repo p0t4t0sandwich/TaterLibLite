@@ -16,21 +16,24 @@ public final class Reflecto {
 
     @SuppressWarnings("unchecked")
     public static <T> @NonNull T invoke(
-            final @NonNull String parent,
-            final @NonNull String alias,
-            final Object target,
-            final Object... args) {
+            final @NonNull String parent, final @NonNull String alias, final Object... args) {
+        final MethodHandle mh = getHandle(parent, alias);
+        try {
+            return (T) mh.invokeWithArguments(args);
+        } catch (final Throwable e) {
+            throw new RuntimeException(
+                    "Failed to invoke MethodHandle for: " + parent + "." + alias, e);
+        }
+    }
+
+    public static @NonNull MethodHandle getHandle(
+            final @NonNull String parent, final @NonNull String alias) {
         final MethodHandle mh = handles.get(parent + "." + alias);
         if (mh == null) {
             throw new IllegalStateException(
                     "No MethodHandle registered for: " + parent + "." + alias);
         }
-        try {
-            return (T) mh.invokeWithArguments(target, args);
-        } catch (final Throwable e) {
-            throw new RuntimeException(
-                    "Failed to invoke MethodHandle for: " + parent + "." + alias, e);
-        }
+        return mh;
     }
 
     public static void register(final MappingMember.@NonNull Builder... builders) {

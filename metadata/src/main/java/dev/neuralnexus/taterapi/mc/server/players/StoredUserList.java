@@ -66,7 +66,7 @@ public sealed class StoredUserList implements Wrapped<Object> permits UserWhiteL
     private final Object storedUserList;
 
     StoredUserList(final @NonNull Object storedUserList) {
-        if (!initialized) init();
+        init();
         this.storedUserList = storedUserList;
     }
 
