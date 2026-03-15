@@ -66,9 +66,8 @@ public final class MinecraftServer {
     }
     // spotless:on
 
-    @SuppressWarnings("unchecked")
-    public static <T> @NonNull T getServer() {
-        return (T) MetaAPI.instance().server();
+    public static net.minecraft.server.@NonNull MinecraftServer getServer() {
+        return (net.minecraft.server.MinecraftServer) MetaAPI.instance().server();
     }
 
     public static boolean isDedicatedServer(Object server) {
@@ -76,8 +75,16 @@ public final class MinecraftServer {
         return Reflecto.invoke(MINECRAFT_SERVER, IS_DEDICATED_SERVER, server);
     }
 
+    public static boolean isDedicatedServer() {
+        return isDedicatedServer(getServer());
+    }
+
     public static PlayerList getPlayerList(Object server) {
         init();
         return PlayerList.wrap(Reflecto.invoke(MINECRAFT_SERVER, GET_PLAYER_LIST, server));
+    }
+
+    public static PlayerList getPlayerList() {
+        return getPlayerList(getServer());
     }
 }
