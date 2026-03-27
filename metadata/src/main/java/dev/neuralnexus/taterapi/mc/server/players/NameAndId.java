@@ -36,13 +36,13 @@ public record NameAndId(@NonNull UUID id, @NonNull String name) implements Wrapp
     public static final String NAME_AND_ID_CONSTRUCTOR_ID_NAME = "NameAndIdConstructorIdName";
     public static final String NAME = "name";
     public static final String ID = "id";
-    private static Class<?> CLASS;
+    public static Class<?> CLASS;
     private static final Logger logger = Logger.create("TaterLibLite/NameAndId");
 
     private static boolean initialized = false;
 
     // spotless:off
-    private static void init() {
+    public static void init() {
         if (initialized) return;
         initialized = true;
 
@@ -86,14 +86,14 @@ public record NameAndId(@NonNull UUID id, @NonNull String name) implements Wrapp
     }
     // spotless:on
 
-    public static NameAndId wrap(final @NonNull Object nameAndId) {
+    public static @NonNull NameAndId wrap(final @NonNull Object nameAndId) {
         init();
         if (!CLASS.isInstance(nameAndId)) {
             throw new IllegalArgumentException("Object is not an instance of NameAndId");
         }
         try {
-            var id = (UUID) Reflecto.getHandle(NAME_AND_ID, ID).invokeExact(nameAndId);
-            var name = (String) Reflecto.getHandle(NAME_AND_ID, NAME).invokeExact(nameAndId);
+            final UUID id = (UUID) Reflecto.getHandle(NAME_AND_ID, ID).invokeExact(nameAndId);
+            final String name = (String) Reflecto.getHandle(NAME_AND_ID, NAME).invokeExact(nameAndId);
             return new NameAndId(id, name);
         } catch (final Throwable e) {
             logger.error("Failed to wrap NameAndId", e);
@@ -115,8 +115,16 @@ public record NameAndId(@NonNull UUID id, @NonNull String name) implements Wrapp
         this(getId(profile), getName(profile));
     }
 
-    public NameAndId(final com.mojang.authlib.yggdrasil.response.NameAndId profile) {
+    public NameAndId(final com.mojang.authlib.yggdrasil.response.@NonNull NameAndId profile) {
         this(profile.id(), profile.name());
+    }
+
+    public @NonNull GameProfile toProfile() {
+        return new GameProfile(this.id, this.name);
+    }
+
+    public com.mojang.authlib.yggdrasil.response.@NonNull NameAndId toYggdrasil() {
+        return new com.mojang.authlib.yggdrasil.response.NameAndId(this.id, this.name);
     }
 
     private static final MethodHandle nameHandle;
