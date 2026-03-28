@@ -93,7 +93,8 @@ public record NameAndId(@NonNull UUID id, @NonNull String name) implements Wrapp
         }
         try {
             final UUID id = (UUID) Reflecto.getHandle(NAME_AND_ID, ID).invokeExact(nameAndId);
-            final String name = (String) Reflecto.getHandle(NAME_AND_ID, NAME).invokeExact(nameAndId);
+            final String name =
+                    (String) Reflecto.getHandle(NAME_AND_ID, NAME).invokeExact(nameAndId);
             return new NameAndId(id, name);
         } catch (final Throwable e) {
             logger.error("Failed to wrap NameAndId", e);
