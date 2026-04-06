@@ -91,11 +91,7 @@ public final class MixinServiceUtil {
     public static void checkForClass(@NonNull final String className)
             throws IOException, ClassNotFoundException {
         if (checkForOldMixin()) {
-            try {
-                checkForOldMixinClass(className);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
+            checkForOldMixinClass(className);
             return;
         }
         MixinService.getService().getBytecodeProvider().getClassNode(className);
@@ -141,7 +137,14 @@ public final class MixinServiceUtil {
     }
 
     /** Check for classes using old Mixin versions */
-    public static void checkForOldMixinClass(@NonNull final String className) throws Throwable {
-        getClassNodeHandle.invoke(MixinService.getService().getBytecodeProvider(), className);
+    public static void checkForOldMixinClass(@NonNull final String className)
+            throws IOException, ClassNotFoundException {
+        try {
+            getClassNodeHandle.invoke(MixinService.getService().getBytecodeProvider(), className);
+        } catch (final IOException | ClassNotFoundException e) {
+            throw e;
+        } catch (final Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 }
