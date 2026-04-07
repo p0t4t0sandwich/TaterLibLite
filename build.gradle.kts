@@ -1,4 +1,3 @@
-import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 import java.time.Instant
 
 plugins {
@@ -60,7 +59,6 @@ subprojects {
     spotless {
         format("misc") {
             target("*.gradle.kts", ".gitattributes", ".gitignore")
-//            target(".gitattributes", ".gitignore")
             trimTrailingWhitespace()
             leadingTabsToSpaces()
             endWithNewline()
