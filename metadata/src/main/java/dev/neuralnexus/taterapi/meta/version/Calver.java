@@ -10,4 +10,5 @@ import dev.neuralnexus.taterapi.meta.impl.version.MinecraftVersionImpl;
 public interface Calver {
     // TODO: Add snapshots
     MinecraftVersion V26_1 = MinecraftVersionImpl.of("26.1");
+    MinecraftVersion V26_1_1 = MinecraftVersionImpl.of("26.1.1");
 }
