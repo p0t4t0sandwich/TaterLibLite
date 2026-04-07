@@ -60,6 +60,7 @@ subprojects {
     spotless {
         format("misc") {
             target("*.gradle.kts", ".gitattributes", ".gitignore")
+//            target(".gitattributes", ".gitignore")
             trimTrailingWhitespace()
             leadingTabsToSpaces()
             endWithNewline()
