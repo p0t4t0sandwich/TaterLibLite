@@ -11,6 +11,8 @@ import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platform;
 
+import java.lang.reflect.InvocationTargetException;
+
 /** Stores data about the Forge platform */
 public final class ForgeData {
     public static Platform.Meta create() {
@@ -19,7 +21,18 @@ public final class ForgeData {
             if (version.lessThan(MinecraftVersions.V26_1)) {
                 return new FMLLoaderMeta();
             }
-            return new FMLLoaderMeta_26();
+            try { // TODO: Restructure project
+                final Class<?> clazz =
+                        Class.forName(
+                                "dev.neuralnexus.taterapi.meta.impl.platform.meta.forge.FMLLoaderMeta_26");
+                return (Platform.Meta) clazz.getDeclaredConstructor().newInstance();
+            } catch (final ClassNotFoundException
+                    | IllegalAccessException
+                    | InstantiationException
+                    | InvocationTargetException
+                    | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
         } else if (checkForClass("net.minecraftforge.fml.common.Loader")) {
             return new MCFLoaderMeta();
         } else if (checkForClass("cpw.mods.fml.common.Loader")) {
