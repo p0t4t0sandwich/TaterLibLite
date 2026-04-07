@@ -98,7 +98,7 @@ public final class AnnotationChecker {
             final @NonNull String mixinClassName, final boolean verbose)
             throws ClassNotFoundException, IOException {
         final ClassNode classNode =
-                MixinService.getService().getBytecodeProvider().getClassNode(mixinClassName, false);
+                MixinService.getService().getBytecodeProvider().getClassNode(mixinClassName);
 
         if (classNode.visibleAnnotations != null) {
             return AnnotationChecker.checkAnnotations(
