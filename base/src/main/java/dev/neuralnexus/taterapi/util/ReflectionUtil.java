@@ -4,6 +4,8 @@
  */
 package dev.neuralnexus.taterapi.util;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
 
 /** Utility class for reflection operations */
@@ -14,7 +16,7 @@ public final class ReflectionUtil {
         try {
             Class.forName("org.spongepowered.asm.service.MixinService");
             isMixinPresent = true;
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             isMixinPresent = false;
         }
     }
@@ -25,8 +27,8 @@ public final class ReflectionUtil {
      * @param className The class(es) to check
      * @return True if one of the classes exists
      */
-    public static boolean checkForClass(String... className) {
-        for (String s : className) {
+    public static boolean checkForClass(final @NonNull String... className) {
+        for (final String s : className) {
             try {
                 if (isMixinPresent) {
                     MixinServiceUtil.checkForClass(s);
@@ -34,7 +36,7 @@ public final class ReflectionUtil {
                     Class.forName(s);
                 }
                 return true;
-            } catch (ClassNotFoundException | IOException ignored) {
+            } catch (final ClassNotFoundException | IOException ignored) {
             }
         }
         return false;
@@ -47,7 +49,8 @@ public final class ReflectionUtil {
      * @param methodName The method to check.
      * @return Whether the method exists.
      */
-    public static boolean checkForMethod(String className, String methodName) {
+    public static boolean checkForMethod(
+            final @NonNull String className, final @NonNull String methodName) {
         try {
             if (isMixinPresent) {
                 MixinServiceUtil.checkForMethod(className, methodName);
@@ -55,7 +58,7 @@ public final class ReflectionUtil {
                 Class.forName(className).getDeclaredMethod(methodName);
             }
             return true;
-        } catch (ClassNotFoundException | NoSuchMethodException | IOException e) {
+        } catch (final ClassNotFoundException | NoSuchMethodException | IOException e) {
             return false;
         }
     }
