@@ -23,7 +23,7 @@ import java.util.List;
  * <br>
  * <br>
  * <a
- * href="https://github.com/unascribed/FlexVer/blob/trunk/java/src/main/java/com/unascribed/flexver/FlexVerComparator.java">FlexVer
+ * href="https://git.sleeping.town/exa/FlexVer/src/branch/trunk/java/src/main/java/com/unascribed/flexver/FlexVerComparator.java">FlexVer
  * v1.1.1</a> <br>
  * Implements FlexVer, a SemVer-compatible intuitive comparator for free-form versioning strings as
  * seen in the wild. It's designed to sort versions like people do, rather than attempting to force
