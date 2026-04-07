@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Stores data about the FMLLoader platform */
-sealed class FMLLoaderMeta implements Platform.Meta permits FMLLoaderMeta_26 {
+class FMLLoaderMeta implements Platform.Meta {
     private final boolean oldLifeCycleHooks =
             checkForClass("net.minecraftforge.fml.server.ServerLifecycleHooks");
 

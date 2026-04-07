@@ -1,8 +1,23 @@
 import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 import java.time.Instant
 
+plugins {
+    alias(libs.plugins.unimined)
+}
+
 base {
     archivesName = "metadata"
+}
+
+val forge26: SourceSet by sourceSets.creating
+val forge26CompileOnly: Configuration by configurations.getting
+
+unimined.minecraft(forge26) {
+    combineWith(sourceSets.main.get())
+    version("26.1.1")
+    minecraftForge {
+        loader("63.0.1")
+    }
 }
 
 dependencies {
@@ -22,6 +37,10 @@ dependencies {
 
     // TODO: Replace with proper source sets
     compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.28")
+
+//    forge26CompileOnly(files(sourceSets.main.get().output))
+//    forge26CompileOnly("net.minecraftforge:fmlcore:26.1.1-63.0.1")
+//    forge26CompileOnly("net.minecraftforge:fmlloader:26.1.1-63.0.1")
 }
 
 tasks.test {
