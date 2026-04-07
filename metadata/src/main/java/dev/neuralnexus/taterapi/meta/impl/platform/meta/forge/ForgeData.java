@@ -6,13 +6,20 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta.forge;
 
 import static dev.neuralnexus.taterapi.util.ReflectionUtil.checkForClass;
 
+import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platform;
 
 /** Stores data about the Forge platform */
 public final class ForgeData {
     public static Platform.Meta create() {
         if (checkForClass("net.minecraftforge.fml.loading.FMLLoader")) {
-            return new FMLLoaderMeta();
+            final MinecraftVersion version = MetaAPI.instance().version();
+            if (version.lessThan(MinecraftVersions.V26_1)) {
+                return new FMLLoaderMeta();
+            }
+            return new FMLLoaderMeta_26();
         } else if (checkForClass("net.minecraftforge.fml.common.Loader")) {
             return new MCFLoaderMeta();
         } else if (checkForClass("cpw.mods.fml.common.Loader")) {
