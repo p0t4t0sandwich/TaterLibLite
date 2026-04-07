@@ -116,15 +116,18 @@ public final class MixinServiceUtil {
 
     /** Some mixin runtimes use a shaded copy of ASM */
     public static boolean checkForShadedASM() {
-        if (shadedASM) {
-            return true;
-        }
+        if (shadedASM) return true;
         try {
-            Class.forName("org.spongepowered.asm.lib.tree.ClassNode");
-            shadedASM = true;
-            return true;
-        } catch (final ClassNotFoundException e) {
-            return false;
+            // Check for:
+            // org.spongepowered.asm.lib.tree.ClassNode
+            // org.spongepowered.asm.service.IClassBytecodeProvider.getClassNode(java.lang.String)
+            final Class<?> iType =
+                    Class.forName("org.spongepowered.asm.service.IClassBytecodeProvider");
+            final Class<?> rType = Class.forName("org.spongepowered.asm.lib.tree.ClassNode");
+            shadedASM = iType.getMethod("getClassNode", String.class).getReturnType().equals(rType);
+        } catch (final ClassNotFoundException | NoSuchMethodException e) {
+            shadedASM = false;
         }
+        return shadedASM;
     }
 }
