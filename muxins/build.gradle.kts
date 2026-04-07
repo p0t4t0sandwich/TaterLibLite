@@ -27,7 +27,7 @@ var relocatedMixinJar = tasks.register<ShadowJar>("relocatedMixinJar") {
     archiveClassifier.set("relocated")
     from(sourceSets.main.get().output)
     relocate("dev.neuralnexus.taterapi.muxins", "dev.neuralnexus.taterapi.muxins.shaded")
-    relocate("org.objectweb.asm", " org.spongepowered.asm.lib")
+    relocate("org.objectweb.asm", "org.spongepowered.asm.lib")
 }
 
 tasks.jar {

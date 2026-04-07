@@ -30,7 +30,7 @@ dependencies {
 var relocatedMixinJar = tasks.register<ShadowJar>("relocatedMixinJar") {
     archiveClassifier.set("relocated")
     from(relocatedMixin.output)
-    relocate("org.objectweb.asm", " org.spongepowered.asm.lib")
+    relocate("org.objectweb.asm", "org.spongepowered.asm.lib")
 }
 
 tasks.jar {
