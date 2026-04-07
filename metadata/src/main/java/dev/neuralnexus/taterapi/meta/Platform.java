@@ -122,7 +122,8 @@ public interface Platform {
         /**
          * Get an instance of the platform's server. <br>
          * In abstracted environments, this will return the platform's server object. <br>
-         * In client-only environments, this will return the client instance.
+         * In client-only environments, this will return the client instance. <br>
+         * TODO: Rethink this somewhat in 0.3.0, as it's confusing af
          *
          * @return The server instance
          */
