@@ -43,6 +43,8 @@ tasks.test {
 }
 
 tasks.jar {
+    from(sourceSets.main.get().output, forge26.output)
+    DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(
             mapOf(
