@@ -4,18 +4,29 @@
  */
 package dev.neuralnexus.taterapi.util;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
 
 /** Utility class for reflection operations */
 public final class ReflectionUtil {
-    private static boolean isMixinPresent;
+    private static boolean isMixinPresent = false;
+
+    // ModernMixin's ByteCodeProvider always gives a ClassNode even for classes that don't exist
+    // meaning the usual "soft" reflection checks are no longer valid
+    private static boolean isModernMixinsModPresent = false;
 
     static {
         try {
+            Class.forName("org.redlance.dima_dencep.mods.modernmixins.ModernMixinsMod");
+            isModernMixinsModPresent = true;
+        } catch (final ClassNotFoundException ignored) {
+        }
+
+        try {
             Class.forName("org.spongepowered.asm.service.MixinService");
             isMixinPresent = true;
-        } catch (ClassNotFoundException e) {
-            isMixinPresent = false;
+        } catch (final ClassNotFoundException ignored) {
         }
     }
 
@@ -25,16 +36,16 @@ public final class ReflectionUtil {
      * @param className The class(es) to check
      * @return True if one of the classes exists
      */
-    public static boolean checkForClass(String... className) {
-        for (String s : className) {
+    public static boolean checkForClass(final @NonNull String... className) {
+        for (final String s : className) {
             try {
-                if (isMixinPresent) {
+                if (isMixinPresent && !isModernMixinsModPresent) {
                     MixinServiceUtil.checkForClass(s);
                 } else {
                     Class.forName(s);
                 }
                 return true;
-            } catch (ClassNotFoundException | IOException ignored) {
+            } catch (final ClassNotFoundException | IOException ignored) {
             }
         }
         return false;
@@ -47,15 +58,16 @@ public final class ReflectionUtil {
      * @param methodName The method to check.
      * @return Whether the method exists.
      */
-    public static boolean checkForMethod(String className, String methodName) {
+    public static boolean checkForMethod(
+            final @NonNull String className, final @NonNull String methodName) {
         try {
-            if (isMixinPresent) {
+            if (isMixinPresent && !isModernMixinsModPresent) {
                 MixinServiceUtil.checkForMethod(className, methodName);
             } else {
                 Class.forName(className).getDeclaredMethod(methodName);
             }
             return true;
-        } catch (ClassNotFoundException | NoSuchMethodException | IOException e) {
+        } catch (final ClassNotFoundException | NoSuchMethodException | IOException e) {
             return false;
         }
     }

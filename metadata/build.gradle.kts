@@ -1,8 +1,23 @@
 import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 import java.time.Instant
 
+plugins {
+    alias(libs.plugins.unimined)
+}
+
 base {
     archivesName = "metadata"
+}
+
+val forge26: SourceSet by sourceSets.creating
+val forge26CompileOnly: Configuration by configurations.getting
+
+unimined.minecraft(forge26) {
+    combineWith(sourceSets.main.get())
+    version("26.1.1")
+    minecraftForge {
+        loader("63.0.1")
+    }
 }
 
 dependencies {
@@ -28,6 +43,8 @@ tasks.test {
 }
 
 tasks.jar {
+    from(sourceSets.main.get().output, forge26.output)
+    DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(
             mapOf(

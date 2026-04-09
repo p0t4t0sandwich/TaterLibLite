@@ -9,13 +9,14 @@ import dev.neuralnexus.taterapi.meta.version.Alpha;
 import dev.neuralnexus.taterapi.meta.version.Beta;
 import dev.neuralnexus.taterapi.meta.version.Calver;
 import dev.neuralnexus.taterapi.meta.version.Classic;
+import dev.neuralnexus.taterapi.meta.version.Flattened;
 import dev.neuralnexus.taterapi.meta.version.Indev;
 import dev.neuralnexus.taterapi.meta.version.Infdev;
 import dev.neuralnexus.taterapi.meta.version.PreClassic;
 import dev.neuralnexus.taterapi.meta.version.Release;
 
 public final class MinecraftVersions
-        implements PreClassic, Classic, Indev, Infdev, Alpha, Beta, Release, Calver {
+        implements PreClassic, Classic, Indev, Infdev, Alpha, Beta, Release, Flattened, Calver {
     public static final MinecraftVersion UNKNOWN = MinecraftVersionImpl.of("unknown");
 
     /**

@@ -22,7 +22,10 @@ import dev.neuralnexus.taterapi.meta.enums.Platform;
 import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.spongepowered.asm.service.MixinService;
 
+import java.io.IOException;
 import java.util.List;
 
 /** Checks annotations on mixins */
@@ -79,6 +82,28 @@ public final class AnnotationChecker {
             }
         }
         Constraint.Evaluator.DEBUG = debug;
+        return true;
+    }
+
+    /**
+     * Checks the annotations on a mixin
+     *
+     * @param mixinClassName The name of the mixin class
+     * @param verbose If the method should log the result
+     * @return If the mixin should be applied
+     * @throws ClassNotFoundException If the mixin class is not found
+     * @throws IOException propagated
+     */
+    public static boolean checkAnnotations(
+            final @NonNull String mixinClassName, final boolean verbose)
+            throws ClassNotFoundException, IOException {
+        final ClassNode classNode =
+                MixinService.getService().getBytecodeProvider().getClassNode(mixinClassName);
+
+        if (classNode.visibleAnnotations != null) {
+            return AnnotationChecker.checkAnnotations(
+                    classNode.visibleAnnotations, mixinClassName, verbose);
+        }
         return true;
     }
 

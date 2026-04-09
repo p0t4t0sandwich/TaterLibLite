@@ -1,4 +1,3 @@
-import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 import java.time.Instant
 
 plugins {
@@ -135,7 +134,7 @@ sourceSets.main {
         property("version", version.toString())
         property("license", license)
         property("author", author)
-        property("description", description)
+        property("description", description ?: "")
         property("homepage_url", homepageUrl)
     }
 }

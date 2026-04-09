@@ -30,6 +30,8 @@ import net.minecraftforge.forgespi.language.IModInfo;
 
 import org.jspecify.annotations.NonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
@@ -38,11 +40,32 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Stores data about the FMLLoader platform */
-final class FMLLoaderMeta implements Platform.Meta {
+class FMLLoaderMeta implements Platform.Meta {
     private final boolean oldLifeCycleHooks =
             checkForClass("net.minecraftforge.fml.server.ServerLifecycleHooks");
 
-    private static Field modsField;
+    private static MethodHandle getModsHandle;
+
+    @SuppressWarnings("unchecked")
+    private static List<net.minecraftforge.fml.ModContainer> getModsField() {
+        if (getModsHandle == null) {
+            try {
+                final Field mods = ModList.class.getDeclaredField("mods");
+                mods.setAccessible(true);
+                getModsHandle =
+                        MethodHandles.privateLookupIn(ModList.class, MethodHandles.lookup())
+                                .unreflectGetter(mods);
+            } catch (final NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            return (List<net.minecraftforge.fml.ModContainer>)
+                    getModsHandle.invokeExact(ModList.get());
+        } catch (final Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public @NonNull Object server() {
@@ -97,32 +120,16 @@ final class FMLLoaderMeta implements Platform.Meta {
         if (ModList.get() != null) {
             final MinecraftVersion version = MetaAPI.instance().version();
             if (version.isInRange(MinecraftVersions.V13, MinecraftVersions.V21_3)) {
-                if (modsField == null) {
-                    try {
-                        modsField = ModList.class.getDeclaredField("mods");
-                        modsField.setAccessible(true);
-                    } catch (final NoSuchFieldException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                try {
-                    if (modsField != null) {
-                        return ((List<net.minecraftforge.fml.ModContainer>)
-                                        modsField.get(ModList.get()))
-                                .stream()
-                                        .map(mc -> (ModContainer<T>) this.toContainer(mc))
-                                        .collect(Collectors.toList());
-                    }
-                } catch (final IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+                return getModsField().stream()
+                        .map(mc -> (ModContainer<T>) toContainer(mc))
+                        .collect(Collectors.toList());
             }
             return ModList.get().getLoadedMods().stream()
-                    .map(mc -> (ModContainer<T>) this.toContainer(mc))
+                    .map(mc -> (ModContainer<T>) toContainer(mc))
                     .collect(Collectors.toList());
         } else {
             return LoadingModList.get().getMods().stream()
-                    .map(info -> (ModContainer<T>) this.toContainer(info))
+                    .map(info -> (ModContainer<T>) toContainer(info))
                     .collect(Collectors.toList());
         }
     }
@@ -134,11 +141,11 @@ final class FMLLoaderMeta implements Platform.Meta {
             Optional<? extends net.minecraftforge.fml.ModContainer> container =
                     ModList.get().getModContainerById(modId);
             if (container.isPresent()) {
-                return Optional.of((ModContainer<T>) this.toContainer(container.get()));
+                return Optional.of((ModContainer<T>) toContainer(container.get()));
             }
             container = ModList.get().getModContainerById(modId.toLowerCase(Locale.ROOT));
             if (container.isPresent()) {
-                return Optional.of((ModContainer<T>) this.toContainer(container.get()));
+                return Optional.of((ModContainer<T>) toContainer(container.get()));
             }
         } else {
             return LoadingModList.get().getMods().stream()
@@ -147,7 +154,7 @@ final class FMLLoaderMeta implements Platform.Meta {
                                     m.getModId().equals(modId)
                                             || m.getModId().equals(modId.toLowerCase(Locale.ROOT)))
                     .findFirst()
-                    .map(i -> (ModContainer<T>) this.toContainer(i));
+                    .map(i -> (ModContainer<T>) toContainer(i));
         }
         return Optional.empty();
     }
@@ -198,7 +205,7 @@ final class FMLLoaderMeta implements Platform.Meta {
         return true;
     }
 
-    private @NonNull ModContainer<net.minecraftforge.fml.ModContainer> toContainer(
+    @NonNull ModContainer<net.minecraftforge.fml.ModContainer> toContainer(
             final net.minecraftforge.fml.@NonNull ModContainer container) {
         return new ModContainerImpl<>(
                 container,
@@ -222,7 +229,7 @@ final class FMLLoaderMeta implements Platform.Meta {
                         }));
     }
 
-    private @NonNull ModContainer<IModInfo> toContainer(final IModInfo info) {
+    @NonNull ModContainer<IModInfo> toContainer(final IModInfo info) {
         return new ModContainerImpl<>(
                 info,
                 new ModInfoImpl(
