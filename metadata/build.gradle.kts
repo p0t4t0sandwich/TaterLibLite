@@ -26,8 +26,6 @@ dependencies {
     testImplementation(project(":base"))
     testRuntimeOnly(project(":base"))
 
-    compileOnly(libs.mojang.authlib)
-
     compileOnly(libs.mixin)
     compileOnly(libs.asm.tree)
 
