@@ -6,13 +6,13 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta.sponge;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.ApacheLogger;
-import dev.neuralnexus.taterapi.mc.client.Minecraft;
-import dev.neuralnexus.taterapi.mc.server.MinecraftServer;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
+import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
+import dev.neuralnexus.taterapi.meta.impl.WMinecraftServer;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.FabricMeta;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModContainerImpl;
 import dev.neuralnexus.taterapi.meta.impl.platform.meta.ModInfoImpl;
@@ -43,13 +43,13 @@ final class SpongeModernMeta implements Platform.Meta {
 
     @Override
     public @NonNull Object client() {
-        return Minecraft.getInstance();
+        return WMinecraft.getInstance();
     }
 
     @Override
     public @NonNull Object minecraft() {
-        if (this.side().isClient() && Minecraft.hasServer()) {
-            return Minecraft.getServer();
+        if (this.side().isClient() && WMinecraft.hasServer()) {
+            return WMinecraft.getServer();
         }
         return this.server();
     }
@@ -59,7 +59,7 @@ final class SpongeModernMeta implements Platform.Meta {
         if (Sponge.server() == null) {
             return Side.CLIENT;
         }
-        return MinecraftServer.isDedicatedServer(Sponge.server()) ? Side.INTEGRATED : Side.SERVER;
+        return WMinecraftServer.isDedicatedServer(Sponge.server()) ? Side.INTEGRATED : Side.SERVER;
     }
 
     @Override

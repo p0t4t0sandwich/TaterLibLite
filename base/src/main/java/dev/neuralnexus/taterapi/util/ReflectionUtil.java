@@ -10,14 +10,23 @@ import java.io.IOException;
 
 /** Utility class for reflection operations */
 public final class ReflectionUtil {
-    private static boolean isMixinPresent;
+    private static boolean isMixinPresent = false;
+
+    // ModernMixin's ByteCodeProvider always gives a ClassNode even for classes that don't exist
+    // meaning the usual "soft" reflection checks are no longer valid
+    private static boolean isModernMixinsModPresent = false;
 
     static {
         try {
+            Class.forName("org.redlance.dima_dencep.mods.modernmixins.ModernMixinsMod");
+            isModernMixinsModPresent = true;
+        } catch (final ClassNotFoundException ignored) {
+        }
+
+        try {
             Class.forName("org.spongepowered.asm.service.MixinService");
             isMixinPresent = true;
-        } catch (final ClassNotFoundException e) {
-            isMixinPresent = false;
+        } catch (final ClassNotFoundException ignored) {
         }
     }
 
@@ -30,7 +39,7 @@ public final class ReflectionUtil {
     public static boolean checkForClass(final @NonNull String... className) {
         for (final String s : className) {
             try {
-                if (isMixinPresent) {
+                if (isMixinPresent && !isModernMixinsModPresent) {
                     MixinServiceUtil.checkForClass(s);
                 } else {
                     Class.forName(s);
@@ -52,7 +61,7 @@ public final class ReflectionUtil {
     public static boolean checkForMethod(
             final @NonNull String className, final @NonNull String methodName) {
         try {
-            if (isMixinPresent) {
+            if (isMixinPresent && !isModernMixinsModPresent) {
                 MixinServiceUtil.checkForMethod(className, methodName);
             } else {
                 Class.forName(className).getDeclaredMethod(methodName);
