@@ -14,5 +14,6 @@ include(
     ":base",
     ":core",
     ":metadata",
-    ":muxins"
+    ":muxins",
+    ":network"
 )
