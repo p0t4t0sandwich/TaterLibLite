@@ -4,6 +4,8 @@
  */
 package dev.neuralnexus.taterapi.meta;
 
+import org.jspecify.annotations.NonNull;
+
 /** Enum for platform runtime mappings */
 public enum Mappings {
     UNKNOWN("unknown"),
@@ -17,18 +19,19 @@ public enum Mappings {
     MCP("mcp"),
     YARN("yarn"),
     YARN_INTERMEDIARY("yarn intermediary"), // Fabric 1.14+
-    LEGACY_INTERMEDIARY("legacy intermediary"), // Fabric 1.13-
+    // Deprecated by LegacyFabric, they now use Orinthe (Calamus) intermediary mappings
+    LEGACY_INTERMEDIARY("legacy intermediary"),
     BABRIC_INTERMEDIARY("babric intermediary"),
-    CALAMUS("calamus"),
+    CALAMUS("calamus"), // Fabric 1.13-
     HASHED("hashed");
 
     private final String name;
 
-    Mappings(String name) {
+    Mappings(@NonNull final String name) {
         this.name = name;
     }
 
-    public boolean is(Mappings mappings) {
+    public boolean is(@NonNull final Mappings mappings) {
         return this == mappings;
     }
 

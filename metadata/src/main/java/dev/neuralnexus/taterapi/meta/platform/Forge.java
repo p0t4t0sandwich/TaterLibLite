@@ -16,5 +16,9 @@ public interface Forge {
                     "cpw.mods.fml.common.Loader");
     Platform GOLDENFORGE =
             new PlatformImpl("GoldenForge", "org.goldenforgelauncher.GoldenForgeEntryPoint");
-    Platform NEOFORGE = new PlatformImpl("NeoForge", "net.neoforged.neoforge.common.NeoForge");
+    Platform NEOFORGE =
+            new PlatformImpl(
+                    "NeoForge",
+                    "net.neoforged.fml.ModLoader",
+                    "net.neoforged.neoforge.common.NeoForge");
 }
