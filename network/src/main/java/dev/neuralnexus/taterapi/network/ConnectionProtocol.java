@@ -103,12 +103,22 @@ public enum ConnectionProtocol {
 
     private final @NonNull String id;
 
-    ConnectionProtocol(@NonNull String id) {
+    ConnectionProtocol(final @NonNull String id) {
         this.id = id;
     }
 
     public @NonNull String id() {
         return this.id;
+    }
+    
+    public static ConnectionProtocol fromLegacyId(final int id) {
+        return switch (id) {
+            case -1 -> HANDSHAKING;
+            case 0 -> PLAY;
+            case 1 -> STATUS;
+            case 2 -> LOGIN;
+            default -> throw new IllegalStateException("Unexpected value: " + id);
+        };
     }
 
     protected final PacketRegistry clientbound = new PacketRegistry(PacketFlow.CLIENTBOUND, this);
@@ -118,7 +128,7 @@ public enum ConnectionProtocol {
         return direction == PacketFlow.CLIENTBOUND ? this.clientbound : this.serverbound;
     }
 
-    public @NonNull StreamCodec<? extends ByteBuf, ? extends Packet> codec(
+    public @NonNull Optional<StreamCodec<ByteBuf, Packet>> codec(
             final @NonNull PacketFlow direction, final int id) {
         return this.getProtocolRegistry(direction).codec(id);
     }
@@ -128,6 +138,7 @@ public enum ConnectionProtocol {
         public final @NonNull ConnectionProtocol protocol;
         final IntObjectMap<ProtocolInfo<? extends Packet>> intToProtocolInfo =
                 new IntObjectHashMap<>(16, 0.5f);
+        final Object2IntMap<Class<? extends Packet>> classToInt = new Object2IntOpenHashMap<>();
 
         public PacketRegistry(
                 final @NonNull PacketFlow direction, final @NonNull ConnectionProtocol protocol) {
@@ -155,18 +166,13 @@ public enum ConnectionProtocol {
             this.intToProtocolInfo.put(id, new ProtocolInfo<>(clazz, identifier, codec));
         }
 
-        public @NonNull StreamCodec<? extends ByteBuf, ? extends Packet> codec(int id) {
+        @SuppressWarnings("unchecked")
+        public Optional<StreamCodec<ByteBuf, Packet>> codec(final int id) {
             ProtocolInfo<? extends Packet> protocolInfo = this.intToProtocolInfo.get(id);
             if (protocolInfo == null) {
-                throw new IllegalArgumentException(
-                        "No protocol info found for id: "
-                                + id
-                                + " in "
-                                + this.direction.id()
-                                + " "
-                                + this.protocol.id());
+                return Optional.empty();
             }
-            return protocolInfo.codec();
+            return Optional.of((StreamCodec<ByteBuf, Packet>) protocolInfo.codec());
         }
     }
 
