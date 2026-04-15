@@ -21,9 +21,7 @@ public interface CustomPacketPayload {
     StreamCodec<@NonNull ByteBuf, @NonNull CustomPacketPayload> DEFAULT_CODEC =
             CustomPacketPayload.codec(CustomPacketPayload::codec);
 
-    @NonNull String id();
-
-    @NonNull ByteBuf data();
+    @NonNull String id(); // TODO: convert to Identifier abstraction
 
     static <B extends @NonNull ByteBuf, T extends @NonNull CustomPacketPayload>
             StreamCodec<B, T> codec(
@@ -37,24 +35,13 @@ public interface CustomPacketPayload {
         return new StreamCodec<>() {
             @Override
             public CustomPacketPayload decode(final @NonNull B buffer) {
-                final ByteBuf data = readPayload(buffer);
-                return new CustomPacketPayload() {
-                    @Override
-                    public @NonNull String id() {
-                        return identifier;
-                    }
-
-                    @Override
-                    public @NonNull ByteBuf data() {
-                        return data;
-                    }
-                };
+                return new Raw(identifier, readPayload(buffer));
             }
 
             @Override
             public void encode(
                     final @NonNull ByteBuf buffer, final @NonNull CustomPacketPayload value) {
-                buffer.writeBytes(value.data().slice());
+                buffer.writeBytes(((Raw) value).data().slice());
             }
         };
     }
@@ -96,4 +83,6 @@ public interface CustomPacketPayload {
         StreamCodec<? super ByteBuf, ? extends CustomPacketPayload> create(
                 final @NonNull String identifier);
     }
+
+    record Raw(@NonNull String id, @NonNull ByteBuf data) implements CustomPacketPayload {}
 }

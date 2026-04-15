@@ -18,14 +18,13 @@ import org.jspecify.annotations.NonNull;
 public interface CustomQueryAnswerPayload {
     StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryAnswerPayload> DEFAULT_CODEC =
             CustomQueryAnswerPayload.codec(
-                    (value, buf) -> buf.writeBytes(readPayload(value.data())),
+                    (value, buffer) -> buffer.writeBytes(((Raw) value).data().slice()),
                     // TODO: Discover why simplifying this further causes deserialization issues
+                    // TODO: Test to see if it still happens after the introduction of Raw record
                     buffer -> {
                         final ByteBuf data = readPayload(buffer);
-                        return () -> data;
+                        return new Raw(data);
                     });
-
-    @NonNull ByteBuf data();
 
     static <B extends @NonNull ByteBuf, T extends @NonNull CustomQueryAnswerPayload>
             StreamCodec<B, T> codec(
@@ -38,4 +37,6 @@ public interface CustomQueryAnswerPayload {
             final int transactionId) {
         return NetworkRegistry.getQueryAnswerPayloadCodec(transactionId).orElse(DEFAULT_CODEC);
     }
+
+    record Raw(@NonNull ByteBuf data) implements CustomQueryAnswerPayload {}
 }

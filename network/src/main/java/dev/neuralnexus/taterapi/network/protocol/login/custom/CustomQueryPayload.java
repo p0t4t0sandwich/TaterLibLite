@@ -21,9 +21,7 @@ public interface CustomQueryPayload {
     StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryPayload> DEFAULT_CODEC =
             CustomQueryPayload.codec(CustomQueryPayload::codec);
 
-    @NonNull String id();
-
-    @NonNull ByteBuf data();
+    @NonNull String id(); // TODO: convert to Identifier abstraction
 
     static <B extends @NonNull ByteBuf, T extends @NonNull CustomQueryPayload>
             StreamCodec<B, T> codec(
@@ -37,24 +35,13 @@ public interface CustomQueryPayload {
         return new StreamCodec<>() {
             @Override
             public CustomQueryPayload decode(final @NonNull B buffer) {
-                final ByteBuf data = readPayload(buffer);
-                return new CustomQueryPayload() {
-                    @Override
-                    public @NonNull String id() {
-                        return identifier;
-                    }
-
-                    @Override
-                    public @NonNull ByteBuf data() {
-                        return data;
-                    }
-                };
+                return new Raw(identifier, readPayload(buffer));
             }
 
             @Override
             public void encode(
                     final @NonNull ByteBuf buffer, final @NonNull CustomQueryPayload value) {
-                buffer.writeBytes(value.data().slice());
+                buffer.writeBytes(((Raw) value).data().slice());
             }
         };
     }
@@ -95,4 +82,6 @@ public interface CustomQueryPayload {
         StreamCodec<? super ByteBuf, ? extends CustomQueryPayload> create(
                 final @NonNull String identifier);
     }
+
+    record Raw(@NonNull String id, @NonNull ByteBuf data) implements CustomQueryPayload {}
 }
