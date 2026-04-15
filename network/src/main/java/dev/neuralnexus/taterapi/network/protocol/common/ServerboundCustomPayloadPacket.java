@@ -7,6 +7,8 @@ package dev.neuralnexus.taterapi.network.protocol.common;
 import dev.neuralnexus.taterapi.network.NetworkRegistry;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.Packet;
+import dev.neuralnexus.taterapi.network.protocol.PacketType;
+import dev.neuralnexus.taterapi.network.protocol.PacketTypes;
 import dev.neuralnexus.taterapi.network.protocol.common.custom.CustomPacketPayload;
 import dev.neuralnexus.taterapi.serialization.Codec;
 
@@ -22,6 +24,11 @@ public record ServerboundCustomPayloadPacket(@NonNull CustomPacketPayload payloa
 
     public static final Codec<?, ServerboundCustomPayloadPacket> ADAPTER_CODEC =
             NetworkRegistry.adapters().getTo(ServerboundCustomPayloadPacket.class).orElse(null);
+
+    @Override
+    public PacketType<ServerboundCustomPayloadPacket> type() {
+        return PacketTypes.COMMON.SERVERBOUND_CUSTOM_PAYLOAD;
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> @NonNull ServerboundCustomPayloadPacket fromMC(final @NonNull T obj) {

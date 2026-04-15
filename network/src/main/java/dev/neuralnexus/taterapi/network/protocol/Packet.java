@@ -15,6 +15,8 @@ import org.jspecify.annotations.NonNull;
 public interface Packet {
     // void handle(final @NonNull T handler);
 
+    PacketType<? extends Packet> type();
+
     static <B extends ByteBuf, T extends Packet> StreamCodec<B, T> codec(
             final @NonNull StreamMemberEncoder<B, T> encoder,
             final @NonNull StreamDecoder<B, T> decoder) {

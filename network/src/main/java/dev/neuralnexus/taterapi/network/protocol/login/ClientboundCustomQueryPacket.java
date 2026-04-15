@@ -10,6 +10,8 @@ import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeVarInt;
 import dev.neuralnexus.taterapi.network.NetworkRegistry;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.Packet;
+import dev.neuralnexus.taterapi.network.protocol.PacketType;
+import dev.neuralnexus.taterapi.network.protocol.PacketTypes;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
 import dev.neuralnexus.taterapi.serialization.Codec;
 
@@ -34,6 +36,11 @@ public record ClientboundCustomQueryPacket(int transactionId, @NonNull CustomQue
     private void write(final @NonNull ByteBuf buf) {
         writeVarInt(buf, this.transactionId);
         CustomQueryPayload.DEFAULT_CODEC.encode(buf, this.payload);
+    }
+
+    @Override
+    public PacketType<ClientboundCustomQueryPacket> type() {
+        return PacketTypes.LOGIN.CLIENTBOUND_CUSTOM_QUERY;
     }
 
     @SuppressWarnings("unchecked")
