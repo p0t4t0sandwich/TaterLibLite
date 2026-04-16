@@ -4,13 +4,11 @@
  */
 package dev.neuralnexus.taterapi.network.protocol.common;
 
-import dev.neuralnexus.taterapi.network.NetworkRegistry;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.Packet;
 import dev.neuralnexus.taterapi.network.protocol.PacketType;
 import dev.neuralnexus.taterapi.network.protocol.PacketTypes;
 import dev.neuralnexus.taterapi.network.protocol.common.custom.CustomPacketPayload;
-import dev.neuralnexus.taterapi.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
 
@@ -22,21 +20,8 @@ public record ClientboundCustomPayloadPacket(@NonNull CustomPacketPayload payloa
             CustomPacketPayload.DEFAULT_CODEC.map(
                     ClientboundCustomPayloadPacket::new, ClientboundCustomPayloadPacket::payload);
 
-    public static final Codec<?, ClientboundCustomPayloadPacket> ADAPTER_CODEC =
-            NetworkRegistry.adapters().getTo(ClientboundCustomPayloadPacket.class).orElse(null);
-
     @Override
     public PacketType<ClientboundCustomPayloadPacket> type() {
         return PacketTypes.COMMON.CLIENTBOUND_CUSTOM_PAYLOAD;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> @NonNull ClientboundCustomPayloadPacket fromMC(final @NonNull T obj) {
-        return ((Codec<T, ClientboundCustomPayloadPacket>) ADAPTER_CODEC).encode(obj).unwrap();
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> @NonNull T toMC() {
-        return ((Codec<T, ClientboundCustomPayloadPacket>) ADAPTER_CODEC).decode(this).unwrap();
     }
 }

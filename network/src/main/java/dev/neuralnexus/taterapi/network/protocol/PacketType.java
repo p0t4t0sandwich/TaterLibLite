@@ -15,25 +15,20 @@ public interface PacketType<T extends Packet> {
 
     @NonNull PacketFlow flow();
 
-    @NonNull String identifier();
+    @NonNull String id();
 
     @NonNull StreamCodec<ByteBuf, Packet> codec();
 
     record Definition<T extends Packet>(
             @NonNull Class<T> clazz,
             @NonNull PacketFlow flow,
-            @NonNull String identifier, // TODO: Change to Identifier abstraction
+            @NonNull String id, // TODO: Change to Identifier abstraction
             @NonNull StreamCodec<ByteBuf, Packet> codec)
             implements PacketType<T> {
 
         @Override
         public @NonNull String toString() {
-            return this.flow.name()
-                    + "/"
-                    + this.identifier
-                    + " ("
-                    + this.clazz.getSimpleName()
-                    + ")";
+            return this.flow.name() + "/" + this.id + " (" + this.clazz.getSimpleName() + ")";
         }
     }
 
@@ -44,7 +39,7 @@ public interface PacketType<T extends Packet> {
     final class Builder<T extends Packet> {
         private final Class<T> clazz;
         private PacketFlow flow;
-        private String identifier;
+        private String id;
         private StreamCodec<ByteBuf, Packet> codec;
 
         public Builder(final @NonNull Class<T> clazz) {
@@ -57,16 +52,20 @@ public interface PacketType<T extends Packet> {
         }
 
         public Builder<T> identifier(final @NonNull String identifier) {
-            if (!identifier.contains(":")) {
-                this.identifier = "minecraft:" + identifier;
-            } else {
-                this.identifier = identifier;
-            }
+            this.id = identifier;
             return this;
         }
 
         public Builder<T> identifier(final @NonNull String path, final @NonNull String name) {
-            this.identifier = path + ":" + name;
+            this.id = path + ":" + name;
+            return this;
+        }
+
+        public Builder<T> identifier(
+                final @NonNull String path,
+                final @NonNull String name,
+                final @NonNull String resource) {
+            this.id = path + ":" + name + "/" + resource;
             return this;
         }
 
@@ -77,10 +76,10 @@ public interface PacketType<T extends Packet> {
         }
 
         public PacketType.Definition<T> build() {
-            if (this.flow == null || this.identifier == null || this.codec == null) {
+            if (this.flow == null || this.id == null || this.codec == null) {
                 throw new IllegalStateException("All fields must be set");
             }
-            return new PacketType.Definition<>(this.clazz, this.flow, this.identifier, this.codec);
+            return new PacketType.Definition<>(this.clazz, this.flow, this.id, this.codec);
         }
     }
 }

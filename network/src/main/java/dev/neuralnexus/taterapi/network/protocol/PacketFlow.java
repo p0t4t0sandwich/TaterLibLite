@@ -8,7 +8,8 @@ import org.jspecify.annotations.NonNull;
 
 public enum PacketFlow {
     SERVERBOUND("serverbound"),
-    CLIENTBOUND("clientbound");
+    CLIENTBOUND("clientbound"),
+    BIDIRECTIONAL("bidirectional");
 
     private final String id;
 

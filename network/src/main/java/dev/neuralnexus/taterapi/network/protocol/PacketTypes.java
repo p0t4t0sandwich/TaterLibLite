@@ -8,42 +8,48 @@ import dev.neuralnexus.taterapi.network.protocol.common.ClientboundCustomPayload
 import dev.neuralnexus.taterapi.network.protocol.common.ServerboundCustomPayloadPacket;
 import dev.neuralnexus.taterapi.network.protocol.login.ClientboundCustomQueryPacket;
 import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAnswerPacket;
+import dev.neuralnexus.taterapi.network.protocol.login.ServerboundHelloPacket;
+import dev.neuralnexus.taterapi.registries.AdapterRegistry;
 
 import org.jspecify.annotations.NonNull;
 
 public interface PacketTypes {
-    final class LOGIN {
-        public static final PacketType<ClientboundCustomQueryPacket> CLIENTBOUND_CUSTOM_QUERY =
-                createClientbound(ClientboundCustomQueryPacket.class, "custom_query")
-                        .codec(ClientboundCustomQueryPacket.STREAM_CODEC)
-                        .build();
-        public static final PacketType<ServerboundCustomQueryAnswerPacket>
-                SERVERBOUND_CUSTOM_QUERY_ANSWER =
-                        createServerbound(
-                                        ServerboundCustomQueryAnswerPacket.class,
-                                        "custom_query_answer")
-                                .codec(ServerboundCustomQueryAnswerPacket.STREAM_CODEC)
-                                .build();
+    // spotless:off
+    interface HANDSHAKING {}
+    interface STATUS {}
+    interface LOGIN {
+        PacketType<ClientboundCustomQueryPacket> CLIENTBOUND_CUSTOM_QUERY =
+                clientbound(ClientboundCustomQueryPacket.class, "minecraft:custom_query")
+                        .codec(ClientboundCustomQueryPacket.STREAM_CODEC).build();
+
+        PacketType<ServerboundCustomQueryAnswerPacket> SERVERBOUND_CUSTOM_QUERY_ANSWER =
+                serverbound(ServerboundCustomQueryAnswerPacket.class, "minecraft:custom_query_answer")
+                        .codec(ServerboundCustomQueryAnswerPacket.STREAM_CODEC).build();
+        PacketType<ServerboundHelloPacket> SERVERBOUND_HELLO =
+                serverbound(ServerboundHelloPacket.class, "minecraft:hello")
+                        .codec(ServerboundHelloPacket.STREAM_CODEC).build();
     }
+    interface CONFIGURATION {}
+    interface PLAY {}
+    interface COMMON {
+        PacketType<ClientboundCustomPayloadPacket> CLIENTBOUND_CUSTOM_PAYLOAD =
+                clientbound(ClientboundCustomPayloadPacket.class, "minecraft:custom_payload")
+                        .codec(ClientboundCustomPayloadPacket.STREAM_CODEC).build();
 
-    class COMMON {
-        public static final PacketType<ClientboundCustomPayloadPacket> CLIENTBOUND_CUSTOM_PAYLOAD =
-                createClientbound(ClientboundCustomPayloadPacket.class, "custom_payload")
-                        .codec(ClientboundCustomPayloadPacket.STREAM_CODEC)
-                        .build();
-
-        public static final PacketType<ServerboundCustomPayloadPacket> SERVERBOUND_CUSTOM_PAYLOAD =
-                createServerbound(ServerboundCustomPayloadPacket.class, "custom_payload")
-                        .codec(ServerboundCustomPayloadPacket.STREAM_CODEC)
-                        .build();
+        PacketType<ServerboundCustomPayloadPacket> SERVERBOUND_CUSTOM_PAYLOAD =
+                serverbound(ServerboundCustomPayloadPacket.class, "minecraft:custom_payload")
+                        .codec(ServerboundCustomPayloadPacket.STREAM_CODEC).build();
     }
+    // spotless:on
 
-    static <T extends Packet> PacketType.Builder<T> createClientbound(
+    AdapterRegistry ADAPTERS = new AdapterRegistry();
+
+    static <T extends Packet> PacketType.Builder<T> clientbound(
             final @NonNull Class<T> clazz, final @NonNull String id) {
         return PacketType.builder(clazz).flow(PacketFlow.CLIENTBOUND).identifier(id);
     }
 
-    static <T extends Packet> PacketType.Builder<T> createServerbound(
+    static <T extends Packet> PacketType.Builder<T> serverbound(
             final @NonNull Class<T> clazz, final @NonNull String id) {
         return PacketType.builder(clazz).flow(PacketFlow.SERVERBOUND).identifier(id);
     }

@@ -4,31 +4,22 @@
  */
 package dev.neuralnexus.taterapi.network;
 
-import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.Packet;
 import dev.neuralnexus.taterapi.network.protocol.PacketFlow;
 import dev.neuralnexus.taterapi.network.protocol.PacketType;
 import dev.neuralnexus.taterapi.network.protocol.PacketTypes;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.util.collection.IntObjectHashMap;
-import io.netty.util.collection.IntObjectMap;
+import dev.neuralnexus.taterapi.network.protocol.PayloadTypes;
 
 import org.jspecify.annotations.NonNull;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 public enum Protocol {
     HANDSHAKING("handshake"),
     STATUS("status"),
     LOGIN("login") {
         {
+            // TODO: A soft lower bound of 1.13 that's overridable in some way
             serverbound.register(PacketTypes.LOGIN.SERVERBOUND_CUSTOM_QUERY_ANSWER, map(0x02));
             clientbound.register(PacketTypes.LOGIN.CLIENTBOUND_CUSTOM_QUERY, map(0x04));
         }
@@ -85,6 +76,10 @@ public enum Protocol {
         }
     };
 
+    static {
+        PayloadRegistry.register(PayloadTypes.CUSTOM.BRAND, map(MinecraftVersions.V13));
+    }
+
     private final @NonNull String id;
 
     Protocol(final @NonNull String id) {
@@ -132,84 +127,44 @@ public enum Protocol {
         return this.getProtocolRegistry(direction).id(clazz);
     }
 
-    public static class PacketRegistry {
-        public final @NonNull PacketFlow direction;
-        public final @NonNull Protocol protocol;
-        final IntObjectMap<PacketType<Packet>> idToProtocolInfo = new IntObjectHashMap<>(16, 0.5f);
-        final Map<Class<Packet>, Integer> classToId = new HashMap<>(16, 0.5f);
-
-        public PacketRegistry(
-                final @NonNull PacketFlow direction, final @NonNull Protocol protocol) {
-            this.direction = direction;
-            this.protocol = protocol;
-        }
-
-        @SuppressWarnings("unchecked")
-        public <T extends Packet> void register(
-                @NonNull PacketType<T> protocolInfo, @NonNull PacketMapping... mappings) {
-            if (mappings.length == 0) {
-                throw new IllegalArgumentException("At least one mapping must be provided");
-            }
-            final int id =
-                    Stream.of(mappings)
-                            .map(PacketMapping::resolve)
-                            .flatMap(Optional::stream)
-                            .findFirst()
-                            .orElse(-1);
-            if (id == -1) {
-                return;
-            }
-            this.idToProtocolInfo.put(id, (PacketType<Packet>) protocolInfo);
-            this.classToId.put((Class<Packet>) protocolInfo.clazz(), id);
-        }
-
-        public PacketType<Packet> info(final int id) {
-            return this.idToProtocolInfo.get(id);
-        }
-
-        public int id(final @NonNull Class<? extends Packet> clazz) {
-            return this.classToId.get(clazz);
-        }
-
-        public Optional<StreamCodec<ByteBuf, Packet>> codec(final int id) {
-            PacketType<Packet> protocolInfo = this.idToProtocolInfo.get(id);
-            if (protocolInfo == null) {
-                return Optional.empty();
-            }
-            return Optional.of(protocolInfo.codec());
-        }
-    }
-
-    public static @NonNull PacketMapping map(
+    public static PacketRegistry.@NonNull Mapping map(
             final int id,
             final @NonNull MinecraftVersion since,
             final @NonNull MinecraftVersion until) {
-        return new PacketMapping(id, since, until);
+        return new PacketRegistry.Mapping(id, since, until);
     }
 
-    public static @NonNull PacketMapping map(final int id, final @NonNull MinecraftVersion since) {
-        return new PacketMapping(id, since);
+    public static PacketRegistry.@NonNull Mapping map(
+            final int id, final @NonNull MinecraftVersion since) {
+        return new PacketRegistry.Mapping(id, since);
     }
 
-    public static @NonNull PacketMapping map(final int id) {
-        return new PacketMapping(id);
+    public static PacketRegistry.@NonNull Mapping map(final int id) {
+        return new PacketRegistry.Mapping(id);
     }
 
-    public record PacketMapping(
-            int id, @NonNull MinecraftVersion since, @NonNull MinecraftVersion until) {
-        public PacketMapping(int id, @NonNull MinecraftVersion since) {
-            this(id, since, MinecraftVersions.UNKNOWN);
-        }
+    public static PayloadRegistry.@NonNull Mapping map(
+            final @NonNull String identifier,
+            final @NonNull MinecraftVersion since,
+            final @NonNull MinecraftVersion until) {
+        return new PayloadRegistry.Mapping(identifier, since, until);
+    }
 
-        public PacketMapping(int id) {
-            this(id, MinecraftVersions.UNKNOWN, MinecraftVersions.UNKNOWN);
-        }
+    public static PayloadRegistry.@NonNull Mapping map(
+            final @NonNull MinecraftVersion since, final @NonNull MinecraftVersion until) {
+        return new PayloadRegistry.Mapping(null, since, until);
+    }
 
-        public Optional<Integer> resolve() {
-            if (Constraint.range(this.since, this.until).result()) {
-                return Optional.of(this.id);
-            }
-            return Optional.empty();
-        }
+    public static PayloadRegistry.@NonNull Mapping map(
+            final @NonNull String identifier, final @NonNull MinecraftVersion since) {
+        return new PayloadRegistry.Mapping(identifier, since);
+    }
+
+    public static PayloadRegistry.@NonNull Mapping map(final @NonNull MinecraftVersion since) {
+        return new PayloadRegistry.Mapping(null, since);
+    }
+
+    public static PayloadRegistry.@NonNull Mapping map(final @NonNull String identifier) {
+        return new PayloadRegistry.Mapping(identifier);
     }
 }

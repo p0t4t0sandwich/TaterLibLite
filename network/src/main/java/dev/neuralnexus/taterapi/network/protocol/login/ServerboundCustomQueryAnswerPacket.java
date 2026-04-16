@@ -9,13 +9,11 @@ import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readVarInt;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeNullable;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeVarInt;
 
-import dev.neuralnexus.taterapi.network.NetworkRegistry;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.Packet;
 import dev.neuralnexus.taterapi.network.protocol.PacketType;
 import dev.neuralnexus.taterapi.network.protocol.PacketTypes;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
-import dev.neuralnexus.taterapi.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
 
@@ -28,9 +26,6 @@ public record ServerboundCustomQueryAnswerPacket(
             Packet.codec(
                     ServerboundCustomQueryAnswerPacket::write,
                     ServerboundCustomQueryAnswerPacket::read);
-
-    public static final Codec<?, ServerboundCustomQueryAnswerPacket> ADAPTER_CODEC =
-            NetworkRegistry.adapters().getTo(ServerboundCustomQueryAnswerPacket.class).orElse(null);
 
     public ServerboundCustomQueryAnswerPacket(final int transactionId) {
         this(transactionId, null);
@@ -51,15 +46,5 @@ public record ServerboundCustomQueryAnswerPacket(
     @Override
     public PacketType<ServerboundCustomQueryAnswerPacket> type() {
         return PacketTypes.LOGIN.SERVERBOUND_CUSTOM_QUERY_ANSWER;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> @NonNull ServerboundCustomQueryAnswerPacket fromMC(final @NonNull T obj) {
-        return ((Codec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC).encode(obj).unwrap();
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> @NonNull T toMC() {
-        return ((Codec<T, ServerboundCustomQueryAnswerPacket>) ADAPTER_CODEC).decode(this).unwrap();
     }
 }
