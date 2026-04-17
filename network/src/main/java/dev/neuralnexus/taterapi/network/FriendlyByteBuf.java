@@ -151,14 +151,6 @@ public final class FriendlyByteBuf extends ByteBuf {
         return readUtf(this.source, maxLength);
     }
 
-    public int readVarInt() {
-        return readVarInt(this.source);
-    }
-
-    public @NonNull UUID readUUID() {
-        return readUUID(this.source);
-    }
-
     public @NonNull ByteBuf writeUtf(final @NonNull String string, int maxLength) {
         return writeUtf(this.source, string, maxLength);
     }
@@ -167,8 +159,20 @@ public final class FriendlyByteBuf extends ByteBuf {
         return writeUtf(this.source, string, MAX_STRING_LENGTH);
     }
 
+    public int readVarInt() {
+        return readVarInt(this.source);
+    }
+
     public @NonNull ByteBuf writeVarInt(final int input) {
         return writeVarInt(this.source, input);
+    }
+
+    public @NonNull UUID readUUID() {
+        return readUUID(this.source);
+    }
+
+    public @NonNull ByteBuf writeUUID(final @NonNull UUID uuid) {
+        return writeUUID(this.source, uuid);
     }
 
     public byte[] readByteArray(final int maxLength) {
@@ -207,8 +211,16 @@ public final class FriendlyByteBuf extends ByteBuf {
         return readInstant(this.source);
     }
 
+    public @NonNull ByteBuf writeInstant(final @NonNull Instant instant) {
+        return writeInstant(this.source, instant);
+    }
+
     public @NonNull PublicKey readPublicKey() {
         return readPublicKey(this.source);
+    }
+
+    public @NonNull ByteBuf writePublicKey(final @NonNull PublicKey publicKey) {
+        return writePublicKey(this.source, publicKey);
     }
 
     // ---------------- FriendlyByteBuf static methods -----------------
@@ -242,6 +254,12 @@ public final class FriendlyByteBuf extends ByteBuf {
         return new UUID(buf.readLong(), buf.readLong());
     }
 
+    public static @NonNull ByteBuf writeUUID(final @NonNull ByteBuf buf, final @NonNull UUID uuid) {
+        buf.writeLong(uuid.getMostSignificantBits());
+        buf.writeLong(uuid.getLeastSignificantBits());
+        return buf;
+    }
+
     public static byte[] readByteArray(final @NonNull ByteBuf buf, int maxLength) {
         int i = readVarInt(buf);
         if (i > maxLength) {
@@ -252,6 +270,24 @@ public final class FriendlyByteBuf extends ByteBuf {
             buf.readBytes(abyte);
             return abyte;
         }
+    }
+
+    public static @NonNull ByteBuf writeByteArray(
+            final @NonNull ByteBuf buf, final byte[] bytes, int maxLength) {
+        if (bytes.length > maxLength) {
+            throw new IllegalArgumentException(
+                    "Byte array with size "
+                            + bytes.length
+                            + " is bigger than allowed "
+                            + maxLength);
+        } else {
+            writeVarInt(buf, bytes.length);
+            return buf.writeBytes(bytes);
+        }
+    }
+
+    public static @NonNull ByteBuf writeByteArray(final @NonNull ByteBuf buf, final byte[] bytes) {
+        return writeByteArray(buf, bytes, MAX_PAYLOAD_SIZE);
     }
 
     public static <T> @NonNull T readResourceLocation(final @NonNull ByteBuf buf) {
@@ -310,6 +346,11 @@ public final class FriendlyByteBuf extends ByteBuf {
         return Instant.ofEpochMilli(buf.readLong());
     }
 
+    public static @NonNull ByteBuf writeInstant(
+            final @NonNull ByteBuf buf, final @NonNull Instant instant) {
+        return buf.writeLong(instant.toEpochMilli());
+    }
+
     public static @NonNull PublicKey readPublicKey(final @NonNull ByteBuf buf)
             throws DecoderException {
         try {
@@ -317,6 +358,12 @@ public final class FriendlyByteBuf extends ByteBuf {
         } catch (CryptException e) {
             throw new DecoderException("Malformed public key bytes", e);
         }
+    }
+
+    public static @NonNull ByteBuf writePublicKey(
+            final @NonNull ByteBuf buf, final @NonNull PublicKey publicKey)
+            throws IllegalArgumentException {
+        return writeByteArray(buf, publicKey.getEncoded(), Crypt.MAX_PUBLIC_KEY_LENGTH);
     }
 
     // ---------------- ByteBuf methods -----------------
