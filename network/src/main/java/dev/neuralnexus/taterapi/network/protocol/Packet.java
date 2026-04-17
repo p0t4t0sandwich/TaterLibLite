@@ -17,9 +17,28 @@ public interface Packet {
 
     PacketType<? extends Packet> type();
 
-    static <B extends ByteBuf, T extends Packet> StreamCodec<B, T> codec(
-            final @NonNull StreamMemberEncoder<B, T> encoder,
-            final @NonNull StreamDecoder<B, T> decoder) {
+    static <B extends ByteBuf, V extends Packet> StreamCodec<B, V> codec(
+            final @NonNull StreamMemberEncoder<B, V> encoder,
+            final @NonNull StreamDecoder<B, V> decoder) {
         return StreamCodec.ofMember(encoder, decoder);
+    }
+
+    /**
+     * Creates a new versioned codec builder. If there are overlapping version ranges, the codec
+     * with the highest version will be used. If no codec matches the current Minecraft version, an
+     * exception will be thrown.
+     *
+     * @return a new versioned codec builder
+     * @param <B> the buffer type
+     * @param <V> the value type
+     */
+    static <B extends ByteBuf, V extends Packet>
+            StreamCodec.VersionedCodecBuilder<B, V> versioned() {
+        return new StreamCodec.VersionedCodecBuilder<>(false);
+    }
+
+    static <B extends ByteBuf, V extends Packet> StreamCodec.VersionedCodecBuilder<B, V> versioned(
+            final boolean strict) {
+        return new StreamCodec.VersionedCodecBuilder<>(strict);
     }
 }
