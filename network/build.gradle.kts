@@ -38,6 +38,7 @@ val commonCompileOnly: Configuration by configurations.getting
 //}
 
 dependencies {
+    mainCompileOnly(libs.gson)
     mainCompileOnly(libs.guava)
     mainCompileOnly(libs.netty.buffer)
     mainCompileOnly(libs.netty.codec)

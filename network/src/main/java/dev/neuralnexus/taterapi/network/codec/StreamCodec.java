@@ -7,6 +7,8 @@ package dev.neuralnexus.taterapi.network.codec;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.version.Versioned;
 
+import io.netty.handler.codec.EncoderException;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.function.Function;
@@ -53,6 +55,21 @@ public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B,
             @Override
             public void encode(@NonNull B output, @NonNull O value) {
                 StreamCodec.this.encode(output, mapEncode.apply(value));
+            }
+        };
+    }
+
+    static <B, V> StreamCodec<B, V> unit(final V instance) {
+        return new StreamCodec<>() {
+            public V decode(final @NonNull B input) {
+                return instance;
+            }
+
+            public void encode(final @NonNull B output, final @NonNull V value) {
+                if (!value.equals(instance)) {
+                    throw new EncoderException(
+                            "Can't encode '" + value + "', expected '" + instance + "'");
+                }
             }
         };
     }

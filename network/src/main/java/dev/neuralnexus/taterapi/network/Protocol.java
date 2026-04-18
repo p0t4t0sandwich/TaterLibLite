@@ -15,13 +15,40 @@ import dev.neuralnexus.taterapi.network.protocol.PayloadTypes;
 import org.jspecify.annotations.NonNull;
 
 public enum Protocol {
-    HANDSHAKING("handshake"),
-    STATUS("status"),
+    // spotless:off
+    HANDSHAKING("handshake") {
+        {
+            serverbound.register(
+                    PacketTypes.HANDSHAKING.CLIENT_INTENTION,
+                    map(0x00, MinecraftVersions.V7_2));
+        }
+    },
+    STATUS("status") {
+        {
+            serverbound.register(
+                    PacketTypes.STATUS.SERVERBOUND_STATUS_REQUEST,
+                    map(0x00, MinecraftVersions.V7_2));
+            serverbound.register(
+                    PacketTypes.STATUS.SERVERBOUND_PING_REQUEST,
+                    map(0x01, MinecraftVersions.V7_2));
+            clientbound.register(
+                    PacketTypes.STATUS.CLIENTBOUND_STATUS_RESPONSE,
+                    map(0x00, MinecraftVersions.V7_2));
+            clientbound.register(
+                    PacketTypes.STATUS.CLIENTBOUND_PONG_RESPONSE,
+                    map(0x01, MinecraftVersions.V7_2));
+        }
+    },
     LOGIN("login") {
         {
-            // TODO: Create a soft lower bound of 1.13 that's overridable in some way
-            serverbound.register(PacketTypes.LOGIN.SERVERBOUND_CUSTOM_QUERY_ANSWER, map(0x02));
-            clientbound.register(PacketTypes.LOGIN.CLIENTBOUND_CUSTOM_QUERY, map(0x04));
+            // TODO: Create a soft lower bound of 1.13 that's overridable in some way.
+            //  ie: don't default to 1.7.2 if the packet isn't strictly backported by a mod.
+            serverbound.register(
+                    PacketTypes.LOGIN.SERVERBOUND_CUSTOM_QUERY_ANSWER,
+                    map(0x02, MinecraftVersions.V7_2));
+            clientbound.register(
+                    PacketTypes.LOGIN.CLIENTBOUND_CUSTOM_QUERY,
+                    map(0x04, MinecraftVersions.V7_2));
         }
     },
     CONFIGURATION("configuration") {
@@ -75,6 +102,7 @@ public enum Protocol {
                     map(0x18, MinecraftVersions.V21_5));
         }
     };
+    // spotless:on
 
     static {
         PayloadRegistry.register(PayloadTypes.CUSTOM.BRAND, map(MinecraftVersions.V13));
@@ -110,6 +138,10 @@ public enum Protocol {
             default -> throw new IllegalStateException("Unexpected value: " + id);
         };
     }
+
+    public static final int STATUS_ID = 1;
+    public static final int LOGIN_ID = 2;
+    public static final int TRANSFER_ID = 3;
 
     protected final PacketRegistry clientbound = new PacketRegistry(PacketFlow.CLIENTBOUND, this);
     protected final PacketRegistry serverbound = new PacketRegistry(PacketFlow.SERVERBOUND, this);

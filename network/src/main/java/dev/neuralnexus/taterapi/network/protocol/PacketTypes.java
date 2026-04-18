@@ -6,17 +6,40 @@ package dev.neuralnexus.taterapi.network.protocol;
 
 import dev.neuralnexus.taterapi.network.protocol.common.ClientboundCustomPayloadPacket;
 import dev.neuralnexus.taterapi.network.protocol.common.ServerboundCustomPayloadPacket;
+import dev.neuralnexus.taterapi.network.protocol.handshake.ClientIntentionPacket;
 import dev.neuralnexus.taterapi.network.protocol.login.ClientboundCustomQueryPacket;
 import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import dev.neuralnexus.taterapi.network.protocol.login.ServerboundHelloPacket;
+import dev.neuralnexus.taterapi.network.protocol.ping.ClientboundPongResponsePacket;
+import dev.neuralnexus.taterapi.network.protocol.ping.ServerboundPingRequestPacket;
+import dev.neuralnexus.taterapi.network.protocol.status.ClientboundStatusResponsePacket;
+import dev.neuralnexus.taterapi.network.protocol.status.ServerboundStatusRequestPacket;
 import dev.neuralnexus.taterapi.registries.AdapterRegistry;
 
 import org.jspecify.annotations.NonNull;
 
 public interface PacketTypes {
     // spotless:off
-    interface HANDSHAKING {}
-    interface STATUS {}
+    interface HANDSHAKING {
+        PacketType<ClientIntentionPacket> CLIENT_INTENTION =
+                serverbound(ClientIntentionPacket.class, "minecraft:intention")
+                        .codec(ClientIntentionPacket.STREAM_CODEC).build();
+    }
+    interface STATUS {
+        PacketType<ClientboundPongResponsePacket> CLIENTBOUND_PONG_RESPONSE =
+                clientbound(ClientboundPongResponsePacket.class, "minecraft:pong_response")
+                        .codec(ClientboundPongResponsePacket.STREAM_CODEC).build();
+        PacketType<ClientboundStatusResponsePacket> CLIENTBOUND_STATUS_RESPONSE =
+                clientbound(ClientboundStatusResponsePacket.class, "minecraft:status_response")
+                    .codec(ClientboundStatusResponsePacket.STREAM_CODEC).build();
+
+        PacketType<ServerboundPingRequestPacket> SERVERBOUND_PING_REQUEST =
+                serverbound(ServerboundPingRequestPacket.class, "minecraft:ping_request")
+                        .codec(ServerboundPingRequestPacket.STREAM_CODEC).build();
+        PacketType<ServerboundStatusRequestPacket> SERVERBOUND_STATUS_REQUEST =
+                serverbound(ServerboundStatusRequestPacket.class, "minecraft:status_request")
+                        .codec(ServerboundStatusRequestPacket.STREAM_CODEC).build();
+    }
     interface LOGIN {
         PacketType<ClientboundCustomQueryPacket> CLIENTBOUND_CUSTOM_QUERY =
                 clientbound(ClientboundCustomQueryPacket.class, "minecraft:custom_query")
