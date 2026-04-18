@@ -4,8 +4,7 @@
  */
 package dev.neuralnexus.taterapi.network.protocol.login.custom;
 
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readPayload;
-
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.PayloadRegistry;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.codec.StreamDecoder;
@@ -14,20 +13,18 @@ import dev.neuralnexus.taterapi.network.protocol.PacketFlow;
 import dev.neuralnexus.taterapi.network.protocol.PayloadType;
 import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 
-import io.netty.buffer.ByteBuf;
-
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
 public interface CustomQueryAnswerPayload {
-    StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryAnswerPayload> DEFAULT_CODEC =
+    StreamCodec<@NonNull FriendlyByteBuf, @NonNull CustomQueryAnswerPayload> DEFAULT_CODEC =
             CustomQueryAnswerPayload.codec(
-                    (value, buffer) -> buffer.writeBytes(((Raw) value).data().slice()),
+                    (value, output) -> output.writeBytes(((Raw) value).data().slice()),
                     // TODO: Discover why simplifying this further causes deserialization issues
                     // TODO: Test to see if it still happens after the introduction of Raw record
-                    buffer -> {
-                        final ByteBuf data = readPayload(buffer);
+                    input -> {
+                        final FriendlyByteBuf data = input.readPayload();
                         return new Raw(data);
                     });
 
@@ -40,16 +37,21 @@ public interface CustomQueryAnswerPayload {
      */
     @NonNull Type<? extends CustomQueryAnswerPayload> type();
 
-    static <B extends @NonNull ByteBuf, T extends @NonNull CustomQueryAnswerPayload>
+    static <B extends @NonNull FriendlyByteBuf, T extends @NonNull CustomQueryAnswerPayload>
             StreamCodec<B, T> codec(
                     final @NonNull StreamMemberEncoder<B, T> encoder,
                     final @NonNull StreamDecoder<B, T> decoder) {
         return StreamCodec.ofMember(encoder, decoder);
     }
 
-    static <B extends ByteBuf> StreamCodec<? super B, ? extends CustomQueryAnswerPayload> codec(
-            final int transactionId) {
-        return PayloadRegistry.getQueryAnswerPayloadCodec(transactionId).orElse(DEFAULT_CODEC);
+    static <B extends FriendlyByteBuf>
+            StreamCodec<? super B, ? extends CustomQueryAnswerPayload> codec(
+                    final int transactionId) {
+        final Optional<StreamCodec<? super FriendlyByteBuf, ? extends CustomQueryAnswerPayload>>
+                codec =
+                        PayloadRegistry.answer(transactionId)
+                                .map(CustomQueryAnswerPayload.Type::codec);
+        return codec.orElse(DEFAULT_CODEC);
     }
 
     interface Type<T extends CustomQueryAnswerPayload> extends PayloadType<T, Optional<Integer>> {
@@ -60,7 +62,7 @@ public interface CustomQueryAnswerPayload {
                     final @NonNull PacketFlow flow,
                     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
                             final @NonNull Optional<Integer> id,
-                    final @NonNull StreamCodec<ByteBuf, T> codec) {
+                    final @NonNull StreamCodec<FriendlyByteBuf, T> codec) {
                 super(clazz, flow, id, codec);
             }
         }
@@ -86,7 +88,7 @@ public interface CustomQueryAnswerPayload {
         }
     }
 
-    record Raw(@NonNull ByteBuf data) implements CustomQueryAnswerPayload {
+    record Raw(@NonNull FriendlyByteBuf data) implements CustomQueryAnswerPayload {
         @Override
         public @NonNull Type<CustomQueryAnswerPayload> type() {
             return PayloadType.answer(CustomQueryAnswerPayload.class, DEFAULT_CODEC);

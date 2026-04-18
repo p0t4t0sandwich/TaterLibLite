@@ -15,13 +15,13 @@ public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B,
     static <B, V> StreamCodec<B, V> of(StreamEncoder<B, V> encoder, StreamDecoder<B, V> decoder) {
         return new StreamCodec<>() {
             @Override
-            public @NonNull V decode(final @NonNull B object) {
-                return decoder.decode(object);
+            public @NonNull V decode(final @NonNull B input) {
+                return decoder.decode(input);
             }
 
             @Override
-            public void encode(final @NonNull B object, final @NonNull V value) {
-                encoder.encode(object, value);
+            public void encode(final @NonNull B output, final @NonNull V value) {
+                encoder.encode(output, value);
             }
         };
     }
@@ -30,13 +30,13 @@ public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B,
             StreamMemberEncoder<B, V> encoder, StreamDecoder<B, V> decoder) {
         return new StreamCodec<>() {
             @Override
-            public @NonNull V decode(final @NonNull B buffer) {
-                return decoder.decode(buffer);
+            public @NonNull V decode(final @NonNull B input) {
+                return decoder.decode(input);
             }
 
             @Override
-            public void encode(final @NonNull B buffer, final @NonNull V value) {
-                encoder.encode(value, buffer);
+            public void encode(final @NonNull B output, final @NonNull V value) {
+                encoder.encode(value, output);
             }
         };
     }
@@ -46,13 +46,13 @@ public interface StreamCodec<B, V> extends StreamDecoder<B, V>, StreamEncoder<B,
             final Function<? super O, ? extends V> mapEncode) {
         return new StreamCodec<>() {
             @Override
-            public O decode(@NonNull B buffer) {
-                return mapDecode.apply(StreamCodec.this.decode(buffer));
+            public O decode(@NonNull B input) {
+                return mapDecode.apply(StreamCodec.this.decode(input));
             }
 
             @Override
-            public void encode(@NonNull B buffer, @NonNull O value) {
-                StreamCodec.this.encode(buffer, mapEncode.apply(value));
+            public void encode(@NonNull B output, @NonNull O value) {
+                StreamCodec.this.encode(output, mapEncode.apply(value));
             }
         };
     }

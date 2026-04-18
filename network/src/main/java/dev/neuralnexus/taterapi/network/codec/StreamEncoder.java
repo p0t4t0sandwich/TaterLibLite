@@ -8,5 +8,5 @@ import org.jspecify.annotations.NonNull;
 
 @FunctionalInterface
 public interface StreamEncoder<O, T> {
-    void encode(final @NonNull O buffer, final @NonNull T value);
+    void encode(final @NonNull O output, final @NonNull T value);
 }

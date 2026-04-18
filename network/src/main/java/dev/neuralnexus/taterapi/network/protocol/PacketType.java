@@ -4,9 +4,8 @@
  */
 package dev.neuralnexus.taterapi.network.protocol;
 
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
-
-import io.netty.buffer.ByteBuf;
 
 import org.jspecify.annotations.NonNull;
 
@@ -17,13 +16,13 @@ public interface PacketType<T extends Packet> {
 
     @NonNull String id();
 
-    @NonNull StreamCodec<ByteBuf, Packet> codec();
+    @NonNull StreamCodec<FriendlyByteBuf, Packet> codec();
 
     record Definition<T extends Packet>(
             @NonNull Class<T> clazz,
             @NonNull PacketFlow flow,
             @NonNull String id, // TODO: Change to Identifier abstraction
-            @NonNull StreamCodec<ByteBuf, Packet> codec)
+            @NonNull StreamCodec<FriendlyByteBuf, Packet> codec)
             implements PacketType<T> {
 
         @Override
@@ -40,7 +39,7 @@ public interface PacketType<T extends Packet> {
         private final Class<T> clazz;
         private PacketFlow flow;
         private String id;
-        private StreamCodec<ByteBuf, Packet> codec;
+        private StreamCodec<FriendlyByteBuf, Packet> codec;
 
         public Builder(final @NonNull Class<T> clazz) {
             this.clazz = clazz;
@@ -70,8 +69,8 @@ public interface PacketType<T extends Packet> {
         }
 
         @SuppressWarnings("unchecked")
-        public Builder<T> codec(final @NonNull StreamCodec<ByteBuf, T> codec) {
-            this.codec = (StreamCodec<ByteBuf, Packet>) codec;
+        public Builder<T> codec(final @NonNull StreamCodec<FriendlyByteBuf, T> codec) {
+            this.codec = (StreamCodec<FriendlyByteBuf, Packet>) codec;
             return this;
         }
 

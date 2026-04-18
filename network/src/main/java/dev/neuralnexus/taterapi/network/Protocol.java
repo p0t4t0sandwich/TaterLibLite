@@ -19,7 +19,7 @@ public enum Protocol {
     STATUS("status"),
     LOGIN("login") {
         {
-            // TODO: A soft lower bound of 1.13 that's overridable in some way
+            // TODO: Create a soft lower bound of 1.13 that's overridable in some way
             serverbound.register(PacketTypes.LOGIN.SERVERBOUND_CUSTOM_QUERY_ANSWER, map(0x02));
             clientbound.register(PacketTypes.LOGIN.CLIENTBOUND_CUSTOM_QUERY, map(0x04));
         }

@@ -12,7 +12,6 @@ import dev.neuralnexus.taterapi.network.protocol.Packet;
 import dev.neuralnexus.taterapi.network.protocol.PacketFlow;
 import dev.neuralnexus.taterapi.network.protocol.PacketType;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;
 
@@ -61,7 +60,7 @@ public final class PacketRegistry {
         return this.classToId.get(clazz);
     }
 
-    public Optional<StreamCodec<ByteBuf, Packet>> codec(final int id) {
+    public Optional<StreamCodec<FriendlyByteBuf, Packet>> codec(final int id) {
         PacketType<Packet> protocolInfo = this.idToProtocolInfo.get(id);
         if (protocolInfo == null) {
             return Optional.empty();

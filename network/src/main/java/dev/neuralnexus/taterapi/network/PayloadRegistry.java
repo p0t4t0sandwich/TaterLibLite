@@ -7,12 +7,9 @@ package dev.neuralnexus.taterapi.network;
 import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.common.custom.CustomPacketPayload;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
-
-import io.netty.buffer.ByteBuf;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -102,12 +99,9 @@ public final class PayloadRegistry {
         ANSWER.remove(transactionId);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <B extends ByteBuf>
-            Optional<StreamCodec<? super B, ? extends CustomQueryAnswerPayload>>
-                    getQueryAnswerPayloadCodec(final int transactionId) {
-        return Optional.ofNullable(
-                (StreamCodec<ByteBuf, CustomQueryAnswerPayload>) ANSWER.get(transactionId));
+    public static Optional<CustomQueryAnswerPayload.Type<? extends CustomQueryAnswerPayload>>
+            answer(final int transactionId) {
+        return Optional.ofNullable(ANSWER.get(transactionId));
     }
 
     public record Mapping(

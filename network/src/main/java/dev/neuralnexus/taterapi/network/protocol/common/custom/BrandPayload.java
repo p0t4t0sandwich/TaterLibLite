@@ -4,26 +4,22 @@
  */
 package dev.neuralnexus.taterapi.network.protocol.common.custom;
 
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUtf;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeUtf;
-
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.PayloadTypes;
-
-import io.netty.buffer.ByteBuf;
 
 import org.jspecify.annotations.NonNull;
 
 public record BrandPayload(@NonNull String brand) implements CustomPacketPayload {
-    public static final StreamCodec<ByteBuf, BrandPayload> STREAM_CODEC =
-            CustomPacketPayload.codec(BrandPayload::write, BrandPayload::new);
+    public static final StreamCodec<FriendlyByteBuf, BrandPayload> STREAM_CODEC =
+            CustomPacketPayload.codec(BrandPayload::encode, BrandPayload::decode);
 
-    private BrandPayload(final @NonNull ByteBuf input) {
-        this(readUtf(input));
+    private void encode(final @NonNull FriendlyByteBuf output) {
+        output.writeUtf(this.brand);
     }
 
-    private void write(final @NonNull ByteBuf output) {
-        writeUtf(output, this.brand);
+    private static BrandPayload decode(final @NonNull FriendlyByteBuf input) {
+        return new BrandPayload(input.readUtf());
     }
 
     @Override

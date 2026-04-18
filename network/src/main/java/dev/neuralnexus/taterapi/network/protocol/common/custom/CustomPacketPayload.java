@@ -4,10 +4,7 @@
  */
 package dev.neuralnexus.taterapi.network.protocol.common.custom;
 
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readPayload;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUtf;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeUtf;
-
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.PayloadRegistry;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.codec.StreamDecoder;
@@ -15,48 +12,47 @@ import dev.neuralnexus.taterapi.network.codec.StreamMemberEncoder;
 import dev.neuralnexus.taterapi.network.protocol.PacketFlow;
 import dev.neuralnexus.taterapi.network.protocol.PayloadType;
 
-import io.netty.buffer.ByteBuf;
-
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
 public interface CustomPacketPayload {
-    StreamCodec<@NonNull ByteBuf, @NonNull CustomPacketPayload> DEFAULT_CODEC =
+    StreamCodec<@NonNull FriendlyByteBuf, @NonNull CustomPacketPayload> DEFAULT_CODEC =
             CustomPacketPayload.codec(CustomPacketPayload::codec);
 
     @NonNull Type<? extends CustomPacketPayload> type();
 
-    static <B extends @NonNull ByteBuf, T extends @NonNull CustomPacketPayload>
+    static <B extends @NonNull FriendlyByteBuf, T extends @NonNull CustomPacketPayload>
             StreamCodec<B, T> codec(
                     final @NonNull StreamMemberEncoder<B, T> encoder,
                     final @NonNull StreamDecoder<B, T> decoder) {
         return StreamCodec.ofMember(encoder, decoder);
     }
 
-    static <B extends ByteBuf> StreamCodec<B, CustomPacketPayload> codec(
+    static <B extends FriendlyByteBuf> StreamCodec<B, CustomPacketPayload> codec(
             final @NonNull String identifier) {
         return new StreamCodec<>() {
             @Override
-            public CustomPacketPayload decode(final @NonNull B buffer) {
-                return new Raw(identifier, readPayload(buffer));
+            public CustomPacketPayload decode(final @NonNull B input) {
+                return new Raw(identifier, input.readPayload());
             }
 
             @Override
             public void encode(
-                    final @NonNull ByteBuf buffer, final @NonNull CustomPacketPayload value) {
-                buffer.writeBytes(((Raw) value).data().slice());
+                    final @NonNull FriendlyByteBuf output,
+                    final @NonNull CustomPacketPayload value) {
+                output.writeBytes(((Raw) value).data().slice());
             }
         };
     }
 
-    static <B extends ByteBuf> StreamCodec<B, CustomPacketPayload> codec(
+    static <B extends FriendlyByteBuf> StreamCodec<B, CustomPacketPayload> codec(
             final CustomPacketPayload.FallbackProvider<B> fallbackprovider) {
         return new StreamCodec<>() {
             private StreamCodec<? super B, ? extends CustomPacketPayload> findCodec(
                     final @NonNull String identifier) {
-                Optional<StreamCodec<? super ByteBuf, ? extends CustomPacketPayload>> codec =
-                        PayloadRegistry.custom(identifier).map(Type::codec);
+                final Optional<StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload>>
+                        codec = PayloadRegistry.custom(identifier).map(Type::codec);
                 return codec.orElse(fallbackprovider.create(identifier));
             }
 
@@ -65,19 +61,19 @@ public interface CustomPacketPayload {
                     final @NonNull B buffer,
                     final @NonNull String id,
                     final @NonNull CustomPacketPayload payload) {
-                writeUtf(buffer, id);
+                buffer.writeUtf(id);
                 final StreamCodec<B, T> codec = (StreamCodec<B, T>) this.findCodec(id);
                 codec.encode(buffer, (T) payload);
             }
 
             public void encode(
-                    final @NonNull B buffer, final @NonNull CustomPacketPayload payload) {
-                this.writeCap(buffer, payload.type().id(), payload);
+                    final @NonNull B output, final @NonNull CustomPacketPayload payload) {
+                this.writeCap(output, payload.type().id(), payload);
             }
 
-            public CustomPacketPayload decode(final @NonNull B buffer) {
-                final String id = readUtf(buffer);
-                return this.findCodec(id).decode(buffer);
+            public CustomPacketPayload decode(final @NonNull B input) {
+                final String id = input.readUtf();
+                return this.findCodec(id).decode(input);
             }
         };
     }
@@ -88,7 +84,7 @@ public interface CustomPacketPayload {
                     final @NonNull Class<T> clazz,
                     final @NonNull PacketFlow flow,
                     final @NonNull String id,
-                    final @NonNull StreamCodec<ByteBuf, T> codec) {
+                    final @NonNull StreamCodec<FriendlyByteBuf, T> codec) {
                 super(clazz, flow, id, codec);
             }
         }
@@ -118,12 +114,12 @@ public interface CustomPacketPayload {
 
     @SuppressWarnings("unused")
     @FunctionalInterface
-    interface FallbackProvider<B extends ByteBuf> {
-        StreamCodec<? super ByteBuf, ? extends CustomPacketPayload> create(
+    interface FallbackProvider<B extends FriendlyByteBuf> {
+        StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload> create(
                 final @NonNull String identifier);
     }
 
-    record Raw(@NonNull String id, @NonNull ByteBuf data) implements CustomPacketPayload {
+    record Raw(@NonNull String id, @NonNull FriendlyByteBuf data) implements CustomPacketPayload {
         @Override
         public @NonNull Type<CustomPacketPayload> type() {
             return PayloadType.custom(CustomPacketPayload.class, this.id)

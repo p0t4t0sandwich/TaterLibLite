@@ -4,12 +4,11 @@
  */
 package dev.neuralnexus.taterapi.network.protocol;
 
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.common.custom.CustomPacketPayload;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
-
-import io.netty.buffer.ByteBuf;
 
 import org.jspecify.annotations.NonNull;
 
@@ -22,19 +21,19 @@ public interface PayloadType<T, I> {
 
     @NonNull I id();
 
-    @NonNull StreamCodec<ByteBuf, T> codec();
+    @NonNull StreamCodec<FriendlyByteBuf, T> codec();
 
     class Base<T, I> implements PayloadType<T, I> {
         private final Class<T> clazz;
         private final PacketFlow flow;
         private final I id;
-        private final StreamCodec<ByteBuf, T> codec;
+        private final StreamCodec<FriendlyByteBuf, T> codec;
 
         public Base(
                 final @NonNull Class<T> clazz,
                 final @NonNull PacketFlow flow,
                 final @NonNull I id,
-                final @NonNull StreamCodec<ByteBuf, T> codec) {
+                final @NonNull StreamCodec<FriendlyByteBuf, T> codec) {
             this.clazz = clazz;
             this.flow = flow;
             this.id = id;
@@ -62,7 +61,7 @@ public interface PayloadType<T, I> {
         }
 
         @Override
-        public @NonNull StreamCodec<ByteBuf, T> codec() {
+        public @NonNull StreamCodec<FriendlyByteBuf, T> codec() {
             return this.codec;
         }
     }
@@ -85,7 +84,7 @@ public interface PayloadType<T, I> {
     }
 
     static <T extends CustomQueryAnswerPayload> CustomQueryAnswerPayload.Type<T> answer(
-            final @NonNull Class<T> clazz, final @NonNull StreamCodec<ByteBuf, T> codec) {
+            final @NonNull Class<T> clazz, final @NonNull StreamCodec<FriendlyByteBuf, T> codec) {
         return new CustomQueryAnswerPayload.Type.Builder<>(clazz)
                 .id(Optional.empty())
                 .flow(PacketFlow.SERVERBOUND)
@@ -98,7 +97,7 @@ public interface PayloadType<T, I> {
         protected final Class<T> clazz;
         protected PacketFlow flow;
         protected I id;
-        protected StreamCodec<ByteBuf, T> codec;
+        protected StreamCodec<FriendlyByteBuf, T> codec;
 
         public Builder(final @NonNull Class<T> clazz) {
             this.clazz = clazz;
@@ -127,7 +126,7 @@ public interface PayloadType<T, I> {
             return (B) this;
         }
 
-        public B codec(final @NonNull StreamCodec<ByteBuf, T> codec) {
+        public B codec(final @NonNull StreamCodec<FriendlyByteBuf, T> codec) {
             this.codec = codec;
             return (B) this;
         }

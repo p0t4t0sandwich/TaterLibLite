@@ -4,33 +4,31 @@
  */
 package dev.neuralnexus.taterapi.network.protocol.login;
 
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readVarInt;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeVarInt;
-
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.Packet;
 import dev.neuralnexus.taterapi.network.protocol.PacketType;
 import dev.neuralnexus.taterapi.network.protocol.PacketTypes;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
 
-import io.netty.buffer.ByteBuf;
-
 import org.jspecify.annotations.NonNull;
 
 public record ClientboundCustomQueryPacket(int transactionId, @NonNull CustomQueryPayload payload)
         implements Packet {
-    public static final StreamCodec<ByteBuf, ClientboundCustomQueryPacket> STREAM_CODEC =
-            Packet.codec(ClientboundCustomQueryPacket::write, ClientboundCustomQueryPacket::read);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundCustomQueryPacket> STREAM_CODEC =
+            Packet.codec(
+                    ClientboundCustomQueryPacket::encode, ClientboundCustomQueryPacket::decode);
 
-    private static @NonNull ClientboundCustomQueryPacket read(final @NonNull ByteBuf buf) {
-        final int transactionId = readVarInt(buf);
-        final CustomQueryPayload payload = CustomQueryPayload.DEFAULT_CODEC.decode(buf);
+    private static @NonNull ClientboundCustomQueryPacket decode(
+            final @NonNull FriendlyByteBuf input) {
+        final int transactionId = input.readVarInt();
+        final CustomQueryPayload payload = CustomQueryPayload.DEFAULT_CODEC.decode(input);
         return new ClientboundCustomQueryPacket(transactionId, payload);
     }
 
-    private void write(final @NonNull ByteBuf buf) {
-        writeVarInt(buf, this.transactionId);
-        CustomQueryPayload.DEFAULT_CODEC.encode(buf, this.payload);
+    private void encode(final @NonNull FriendlyByteBuf output) {
+        output.writeVarInt(this.transactionId);
+        CustomQueryPayload.DEFAULT_CODEC.encode(output, this.payload);
     }
 
     @Override

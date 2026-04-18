@@ -4,10 +4,7 @@
  */
 package dev.neuralnexus.taterapi.network.protocol.login.custom;
 
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readPayload;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUtf;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeUtf;
-
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.PayloadRegistry;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.codec.StreamDecoder;
@@ -15,48 +12,49 @@ import dev.neuralnexus.taterapi.network.codec.StreamMemberEncoder;
 import dev.neuralnexus.taterapi.network.protocol.PacketFlow;
 import dev.neuralnexus.taterapi.network.protocol.PayloadType;
 
-import io.netty.buffer.ByteBuf;
-
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
 public interface CustomQueryPayload {
-    StreamCodec<@NonNull ByteBuf, @NonNull CustomQueryPayload> DEFAULT_CODEC =
+    StreamCodec<@NonNull FriendlyByteBuf, @NonNull CustomQueryPayload> DEFAULT_CODEC =
             CustomQueryPayload.codec(CustomQueryPayload::codec);
 
     @NonNull Type<? extends CustomQueryPayload> type();
 
-    static <B extends @NonNull ByteBuf, T extends @NonNull CustomQueryPayload>
+    static <B extends @NonNull FriendlyByteBuf, T extends @NonNull CustomQueryPayload>
             StreamCodec<B, T> codec(
                     final @NonNull StreamMemberEncoder<B, T> encoder,
                     final @NonNull StreamDecoder<B, T> decoder) {
         return StreamCodec.ofMember(encoder, decoder);
     }
 
-    static <B extends ByteBuf> StreamCodec<B, CustomQueryPayload> codec(
+    static <B extends FriendlyByteBuf> StreamCodec<B, CustomQueryPayload> codec(
             final @NonNull String identifier) {
         return new StreamCodec<>() {
             @Override
-            public CustomQueryPayload decode(final @NonNull B buffer) {
-                return new Raw(identifier, readPayload(buffer));
+            public CustomQueryPayload decode(final @NonNull B input) {
+                return new Raw(identifier, input.readPayload());
             }
 
             @Override
             public void encode(
-                    final @NonNull ByteBuf buffer, final @NonNull CustomQueryPayload value) {
-                buffer.writeBytes(((Raw) value).data().slice());
+                    final @NonNull FriendlyByteBuf output,
+                    final @NonNull CustomQueryPayload value) {
+                output.writeBytes(((Raw) value).data().slice());
             }
         };
     }
 
-    static <B extends ByteBuf> StreamCodec<B, CustomQueryPayload> codec(
+    static <B extends FriendlyByteBuf> StreamCodec<B, CustomQueryPayload> codec(
             final CustomQueryPayload.FallbackProvider<B> fallbackprovider) {
         return new StreamCodec<>() {
             private StreamCodec<? super B, ? extends CustomQueryPayload> findCodec(
                     final @NonNull String identifier) {
-                Optional<StreamCodec<? super ByteBuf, ? extends CustomQueryPayload>> codec =
-                        PayloadRegistry.query(identifier).map(CustomQueryPayload.Type::codec);
+                final Optional<StreamCodec<? super FriendlyByteBuf, ? extends CustomQueryPayload>>
+                        codec =
+                                PayloadRegistry.query(identifier)
+                                        .map(CustomQueryPayload.Type::codec);
                 return codec.orElse(fallbackprovider.create(identifier));
             }
 
@@ -65,18 +63,18 @@ public interface CustomQueryPayload {
                     final @NonNull B buffer,
                     final @NonNull String id,
                     final @NonNull CustomQueryPayload payload) {
-                writeUtf(buffer, id);
+                buffer.writeUtf(id);
                 final StreamCodec<B, T> codec = (StreamCodec<B, T>) this.findCodec(id);
                 codec.encode(buffer, (T) payload);
             }
 
-            public void encode(final @NonNull B buffer, final @NonNull CustomQueryPayload payload) {
-                this.writeCap(buffer, payload.type().id(), payload);
+            public void encode(final @NonNull B output, final @NonNull CustomQueryPayload payload) {
+                this.writeCap(output, payload.type().id(), payload);
             }
 
-            public CustomQueryPayload decode(final @NonNull B buffer) {
-                final String id = readUtf(buffer);
-                return this.findCodec(id).decode(buffer);
+            public CustomQueryPayload decode(final @NonNull B input) {
+                final String id = input.readUtf();
+                return this.findCodec(id).decode(input);
             }
         };
     }
@@ -87,7 +85,7 @@ public interface CustomQueryPayload {
                     final @NonNull Class<T> clazz,
                     final @NonNull PacketFlow flow,
                     final @NonNull String id,
-                    final @NonNull StreamCodec<ByteBuf, T> codec) {
+                    final @NonNull StreamCodec<FriendlyByteBuf, T> codec) {
                 super(clazz, flow, id, codec);
             }
         }
@@ -117,12 +115,12 @@ public interface CustomQueryPayload {
 
     @SuppressWarnings("unused")
     @FunctionalInterface
-    interface FallbackProvider<B extends ByteBuf> {
-        StreamCodec<? super ByteBuf, ? extends CustomQueryPayload> create(
+    interface FallbackProvider<B extends FriendlyByteBuf> {
+        StreamCodec<? super FriendlyByteBuf, ? extends CustomQueryPayload> create(
                 final @NonNull String identifier);
     }
 
-    record Raw(@NonNull String id, @NonNull ByteBuf data) implements CustomQueryPayload {
+    record Raw(@NonNull String id, @NonNull FriendlyByteBuf data) implements CustomQueryPayload {
         @Override
         public @NonNull Type<? extends CustomQueryPayload> type() {
             return PayloadType.query(CustomQueryPayload.class, this.id())

@@ -4,11 +4,10 @@
  */
 package dev.neuralnexus.taterapi.network.protocol;
 
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.codec.StreamDecoder;
 import dev.neuralnexus.taterapi.network.codec.StreamMemberEncoder;
-
-import io.netty.buffer.ByteBuf;
 
 import org.jspecify.annotations.NonNull;
 
@@ -17,7 +16,7 @@ public interface Packet {
 
     PacketType<? extends Packet> type();
 
-    static <B extends ByteBuf, V extends Packet> StreamCodec<B, V> codec(
+    static <B extends FriendlyByteBuf, V extends Packet> StreamCodec<B, V> codec(
             final @NonNull StreamMemberEncoder<B, V> encoder,
             final @NonNull StreamDecoder<B, V> decoder) {
         return StreamCodec.ofMember(encoder, decoder);
@@ -32,13 +31,13 @@ public interface Packet {
      * @param <B> the buffer type
      * @param <V> the value type
      */
-    static <B extends ByteBuf, V extends Packet>
+    static <B extends FriendlyByteBuf, V extends Packet>
             StreamCodec.VersionedCodecBuilder<B, V> versioned() {
         return new StreamCodec.VersionedCodecBuilder<>(false);
     }
 
-    static <B extends ByteBuf, V extends Packet> StreamCodec.VersionedCodecBuilder<B, V> versioned(
-            final boolean strict) {
+    static <B extends FriendlyByteBuf, V extends Packet>
+            StreamCodec.VersionedCodecBuilder<B, V> versioned(final boolean strict) {
         return new StreamCodec.VersionedCodecBuilder<>(strict);
     }
 }

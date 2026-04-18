@@ -4,13 +4,6 @@
  */
 package dev.neuralnexus.taterapi.network.protocol.login;
 
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readOptional;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUUID;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUtf;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeOptional;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeUUID;
-import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeUtf;
-
 import dev.neuralnexus.taterapi.mc.world.entity.player.ProfilePublicKey;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
@@ -19,7 +12,7 @@ import dev.neuralnexus.taterapi.network.protocol.Packet;
 import dev.neuralnexus.taterapi.network.protocol.PacketType;
 import dev.neuralnexus.taterapi.network.protocol.PacketTypes;
 
-import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.EncoderException;
 
 import org.jspecify.annotations.NonNull;
 
@@ -36,7 +29,7 @@ public record ServerboundHelloPacket(
         implements Packet {
     public static final int MAX_NAME_LENGTH = 16;
     // spotless:off
-    public static final StreamCodec<ByteBuf, ServerboundHelloPacket> STREAM_CODEC = Packet.<ByteBuf, ServerboundHelloPacket>versioned()
+    public static final StreamCodec<FriendlyByteBuf, ServerboundHelloPacket> STREAM_CODEC = Packet.<FriendlyByteBuf, ServerboundHelloPacket>versioned()
             .add(ServerboundHelloPacket::encode_7, ServerboundHelloPacket::decode_7, MinecraftVersions.V7, MinecraftVersions.V18_2)
             .add(ServerboundHelloPacket::encode_19, ServerboundHelloPacket::decode_19, MinecraftVersions.V19)
             .add(ServerboundHelloPacket::encode_19_1, ServerboundHelloPacket::decode_19_1, MinecraftVersions.V19_1, MinecraftVersions.V19_2)
@@ -55,48 +48,47 @@ public record ServerboundHelloPacket(
         }
     }
 
-    private static ServerboundHelloPacket decode_7(final @NonNull ByteBuf input) {
-        return new ServerboundHelloPacket(readUtf(input), null, null);
+    private static ServerboundHelloPacket decode_7(final @NonNull FriendlyByteBuf input) {
+        return new ServerboundHelloPacket(input.readUtf(), null, null);
     }
 
-    private void encode_7(final @NonNull ByteBuf output) {
-        writeUtf(output, this.name);
+    private void encode_7(final @NonNull FriendlyByteBuf output) {
+        output.writeUtf(this.name);
     }
 
-    private static ServerboundHelloPacket decode_19(final @NonNull ByteBuf input) {
+    private static ServerboundHelloPacket decode_19(final @NonNull FriendlyByteBuf input) {
         return new ServerboundHelloPacket(
-                readUtf(input), readOptional(input, ProfilePublicKey.Data::new), null);
+                input.readUtf(), input.readOptional(ProfilePublicKey.Data::new), null);
     }
 
-    private void encode_19(final @NonNull ByteBuf output) {
-        writeUtf(output, this.name);
-        writeOptional(output, this.publicKey, (buf, data) -> data.write(buf));
+    private void encode_19(final @NonNull FriendlyByteBuf output) {
+        output.writeUtf(this.name);
+        output.writeOptional(this.publicKey, (buf, data) -> data.write(buf));
     }
 
-    private static ServerboundHelloPacket decode_19_1(final @NonNull ByteBuf input) {
+    private static ServerboundHelloPacket decode_19_1(final @NonNull FriendlyByteBuf input) {
         return new ServerboundHelloPacket(
-                readUtf(input),
-                readOptional(input, ProfilePublicKey.Data::new),
-                readOptional(input, FriendlyByteBuf::readUUID));
+                input.readUtf(),
+                input.readOptional(ProfilePublicKey.Data::new),
+                input.readOptional(FriendlyByteBuf::readUUID));
     }
 
-    private void encode_19_1(final @NonNull ByteBuf output) {
-        writeUtf(output, this.name);
-        writeOptional(output, this.publicKey, (buf, data) -> data.write(buf));
-        writeOptional(output, this.profileId, FriendlyByteBuf::writeUUID);
+    private void encode_19_1(final @NonNull FriendlyByteBuf output) {
+        output.writeUtf(this.name);
+        output.writeOptional(this.publicKey, (buf, data) -> data.write(buf));
+        output.writeOptional(this.profileId, FriendlyByteBuf::writeUUID);
     }
 
-    private static ServerboundHelloPacket decode_20_2(final @NonNull ByteBuf input) {
+    private static ServerboundHelloPacket decode_20_2(final @NonNull FriendlyByteBuf input) {
         return new ServerboundHelloPacket(
-                readUtf(input), Optional.empty(), Optional.of(readUUID(input)));
+                input.readUtf(), Optional.empty(), Optional.of(input.readUUID()));
     }
 
-    private void encode_20_2(final @NonNull ByteBuf output) {
-        writeUtf(output, this.name);
-        writeUUID(
-                output,
+    private void encode_20_2(final @NonNull FriendlyByteBuf output) {
+        output.writeUtf(this.name);
+        output.writeUUID(
                 this.profileId.orElseThrow(
-                        () -> new IllegalStateException("Profile ID is required for 1.20.2+")));
+                        () -> new EncoderException("Profile ID is required for 1.20.2+")));
     }
 
     public PacketType<ServerboundHelloPacket> type() {
