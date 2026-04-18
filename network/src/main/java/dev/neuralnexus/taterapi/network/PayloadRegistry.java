@@ -33,11 +33,13 @@ public final class PayloadRegistry {
         if (mappings.length == 0) {
             throw new IllegalArgumentException("At least one mapping must be provided");
         }
+        String resolved = null;
         for (final Mapping mapping : mappings) {
             if (mapping.resolve()) {
-                CUSTOM.put(Objects.requireNonNullElseGet(mapping.id, type::id), type);
+                resolved = mapping.id;
             }
         }
+        CUSTOM.put(Objects.requireNonNullElseGet(resolved, type::id), type);
     }
 
     public static Optional<CustomPacketPayload.Type<? extends CustomPacketPayload>> custom(
@@ -54,11 +56,13 @@ public final class PayloadRegistry {
         if (mappings.length == 0) {
             throw new IllegalArgumentException("At least one mapping must be provided");
         }
+        String resolved = null;
         for (final Mapping mapping : mappings) {
             if (mapping.resolve()) {
-                QUERY.put(Objects.requireNonNullElseGet(mapping.id, type::id), type);
+                resolved = mapping.id;
             }
         }
+        QUERY.put(Objects.requireNonNullElseGet(resolved, type::id), type);
     }
 
     public static Optional<CustomQueryPayload.Type<? extends CustomQueryPayload>> query(
@@ -75,14 +79,15 @@ public final class PayloadRegistry {
         if (mappings.length == 0) {
             throw new IllegalArgumentException("At least one mapping must be provided");
         }
+
+        Integer resolved = null;
         for (final IntMapping mapping : mappings) {
             if (mapping.resolve()) {
-                if (mapping.id != null) {
-                    ANSWER.put(mapping.id, type);
-                } else if (type.id().isPresent()) {
-                    ANSWER.put(type.id().get(), type);
-                }
+                resolved = mapping.id;
             }
+        }
+        if (resolved != null || type.id().isPresent()) {
+            ANSWER.put(Objects.requireNonNullElseGet(resolved, type.id()::get), type);
         }
     }
 
