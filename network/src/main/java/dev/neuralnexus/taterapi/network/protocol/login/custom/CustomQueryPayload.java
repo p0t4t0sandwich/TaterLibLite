@@ -122,7 +122,7 @@ public interface CustomQueryPayload {
 
     record Raw(@NonNull String id, @NonNull FriendlyByteBuf data) implements CustomQueryPayload {
         @Override
-        public @NonNull Type<? extends CustomQueryPayload> type() {
+        public @NonNull Type<CustomQueryPayload> type() {
             return PayloadType.query(CustomQueryPayload.class, this.id())
                     .codec(DEFAULT_CODEC)
                     .build();
