@@ -4,8 +4,11 @@
  */
 package dev.neuralnexus.taterapi.meta.version;
 
-import dev.neuralnexus.taterapi.meta.Constraint;import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.MinecraftVersions;import org.jspecify.annotations.NonNull;
+import dev.neuralnexus.taterapi.meta.Constraint;
+import dev.neuralnexus.taterapi.meta.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,8 +25,7 @@ public final class Versioned {
      * @return a new versioned builder
      * @param <T> the type of the versioned object
      */
-    static <T, B extends Builder<T, B>> Builder<T, B> versioned(
-            final boolean strict) {
+    static <T, B extends Builder<T, B>> Builder<T, B> versioned(final boolean strict) {
         return new Builder<>(strict);
     }
 
@@ -41,7 +43,9 @@ public final class Versioned {
             return (B) this;
         }
 
-        public B add(final @NonNull T object, final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion since) {
+        public B add(
+                final @NonNull T object,
+                final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion since) {
             this.entries.add(new Entry<>(object, since.ref()));
             return (B) this;
         }
