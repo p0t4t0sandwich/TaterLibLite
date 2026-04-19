@@ -26,4 +26,4 @@ val Project.spigotVersion: String get() = properties["spigot_version"].toString(
 val Project.spongeVersion: String get() = properties["sponge_version"].toString()
 val Project.velocityVersion: String get() = properties["velocity_version"].toString()
 
-val Project.javaVersion: String get() = properties["java_version"].toString()
+val Project.javaVersion: Int get() = properties["java_version"].toString().toInt()
