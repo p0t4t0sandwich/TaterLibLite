@@ -27,6 +27,7 @@ import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -79,8 +80,13 @@ public final class FriendlyByteBuf extends ByteBuf {
     }
 
     // ---------------- Addon methods -----------------
-    public @NonNull SocketAddress readAddress(final int port) {
+    public @NonNull InetAddress readInetAddress() {
+        return InetAddresses.forString(this.readUtf());
+    }
+
+    public @NonNull SocketAddress readSocketAddress() {
         final String ip = this.readUtf();
+        final int port = this.readUnsignedShort();
         if (ip.startsWith("unix://")) {
             // TODO: Consider UnixDomainSocketAddress (Java 16)
             return new DomainSocketAddress(ip.substring(7));

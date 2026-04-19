@@ -4,16 +4,11 @@
  */
 package dev.neuralnexus.taterapi.network.proxy.bungeecord;
 
-import com.google.common.net.InetAddresses;
-
 import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.protocol.common.custom.CustomPacketPayload;
 
-import io.netty.channel.unix.DomainSocketAddress;
-
 import org.jspecify.annotations.NonNull;
 
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.UUID;
@@ -60,12 +55,7 @@ public enum SubChannel {
     IP("IP") {
         @Override
         public @NonNull SocketAddress response(final @NonNull BungeeCordPayload payload) {
-            final String ip = payload.data().readUtf();
-            final int port = payload.data().readInt();
-            if (ip.startsWith("unix://")) {
-                return new DomainSocketAddress(ip.substring(7));
-            }
-            return new InetSocketAddress(InetAddresses.forString(ip), port);
+            return payload.data().readSocketAddress();
         }
     },
     IPOther("IPOther") {
