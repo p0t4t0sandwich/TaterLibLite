@@ -29,12 +29,11 @@ public final class UserWhiteList extends StoredUserList {
 
         CLASS = builder(USER_WHITE_LIST,
                 entry(Mappings.MOJANG, "net.minecraft.server.players.PlayerList"),
-                entry(Mappings.SEARGE, "net.minecraft.server.players.PlayerList",
-                        MinecraftVersions.V17),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.PlayerList",
-                        MinecraftVersions.V9, MinecraftVersions.V16_5),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.ServerConfigurationManager",
-                        MinecraftVersions.V7, MinecraftVersions.V8_9),
+                entry(Mappings.SEARGE, "net.minecraft.server.players.PlayerList").min(MinecraftVersions.V17),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.PlayerList")
+                        .range(MinecraftVersions.V9, MinecraftVersions.V16_5),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.ServerConfigurationManager")
+                        .range(MinecraftVersions.V7, MinecraftVersions.V8_9),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3324"),
                 entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_29639016"))
                 .build().clazz();

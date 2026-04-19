@@ -31,10 +31,10 @@ public sealed class StoredUserEntry implements Wrapped<Object> permits UserWhite
 
         var storedUserEntryClass = builder(STORED_USER_ENTRY,
                 entry(Mappings.MOJANG, "net.minecraft.server.players.StoredUserEntry"),
-                entry(Mappings.SEARGE, "net.minecraft.server.players.StoredUserEntry",
-                        MinecraftVersions.V17),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.UserListEntry",
-                        MinecraftVersions.V7, MinecraftVersions.V16_5),
+                entry(Mappings.SEARGE, "net.minecraft.server.players.StoredUserEntry")
+                        .min(MinecraftVersions.V17),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.UserListEntry")
+                        .range(MinecraftVersions.V7, MinecraftVersions.V16_5),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3330"),
                 entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_02601387"))
                 .build();
@@ -43,13 +43,12 @@ public sealed class StoredUserEntry implements Wrapped<Object> permits UserWhite
                 .methodType(MethodType.methodType(Object.class))
                 .mappings(
                         entry(Mappings.MOJANG, "getUser"),
-                        entry(Mappings.SEARGE, "m_11373_",
-                                MinecraftVersions.V17),
-                        entry(Mappings.LEGACY_SEARGE, "func_152640_f",
-                                MinecraftVersions.V7, MinecraftVersions.V16_5),
+                        entry(Mappings.SEARGE, "m_11373_").min(MinecraftVersions.V17),
+                        entry(Mappings.SEARGE, "func_152640_f")
+                                .range(MinecraftVersions.V7, MinecraftVersions.V16_5),
                         entry(Mappings.YARN_INTERMEDIARY, "method_14626"),
-                        entry(Mappings.CALAMUS, "m_05084164",
-                                MinecraftVersions.V7, MinecraftVersions.V14_4));
+                        entry(Mappings.CALAMUS, "m_05084164")
+                                .range(MinecraftVersions.V7, MinecraftVersions.V14_4));
 
         Reflecto.register(getUser);
     }

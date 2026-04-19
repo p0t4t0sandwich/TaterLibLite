@@ -35,12 +35,17 @@ public final class CachedUserNameToIdResolver implements Wrapped<Object> {
         initialized = true;
 
         var cachedUserNameToIdResolver = builder(CACHED_USER_NAME_TO_ID_RESOLVER,
-                entry(Mappings.MOJANG, "net.minecraft.server.players.GameProfileCache").max(MinecraftVersions.V21_8),
-                entry(Mappings.MOJANG, "net.minecraft.server.players.CachedUserNameToIdResolver", MinecraftVersions.V21_9),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.PlayerProfileCache", MinecraftVersions.V7_6, MinecraftVersions.V16_5),
-                entry(Mappings.SEARGE, "net.minecraft.server.players.GameProfileCache", MinecraftVersions.V17),
+                entry(Mappings.MOJANG, "net.minecraft.server.players.GameProfileCache")
+                        .max(MinecraftVersions.V21_8),
+                entry(Mappings.MOJANG, "net.minecraft.server.players.CachedUserNameToIdResolver")
+                        .min(MinecraftVersions.V21_9),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.PlayerProfileCache")
+                        .range(MinecraftVersions.V7_6, MinecraftVersions.V16_5),
+                entry(Mappings.SEARGE, "net.minecraft.server.players.GameProfileCache")
+                        .min(MinecraftVersions.V17),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3312"),
-                entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_09211509", MinecraftVersions.V7_6)
+                entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_09211509")
+                        .min(MinecraftVersions.V7_6)
         ).build();
 
         var getProfilesByName = member(GET_PROFILES_BY_NAME, cachedUserNameToIdResolver, MappingMember.Type.FIELD_GETTER)
@@ -49,19 +54,26 @@ public final class CachedUserNameToIdResolver implements Wrapped<Object> {
                 .methodType(MethodType.methodType(Map.class))
                 .mappings(
                         entry(Mappings.MOJANG, "profilesByName"),
-                        entry(Mappings.LEGACY_SEARGE, "field_152661_c", MinecraftVersions.V7_6, MinecraftVersions.V16_5),
-                        entry(Mappings.SEARGE, "f_10966_", MinecraftVersions.V17),
+                        entry(Mappings.SEARGE, "field_152661_c")
+                                .range(MinecraftVersions.V7_6, MinecraftVersions.V16_5),
+                        entry(Mappings.SEARGE, "f_10966_").min(MinecraftVersions.V17),
                         entry(Mappings.YARN_INTERMEDIARY, "field_14312"),
-                        entry(Mappings.CALAMUS, "f_76385806", MinecraftVersions.V7_6));
+                        entry(Mappings.CALAMUS, "f_76385806").min(MinecraftVersions.V7_6));
 
         var gameProfileInfo = builder(GameProfileInfo.GAME_PROFILE_INFO,
-                entry(Mappings.MOJANG, "net.minecraft.server.players.GameProfileCache$GameProfileInfo").max(MinecraftVersions.V21_8),
-                entry(Mappings.MOJANG, "net.minecraft.server.players.CachedUserNameToIdResolver$GameProfileInfo", MinecraftVersions.V21_9),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.PlayerProfileCache$ProfileEntry", MinecraftVersions.V7_6, MinecraftVersions.V16_5),
-                entry(Mappings.SEARGE, "net.minecraft.server.players.GameProfileCache$GameProfileInfo", MinecraftVersions.V17),
+                entry(Mappings.MOJANG, "net.minecraft.server.players.GameProfileCache$GameProfileInfo")
+                        .max(MinecraftVersions.V21_8),
+                entry(Mappings.MOJANG, "net.minecraft.server.players.CachedUserNameToIdResolver$GameProfileInfo")
+                        .min(MinecraftVersions.V21_9),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.PlayerProfileCache$ProfileEntry")
+                        .range(MinecraftVersions.V7_6, MinecraftVersions.V16_5),
+                entry(Mappings.SEARGE, "net.minecraft.server.players.GameProfileCache$GameProfileInfo")
+                        .min(MinecraftVersions.V17),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3312$class_3313"),
-                entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_63363474", MinecraftVersions.V7_6, MinecraftVersions.V8),
-                entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_09211509$C_63363474", MinecraftVersions.V8_1)
+                entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_63363474")
+                        .range(MinecraftVersions.V7_6, MinecraftVersions.V8),
+                entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_09211509$C_63363474")
+                        .min(MinecraftVersions.V8_1)
         ).build();
 
         NameAndId.init();
@@ -69,14 +81,15 @@ public final class CachedUserNameToIdResolver implements Wrapped<Object> {
                 .methodType(MethodType.methodType(GameProfile.class))
                 .mappings(
                         entry(Mappings.MOJANG, "getProfile").max(MinecraftVersions.V21_8),
-                        entry(Mappings.MOJANG, "nameAndId", MinecraftVersions.V21_9)
+                        entry(Mappings.MOJANG, "nameAndId").min(MinecraftVersions.V21_9)
                                 .methodType(MethodType.methodType(NameAndId.CLASS)),
-                        entry(Mappings.LEGACY_SEARGE, "func_152668_a", MinecraftVersions.V7_6, MinecraftVersions.V16_5),
-                        entry(Mappings.SEARGE, "m_11028_", MinecraftVersions.V17),
+                        entry(Mappings.SEARGE, "func_152668_a")
+                                .range(MinecraftVersions.V7_6, MinecraftVersions.V16_5),
+                        entry(Mappings.SEARGE, "m_11028_").min(MinecraftVersions.V17),
                         entry(Mappings.YARN_INTERMEDIARY, "method_14519").max(MinecraftVersions.V21_8),
-                        entry(Mappings.YARN_INTERMEDIARY, "method_72369", MinecraftVersions.V21_9)
+                        entry(Mappings.YARN_INTERMEDIARY, "method_72369").min(MinecraftVersions.V21_9)
                                 .methodType(MethodType.methodType(NameAndId.CLASS)),
-                        entry(Mappings.CALAMUS, "m_45654766", MinecraftVersions.V7_6));
+                        entry(Mappings.CALAMUS, "m_45654766").min(MinecraftVersions.V7_6));
 
         Reflecto.register(getProfilesByName, nameAndId);
     }

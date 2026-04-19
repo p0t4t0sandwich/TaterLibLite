@@ -24,7 +24,7 @@ public final class UserNameToIdResolver {
         var userNameToIdResolver = builder(USER_NAME_TO_ID_RESOLVER,
                 entry(Mappings.MOJANG, "net.minecraft.server.players.GameProfileCache").max(MinecraftVersions.V21_8),
                 entry(Mappings.MOJANG, "net.minecraft.server.players.UserNameToIdResolver").min(MinecraftVersions.V21_9),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.PlayerProfileCache").range(MinecraftVersions.V7_6, MinecraftVersions.V16_5),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.PlayerProfileCache").range(MinecraftVersions.V7_6, MinecraftVersions.V16_5),
                 entry(Mappings.SEARGE, "net.minecraft.server.players.GameProfileCache").min(MinecraftVersions.V17),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3312").max(MinecraftVersions.V21_8),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_11561").min(MinecraftVersions.V21_9),

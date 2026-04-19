@@ -218,10 +218,7 @@ public final class MetaAPIImpl implements MetaAPI {
                 }
                 // Check Forge
             } else if (api.isPlatformPresent(Platforms.FORGE)) {
-                if (this.version().noGreaterThan(MinecraftVersions.V16_5)) {
-                    mappings = Mappings.LEGACY_SEARGE;
-                } else if (this.version()
-                        .isInRange(MinecraftVersions.V17, MinecraftVersions.V20_5)) {
+                if (this.version().noGreaterThan(MinecraftVersions.V20_5)) {
                     mappings = Mappings.SEARGE;
                 } else {
                     mappings = Mappings.MOJANG;
@@ -247,11 +244,7 @@ public final class MetaAPIImpl implements MetaAPI {
                 mappings = Mappings.MOJANG;
                 // Check Spigot
             } else if (api.isPlatformPresent(Platforms.SPIGOT)) {
-                if (this.version().lessThan(MinecraftVersions.V18)) {
-                    mappings = Mappings.LEGACY_SPIGOT;
-                } else if (this.version().noLessThan(MinecraftVersions.V18)) {
-                    mappings = Mappings.SPIGOT;
-                }
+                mappings = Mappings.SPIGOT;
                 // Check Bukkit
             } else if (api.isPlatformPresent(Platforms.BUKKIT)) {
                 mappings = Mappings.OFFICIAL;

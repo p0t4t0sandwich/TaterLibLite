@@ -51,36 +51,30 @@ public record NameAndId(@NonNull UUID id, @NonNull String name) implements Wrapp
         }
 
         var nameAndId = builder(NAME_AND_ID,
-                entry(Mappings.MOJANG, "net.minecraft.server.players.NameAndId",
-                        MinecraftVersions.V21_9),
-                entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_11560",
-                        MinecraftVersions.V21_9))
+                entry(Mappings.MOJANG, "net.minecraft.server.players.NameAndId")
+                        .min(MinecraftVersions.V21_9),
+                entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_11560")
+                        .min(MinecraftVersions.V21_9))
                 .build();
         CLASS = nameAndId.clazz();
 
         var constructor = member(NAME_AND_ID_CONSTRUCTOR_ID_NAME, nameAndId, MappingMember.Type.CONSTRUCTOR)
                 .methodType(MethodType.methodType(void.class, UUID.class, String.class))
                 .mappings(
-                        entry(Mappings.MOJANG, "<init>",
-                                MinecraftVersions.V21_9),
-                        entry(Mappings.YARN_INTERMEDIARY, "<init>",
-                                MinecraftVersions.V21_9));
+                        entry(Mappings.MOJANG, "<init>").min(MinecraftVersions.V21_9),
+                        entry(Mappings.YARN_INTERMEDIARY, "<init>").min(MinecraftVersions.V21_9));
 
         var id = member(ID, nameAndId, MappingMember.Type.METHOD)
                 .methodType(MethodType.methodType(UUID.class))
                 .mappings(
-                        entry(Mappings.MOJANG, "id",
-                                MinecraftVersions.V21_9),
-                        entry(Mappings.YARN_INTERMEDIARY, "comp_4422",
-                                MinecraftVersions.V21_9));
+                        entry(Mappings.MOJANG, "id").min(MinecraftVersions.V21_9),
+                        entry(Mappings.YARN_INTERMEDIARY, "comp_4422").min(MinecraftVersions.V21_9));
 
         var name = member(NAME, nameAndId, MappingMember.Type.METHOD)
                 .methodType(MethodType.methodType(String.class))
                 .mappings(
-                        entry(Mappings.MOJANG, "name",
-                                MinecraftVersions.V21_9),
-                        entry(Mappings.YARN_INTERMEDIARY, "comp_4423",
-                                MinecraftVersions.V21_9));
+                        entry(Mappings.MOJANG, "name").min(MinecraftVersions.V21_9),
+                        entry(Mappings.YARN_INTERMEDIARY, "comp_4423").min(MinecraftVersions.V21_9));
 
         Reflecto.register(constructor, id, name);
     }

@@ -47,7 +47,7 @@ public final class MinecraftServer {
                 .mappings(
                         entry(Mappings.MOJANG, "isDedicatedServer"),
                         entry(Mappings.SEARGE, "m_6982_").min(MinecraftVersions.V17),
-                        entry(Mappings.LEGACY_SEARGE, "func_71262_S")
+                        entry(Mappings.SEARGE, "func_71262_S")
                                 .range(MinecraftVersions.V7, MinecraftVersions.V16_5),
                         entry(Mappings.YARN_INTERMEDIARY, "method_3816"),
                         entry(Mappings.CALAMUS, "m_45654766").min(MinecraftVersions.V7_2));
@@ -58,9 +58,9 @@ public final class MinecraftServer {
                 .mappings(
                         entry(Mappings.MOJANG, "getPlayerList"),
                         entry(Mappings.SEARGE, "m_6846_").min(MinecraftVersions.V17),
-                        entry(Mappings.LEGACY_SEARGE, "func_184103_al")
+                        entry(Mappings.SEARGE, "func_184103_al")
                                 .range(MinecraftVersions.V9, MinecraftVersions.V16_5),
-                        entry(Mappings.LEGACY_SEARGE, "func_71203_ab")
+                        entry(Mappings.SEARGE, "func_71203_ab")
                                 .range(MinecraftVersions.V7, MinecraftVersions.V8_9),
                         entry(Mappings.YARN_INTERMEDIARY, "method_3760"),
                         entry(Mappings.CALAMUS, "m_49852985").min(MinecraftVersions.V7_2));
@@ -88,7 +88,7 @@ public final class MinecraftServer {
                     .methodType(MethodType.methodType(UserNameToIdResolver.CLASS))
                     .mappings(
                             entry(Mappings.MOJANG, "getProfileCache").max(MinecraftVersions.V21_8),
-                            entry(Mappings.LEGACY_SEARGE, "func_152358_ax").range(MinecraftVersions.V7_6, MinecraftVersions.V16_5),
+                            entry(Mappings.SEARGE, "func_152358_ax").range(MinecraftVersions.V7_6, MinecraftVersions.V16_5),
                             entry(Mappings.SEARGE, "m_129927_").min(MinecraftVersions.V17),
                             entry(Mappings.YARN_INTERMEDIARY, "method_3793").max(MinecraftVersions.V21_8),
                             entry(Mappings.CALAMUS, "m_04499243").min(MinecraftVersions.V7_6));

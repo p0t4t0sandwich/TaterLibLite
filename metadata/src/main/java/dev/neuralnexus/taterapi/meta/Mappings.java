@@ -12,26 +12,24 @@ public enum Mappings {
     NONE("none"),
     OFFICIAL("official"),
     MOJANG("mojang"),
-    SPIGOT("spigot"), // Spigot 1.18+
-    LEGACY_SPIGOT("legacy spigot"), // Spigot 1.17-
-    SEARGE("searge"), // Forge 1.17.1+
-    LEGACY_SEARGE("legacy searge"), // Forge 1.16.5-
+    SPIGOT("spigot"), // Spigot mappings have a divide starting at 1.18
+    SEARGE("searge"), // Forge mappings have a divide starting at 1.17.1
     MCP("mcp"),
     YARN("yarn"),
     YARN_INTERMEDIARY("yarn intermediary"), // Fabric 1.14+
     // Deprecated by LegacyFabric, they now use Orinthe (Calamus) intermediary mappings
     LEGACY_INTERMEDIARY("legacy intermediary"),
     BABRIC_INTERMEDIARY("babric intermediary"),
-    CALAMUS("calamus"), // Fabric 1.13-
+    CALAMUS("calamus"), // Fabric 1.14.4-
     HASHED("hashed");
 
     private final String name;
 
-    Mappings(@NonNull final String name) {
+    Mappings(final @NonNull String name) {
         this.name = name;
     }
 
-    public boolean is(@NonNull final Mappings mappings) {
+    public boolean is(final @NonNull Mappings mappings) {
         return this == mappings;
     }
 

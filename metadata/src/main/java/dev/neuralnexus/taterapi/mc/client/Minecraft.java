@@ -34,9 +34,7 @@ public final class Minecraft {
 
         var mcClient = builder(MINECRAFT,
                 entry(Mappings.MOJANG, "net.minecraft.client.Minecraft"),
-                entry(Mappings.SEARGE, "net.minecraft.client.Minecraft",
-                        MinecraftVersions.V17),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.client.Minecraft"),
+                entry(Mappings.SEARGE, "net.minecraft.client.Minecraft"),
                 entry(Mappings.CALAMUS, "net.minecraft.client.Minecraft"),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_310"))
                 .build();
@@ -45,9 +43,8 @@ public final class Minecraft {
                 .methodType(MethodType.methodType(mcClient.clazz()))
                 .mappings(
                         entry(Mappings.MOJANG, "getInstance"),
-                        entry(Mappings.SEARGE, "m_91087_",
-                                MinecraftVersions.V17),
-                        entry(Mappings.LEGACY_SEARGE, "func_71410_x"),
+                        entry(Mappings.SEARGE, "func_71410_x").max(MinecraftVersions.V16_5),
+                        entry(Mappings.SEARGE, "m_91087_").min(MinecraftVersions.V17),
                         entry(Mappings.YARN_INTERMEDIARY, "method_1551"),
                         entry(Mappings.CALAMUS, "m_20213497"));
 
@@ -55,8 +52,8 @@ public final class Minecraft {
                 .methodType(MethodType.methodType(boolean.class))
                 .mappings(
                         entry(Mappings.MOJANG, "hasSingleplayerServer"),
-                        entry(Mappings.SEARGE, "m_91091_"),
-                        entry(Mappings.LEGACY_SEARGE, "func_71356_B"),
+                        entry(Mappings.SEARGE, "func_71356_B").max(MinecraftVersions.V16_5),
+                        entry(Mappings.SEARGE, "m_91091_").min(MinecraftVersions.V17),
                         entry(Mappings.YARN_INTERMEDIARY, "method_1496"),
                         entry(Mappings.CALAMUS, "m_10057689"));
 
@@ -65,8 +62,8 @@ public final class Minecraft {
                 .methodType(MethodType.methodType(MinecraftServer.CLASS))
                 .mappings(
                         entry(Mappings.MOJANG, "getSingleplayerServer"),
-                        entry(Mappings.SEARGE, "m_91092_"),
-                        entry(Mappings.LEGACY_SEARGE, "func_71401_C"),
+                        entry(Mappings.SEARGE, "func_71401_C").max(MinecraftVersions.V16_5),
+                        entry(Mappings.SEARGE, "m_91092_").min(MinecraftVersions.V17),
                         entry(Mappings.YARN_INTERMEDIARY, "method_1576"),
                         entry(Mappings.CALAMUS, "m_37046522"));
 

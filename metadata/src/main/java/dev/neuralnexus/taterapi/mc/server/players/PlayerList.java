@@ -32,12 +32,12 @@ public final class PlayerList implements Wrapped<Object> {
 
         var playerList = builder(PLAYER_LIST,
                 entry(Mappings.MOJANG, "net.minecraft.server.players.PlayerList"),
-                entry(Mappings.SEARGE, "net.minecraft.server.players.PlayerList",
-                        MinecraftVersions.V17),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.PlayerList",
-                        MinecraftVersions.V9, MinecraftVersions.V16_5),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.ServerConfigurationManager",
-                        MinecraftVersions.V7, MinecraftVersions.V8_9),
+                entry(Mappings.SEARGE, "net.minecraft.server.players.PlayerList")
+                        .min(MinecraftVersions.V17),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.PlayerList")
+                        .range(MinecraftVersions.V9, MinecraftVersions.V16_5),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.ServerConfigurationManager")
+                        .range(MinecraftVersions.V7, MinecraftVersions.V8_9),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3324"),
                 entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_29639016"))
                 .build();
@@ -48,12 +48,11 @@ public final class PlayerList implements Wrapped<Object> {
                 .methodType(MethodType.methodType(UserWhiteList.CLASS))
                 .mappings(
                         entry(Mappings.MOJANG, "getPlayerList"),
-                        entry(Mappings.SEARGE, "m_6846_",
-                                MinecraftVersions.V17),
-                        entry(Mappings.LEGACY_SEARGE, "func_184103_al",
-                                MinecraftVersions.V9, MinecraftVersions.V16_5),
-                        entry(Mappings.LEGACY_SEARGE, "func_71203_ab",
-                                MinecraftVersions.V7, MinecraftVersions.V8_9),
+                        entry(Mappings.SEARGE, "m_6846_").min(MinecraftVersions.V17),
+                        entry(Mappings.SEARGE, "func_184103_al")
+                                .range(MinecraftVersions.V9, MinecraftVersions.V16_5),
+                        entry(Mappings.SEARGE, "func_71203_ab")
+                                .range(MinecraftVersions.V7, MinecraftVersions.V8_9),
                         entry(Mappings.YARN_INTERMEDIARY, "method_3760"),
                         entry(Mappings.CALAMUS, "m_49852985"));
 

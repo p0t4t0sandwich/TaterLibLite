@@ -37,12 +37,17 @@ public final class Services {
         }
 
         var services = builder(SERVICES,
-                entry(Mappings.MOJANG, "net.minecraft.server.players.GameProfileCache").max(MinecraftVersions.V21_8),
-                entry(Mappings.MOJANG, "net.minecraft.server.players.CachedUserNameToIdResolver", MinecraftVersions.V21_9),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.PlayerProfileCache", MinecraftVersions.V7_6, MinecraftVersions.V16_5),
-                entry(Mappings.SEARGE, "net.minecraft.server.players.GameProfileCache", MinecraftVersions.V17),
+                entry(Mappings.MOJANG, "net.minecraft.server.players.GameProfileCache")
+                        .max(MinecraftVersions.V21_8),
+                entry(Mappings.MOJANG, "net.minecraft.server.players.CachedUserNameToIdResolver")
+                        .min(MinecraftVersions.V21_9),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.PlayerProfileCache")
+                        .range(MinecraftVersions.V7_6, MinecraftVersions.V16_5),
+                entry(Mappings.SEARGE, "net.minecraft.server.players.GameProfileCache")
+                        .min(MinecraftVersions.V17),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3312"),
-                entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_09211509", MinecraftVersions.V7_6)
+                entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_09211509")
+                        .min(MinecraftVersions.V7_6)
         ).build();
         CLASS = services.clazz();
 

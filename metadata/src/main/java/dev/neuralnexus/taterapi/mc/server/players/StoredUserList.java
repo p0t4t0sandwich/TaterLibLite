@@ -33,10 +33,9 @@ public sealed class StoredUserList implements Wrapped<Object> permits UserWhiteL
 
         var storedUserListClass = builder(STORED_USER_LIST,
                 entry(Mappings.MOJANG, "net.minecraft.server.players.StoredUserList"),
-                entry(Mappings.SEARGE, "net.minecraft.server.players.StoredUserList",
-                        MinecraftVersions.V17),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.UserList",
-                        MinecraftVersions.V7, MinecraftVersions.V16_5),
+                entry(Mappings.SEARGE, "net.minecraft.server.players.StoredUserList").min(MinecraftVersions.V17),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.UserList")
+                        .range(MinecraftVersions.V7, MinecraftVersions.V16_5),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3331"),
                 entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_43194647"))
                 .build();
@@ -45,18 +44,17 @@ public sealed class StoredUserList implements Wrapped<Object> permits UserWhiteL
                 .methodType(MethodType.methodType(Collection.class))
                 .mappings(
                         entry(Mappings.MOJANG, "getEntries"),
-                        entry(Mappings.SEARGE, "m_11395_",
-                                MinecraftVersions.V17),
-                        entry(Mappings.LEGACY_SEARGE, "func_199043_f",
-                                MinecraftVersions.V13, MinecraftVersions.V16_5),
-                        entry(Mappings.LEGACY_SEARGE, "func_152688_e",
-                                MinecraftVersions.V7, MinecraftVersions.V12_2)
+                        entry(Mappings.SEARGE, "m_11395_").min(MinecraftVersions.V17),
+                        entry(Mappings.SEARGE, "func_199043_f")
+                                .range(MinecraftVersions.V13, MinecraftVersions.V16_5),
+                        entry(Mappings.SEARGE, "func_152688_e")
+                                .range(MinecraftVersions.V7, MinecraftVersions.V12_2)
                                 .methodType(MethodType.methodType(Map.class)),
                         entry(Mappings.YARN_INTERMEDIARY, "method_14632"),
-                        entry(Mappings.CALAMUS, "m_49852985",
-                                MinecraftVersions.V13, MinecraftVersions.V14_4),
-                        entry(Mappings.CALAMUS, "m_66577243",
-                                MinecraftVersions.V7, MinecraftVersions.V12_2)
+                        entry(Mappings.CALAMUS, "m_49852985")
+                                .range(MinecraftVersions.V13, MinecraftVersions.V14_4),
+                        entry(Mappings.CALAMUS, "m_66577243")
+                                .range(MinecraftVersions.V7, MinecraftVersions.V12_2)
                                 .methodType(MethodType.methodType(Map.class)));
 
         Reflecto.register(getEntries);

@@ -32,20 +32,20 @@ public record MappingEntry(
         return new Builder().value(value).mappings(mappings);
     }
 
-    public static Builder entry(
-            final @NonNull Mappings mappings,
-            final @NonNull String value,
-            final @NonNull MinecraftVersion min) {
-        return new Builder().value(value).mappings(mappings).min(min);
-    }
+    //    public static Builder entry(
+    //            final @NonNull Mappings mappings,
+    //            final @NonNull String value,
+    //            final @NonNull MinecraftVersion min) {
+    //        return new Builder().value(value).mappings(mappings).min(min);
+    //    }
 
-    public static Builder entry(
-            final @NonNull Mappings mappings,
-            final @NonNull String value,
-            final @NonNull MinecraftVersion min,
-            final @NonNull MinecraftVersion max) {
-        return new Builder().value(value).mappings(mappings).range(min, max);
-    }
+    //    public static Builder entry(
+    //            final @NonNull Mappings mappings,
+    //            final @NonNull String value,
+    //            final @NonNull MinecraftVersion min,
+    //            final @NonNull MinecraftVersion max) {
+    //        return new Builder().value(value).mappings(mappings).range(min, max);
+    //    }
 
     public static class Builder {
         private String value;

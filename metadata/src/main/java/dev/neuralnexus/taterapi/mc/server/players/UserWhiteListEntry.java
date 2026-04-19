@@ -27,12 +27,11 @@ public final class UserWhiteListEntry extends StoredUserEntry {
 
         var userWhiteListEntry = builder(USER_WHITE_LIST_ENTRY,
                 entry(Mappings.MOJANG, "net.minecraft.server.players.UserWhiteListEntry"),
-                entry(Mappings.SEARGE, "net.minecraft.server.players.UserWhiteListEntry",
-                        MinecraftVersions.V17),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.WhitelistEntry",
-                        MinecraftVersions.V14, MinecraftVersions.V16_5),
-                entry(Mappings.LEGACY_SEARGE, "net.minecraft.server.management.UserListWhitelistEntry",
-                        MinecraftVersions.V7, MinecraftVersions.V13_2),
+                entry(Mappings.SEARGE, "net.minecraft.server.players.UserWhiteListEntry").min(MinecraftVersions.V17),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.WhitelistEntry")
+                        .range(MinecraftVersions.V14, MinecraftVersions.V16_5),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.UserListWhitelistEntry")
+                        .range(MinecraftVersions.V7, MinecraftVersions.V13_2),
                 entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3340"),
                 entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_02369546"))
                 .build();

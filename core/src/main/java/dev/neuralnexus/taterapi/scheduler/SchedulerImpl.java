@@ -177,12 +177,13 @@ public final class SchedulerImpl implements Scheduler {
                 backgroundExecutor = "backgroundExecutor";
             }
             case SEARGE -> {
-                Util = Class.forName("net.minecraft.Util");
-                backgroundExecutor = "m_438745_";
-            }
-            case LEGACY_SEARGE -> {
-                Util = Class.forName("net.minecraft.util.Util");
-                backgroundExecutor = "func_215072_e";
+                if (Constraint.noLessThan(MinecraftVersions.V17).result()) {
+                    Util = Class.forName("net.minecraft.Util");
+                    backgroundExecutor = "m_438745_";
+                } else {
+                    Util = Class.forName("net.minecraft.util.Util");
+                    backgroundExecutor = "func_215072_e";
+                }
             }
             case YARN_INTERMEDIARY -> {
                 Util = Class.forName("net.minecraft.class_156");
