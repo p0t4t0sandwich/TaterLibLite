@@ -87,7 +87,7 @@ allprojects {
             leadingTabsToSpaces()
             endWithNewline()
             licenseHeader("""/**
- * Copyright (c) 2025 $author
+ * Copyright (c) 2026 $author
  * This project is Licensed under <a href="$sourceUrl/blob/main/LICENSE">$license</a>
  */""")
         }
