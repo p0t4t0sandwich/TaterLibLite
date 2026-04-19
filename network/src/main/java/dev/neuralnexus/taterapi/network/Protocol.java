@@ -67,7 +67,7 @@ public enum Protocol {
         {
             serverbound.register(
                     PacketTypes.COMMON.SERVERBOUND_CUSTOM_PAYLOAD,
-                    map(0x17, MinecraftVersions.V7_2), // TODO: Backport to older
+                    map(0x17, MinecraftVersions.V7_2),
                     map(0x09, MinecraftVersions.V9),
                     map(0x0A, MinecraftVersions.V12),
                     map(0x09, MinecraftVersions.V12_1),
@@ -85,7 +85,7 @@ public enum Protocol {
                     map(0x15, MinecraftVersions.V21_6));
             clientbound.register(
                     PacketTypes.COMMON.CLIENTBOUND_CUSTOM_PAYLOAD,
-                    map(0x3F, MinecraftVersions.V7_2), // TODO: Backport to older
+                    map(0x3F, MinecraftVersions.V7_2),
                     map(0x18, MinecraftVersions.V9),
                     map(0x19, MinecraftVersions.V13),
                     map(0x18, MinecraftVersions.V14),
@@ -102,11 +102,17 @@ public enum Protocol {
                     map(0x18, MinecraftVersions.V21_5));
         }
     };
-    // spotless:on
 
     static {
-        PayloadRegistry.register(PayloadTypes.CUSTOM.BRAND, map(MinecraftVersions.V13));
+        PayloadRegistry.register(
+                PayloadTypes.CUSTOM.BRAND,
+                map(MinecraftVersions.V13));
+        PayloadRegistry.register(
+                PayloadTypes.CUSTOM.BUNGEECORD,
+                map("BungeeCord", MinecraftVersions.V7_2),
+                map("bungeecord:main", MinecraftVersions.V13));
     }
+    // spotless:on
 
     private final @NonNull String id;
 

@@ -8,6 +8,7 @@ import static dev.neuralnexus.taterapi.network.protocol.PayloadType.custom;
 
 import dev.neuralnexus.taterapi.network.protocol.common.custom.BrandPayload;
 import dev.neuralnexus.taterapi.network.protocol.common.custom.CustomPacketPayload;
+import dev.neuralnexus.taterapi.network.proxy.bungeecord.BungeeCordPayload;
 import dev.neuralnexus.taterapi.registries.AdapterRegistry;
 
 public interface PayloadTypes {
@@ -16,6 +17,10 @@ public interface PayloadTypes {
         CustomPacketPayload.Type<BrandPayload> BRAND =
                 custom(BrandPayload.class, "minecraft:brand")
                         .flow(PacketFlow.BIDIRECTIONAL).codec(BrandPayload.STREAM_CODEC).build();
+
+        CustomPacketPayload.Type<BungeeCordPayload> BUNGEECORD =
+                custom(BungeeCordPayload.class, "bungeecord:main")
+                        .flow(PacketFlow.BIDIRECTIONAL).codec(BungeeCordPayload.STREAM_CODEC).build();
     }
     interface QUERY {}
     interface QUERY_ANSWER {}

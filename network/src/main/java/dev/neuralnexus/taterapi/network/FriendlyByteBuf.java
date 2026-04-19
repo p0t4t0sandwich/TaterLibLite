@@ -15,6 +15,7 @@ import dev.neuralnexus.taterapi.network.protocol.PacketFlow;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.unix.DomainSocketAddress;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
@@ -26,7 +27,8 @@ import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -77,8 +79,13 @@ public final class FriendlyByteBuf extends ByteBuf {
     }
 
     // ---------------- Addon methods -----------------
-    public @NonNull InetAddress readAddress() {
-        return InetAddresses.forString(this.readUtf());
+    public @NonNull SocketAddress readAddress(final int port) {
+        final String ip = this.readUtf();
+        if (ip.startsWith("unix://")) {
+            // TODO: Consider UnixDomainSocketAddress (Java 16)
+            return new DomainSocketAddress(ip.substring(7));
+        }
+        return new InetSocketAddress(InetAddresses.forString(ip), port);
     }
 
     public @NonNull FriendlyByteBuf readPayload(final int maxSize) {

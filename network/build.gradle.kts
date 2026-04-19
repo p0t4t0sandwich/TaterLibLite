@@ -42,6 +42,7 @@ dependencies {
     mainCompileOnly(libs.guava)
     mainCompileOnly(libs.netty.buffer)
     mainCompileOnly(libs.netty.codec)
+    mainCompileOnly(libs.netty.unix.common)
 
     mainCompileOnly(libs.jspecify)
     mainCompileOnly(project(":base"))
