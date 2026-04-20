@@ -203,7 +203,7 @@ public final class MetaAPIImpl implements MetaAPI {
             } else if (api.isMixedForgeFabric()) {
                 if (api.isModLoaded(Platforms.FABRIC, "kilt")) {
                     mappings = Mappings.YARN_INTERMEDIARY;
-                } else if (api.isModLoaded(Platforms.FORGE, "fabric_api", "connector")) {
+                } else if (api.isModLoaded(Platforms.FORGE, "fabric_api", "connectormod")) {
                     mappings = Mappings.SEARGE;
                 }
             } else if (api.isMixedNeoForgeFabric()
