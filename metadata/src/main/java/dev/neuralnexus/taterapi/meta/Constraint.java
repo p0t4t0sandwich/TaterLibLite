@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,16 +27,18 @@ import java.util.stream.Stream;
  * Constraints include dependencies, mappings, platform, side, and Minecraft version.
  */
 public record Constraint(
-        Collection<@NonNull String> deps,
-        Collection<@NonNull Mappings> mappings,
-        Collection<@NonNull Platform> platform,
-        Collection<@NonNull Side> side,
-        Collection<@NonNull MinecraftVersion> version,
+        Collection<String> deps,
+        Collection<Mappings> mappings,
+        Collection<Platform> platform,
+        Collection<Side> side,
+        Collection<MinecraftVersion> version,
         boolean minInclusive,
         @NonNull MinecraftVersion min,
         boolean maxInclusive,
         @NonNull MinecraftVersion max,
-        boolean invert) {
+        boolean invert,
+        boolean orElseThrow,
+        @NonNull Function<Constraint, RuntimeException> exceptionSupplier) {
 
     /**
      * Evaluates the constraint against the current environment.
@@ -43,7 +46,7 @@ public record Constraint(
      * @return true if the constraint is satisfied, false otherwise.
      */
     public boolean result() {
-        return Evaluator.evaluate(this);
+        return Evaluator.evaluateOrThrow(this);
     }
 
     /**
@@ -98,6 +101,8 @@ public record Constraint(
                 + max
                 + ", invert="
                 + invert
+                + ", orElseThrow="
+                + orElseThrow
                 + '}';
     }
 
@@ -130,16 +135,19 @@ public record Constraint(
 
     /** Builder class for constructing {@link Constraint} instances. */
     public static final class Builder {
-        private final Set<@NonNull String> deps = new HashSet<>();
-        private final Set<@NonNull Mappings> mappings = new HashSet<>();
-        private final Set<@NonNull Platform> platform = new HashSet<>();
-        private final Set<@NonNull Side> side = new HashSet<>();
-        private final Set<@NonNull MinecraftVersion> version = new HashSet<>();
+        private final Set<String> deps = new HashSet<>();
+        private final Set<Mappings> mappings = new HashSet<>();
+        private final Set<Platform> platform = new HashSet<>();
+        private final Set<Side> side = new HashSet<>();
+        private final Set<MinecraftVersion> version = new HashSet<>();
         private boolean minInclusive = true;
         private @NonNull MinecraftVersion min = MinecraftVersions.UNKNOWN;
         private boolean maxInclusive = true;
         private @NonNull MinecraftVersion max = MinecraftVersions.UNKNOWN;
         private boolean invert = false;
+        private boolean orElseThrow = false;
+        private @NonNull Function<Constraint, RuntimeException> exceptionSupplier =
+                ConstraintException::new;
 
         Builder() {}
 
@@ -149,7 +157,7 @@ public record Constraint(
          * @param deps a collection of dependency identifiers
          * @return the current {@link Builder} instance
          */
-        public Builder deps(final Collection<@NonNull String> deps) {
+        public Builder deps(final Collection<String> deps) {
             this.deps.addAll(deps);
             return this;
         }
@@ -170,7 +178,7 @@ public record Constraint(
          * @param mappings the required {@link Mappings}
          * @return the current {@link Builder} instance
          */
-        public Builder mappings(final Collection<@NonNull Mappings> mappings) {
+        public Builder mappings(final Collection<Mappings> mappings) {
             this.mappings.addAll(mappings);
             return this;
         }
@@ -192,7 +200,7 @@ public record Constraint(
          * @param platform a collection of {@link Platform}
          * @return the current {@link Builder} instance
          */
-        public Builder platform(final Collection<@NonNull Platform> platform) {
+        public Builder platform(final Collection<Platform> platform) {
             this.platform.addAll(platform);
             return this;
         }
@@ -230,7 +238,7 @@ public record Constraint(
          * @param side a collection of {@link Side}
          * @return the current {@link Builder} instance
          */
-        public Builder side(final Collection<@NonNull Side> side) {
+        public Builder side(final Collection<Side> side) {
             this.side.addAll(side);
             return this;
         }
@@ -252,7 +260,7 @@ public record Constraint(
          * @param version a collection of {@link MinecraftVersion}
          * @return the current {@link Builder} instance
          */
-        public Builder version(final Collection<@NonNull MinecraftVersion> version) {
+        public Builder version(final Collection<MinecraftVersion> version) {
             this.version.addAll(version);
             return this;
         }
@@ -302,6 +310,7 @@ public record Constraint(
          * @return the current {@link Builder} instance
          */
         public Builder min(final @NonNull MinecraftVersion min) {
+            Objects.requireNonNull(min, "Minimum Minecraft version cannot be null");
             this.min = min;
             return this;
         }
@@ -314,6 +323,7 @@ public record Constraint(
          */
         public Builder min(
                 final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion min) {
+            Objects.requireNonNull(min, "Minimum Minecraft version cannot be null");
             this.min = min.ref();
             return this;
         }
@@ -336,6 +346,7 @@ public record Constraint(
          * @return the current {@link Builder} instance
          */
         public Builder max(final @NonNull MinecraftVersion max) {
+            Objects.requireNonNull(max, "Maximum Minecraft version cannot be null");
             this.max = max;
             return this;
         }
@@ -348,6 +359,7 @@ public record Constraint(
          */
         public Builder max(
                 final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion max) {
+            Objects.requireNonNull(max, "Maximum Minecraft version cannot be null");
             this.max = max.ref();
             return this;
         }
@@ -379,7 +391,9 @@ public record Constraint(
                     min,
                     maxInclusive,
                     max,
-                    invert);
+                    invert,
+                    orElseThrow,
+                    exceptionSupplier);
         }
 
         /**
@@ -388,6 +402,28 @@ public record Constraint(
          * @return true if the constraint is satisfied, false otherwise
          */
         public boolean result() {
+            return this.build().result();
+        }
+
+        /**
+         * Causes the constraint to throw an exception if not satisfied instead of returning false.
+         *
+         * @return the current {@link Builder} instance
+         */
+        public boolean orElseThrow() {
+            this.orElseThrow = true;
+            return this.build().result();
+        }
+
+        /**
+         * Causes the constraint to throw an exception if not satisfied instead of returning false.
+         *
+         * @param exceptionSupplier Supplies the exception
+         * @return the current {@link Builder} instance
+         */
+        public boolean orElseThrow(final Function<Constraint, RuntimeException> exceptionSupplier) {
+            this.orElseThrow = true;
+            this.exceptionSupplier = exceptionSupplier;
             return this.build().result();
         }
     }
@@ -406,6 +442,8 @@ public record Constraint(
             final @NonNull MinecraftVersion min,
             final boolean maxInclusive,
             final @NonNull MinecraftVersion max) {
+        Objects.requireNonNull(min, "Minimum Minecraft version cannot be null");
+        Objects.requireNonNull(max, "Maximum Minecraft version cannot be null");
         return builder().minInclusive(minInclusive).min(min).maxInclusive(maxInclusive).max(max);
     }
 
@@ -423,6 +461,8 @@ public record Constraint(
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion min,
             final boolean maxInclusive,
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion max) {
+        Objects.requireNonNull(min, "Minimum Minecraft version cannot be null");
+        Objects.requireNonNull(max, "Maximum Minecraft version cannot be null");
         return builder().minInclusive(minInclusive).min(min).maxInclusive(maxInclusive).max(max);
     }
 
@@ -435,6 +475,8 @@ public record Constraint(
      */
     public static Constraint.Builder range(
             final @NonNull MinecraftVersion min, final @NonNull MinecraftVersion max) {
+        Objects.requireNonNull(min, "Minimum Minecraft version cannot be null");
+        Objects.requireNonNull(max, "Maximum Minecraft version cannot be null");
         return builder().min(min).max(max);
     }
 
@@ -448,6 +490,8 @@ public record Constraint(
     public static Constraint.Builder range(
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion min,
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion max) {
+        Objects.requireNonNull(min, "Minimum Minecraft version cannot be null");
+        Objects.requireNonNull(max, "Maximum Minecraft version cannot be null");
         return builder().min(min).max(max);
     }
 
@@ -459,6 +503,7 @@ public record Constraint(
      *     minimum
      */
     public static Constraint.Builder greaterThan(final @NonNull MinecraftVersion min) {
+        Objects.requireNonNull(min, "Minimum Minecraft version cannot be null");
         return builder().min(min).minInclusive(false);
     }
 
@@ -471,6 +516,7 @@ public record Constraint(
      */
     public static Constraint.Builder greaterThan(
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion min) {
+        Objects.requireNonNull(min, "Minimum Minecraft version cannot be null");
         return builder().min(min).minInclusive(false);
     }
 
@@ -482,6 +528,7 @@ public record Constraint(
      *     minimum
      */
     public static Constraint.Builder noLessThan(final @NonNull MinecraftVersion min) {
+        Objects.requireNonNull(min, "Minimum Minecraft version cannot be null");
         return builder().min(min);
     }
 
@@ -494,6 +541,7 @@ public record Constraint(
      */
     public static Constraint.Builder noLessThan(
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion min) {
+        Objects.requireNonNull(min, "Minimum Minecraft version cannot be null");
         return builder().min(min);
     }
 
@@ -505,6 +553,7 @@ public record Constraint(
      *     maximum
      */
     public static Constraint.Builder lessThan(final @NonNull MinecraftVersion max) {
+        Objects.requireNonNull(max, "Maximum Minecraft version cannot be null");
         return builder().max(max).maxInclusive(false);
     }
 
@@ -517,6 +566,7 @@ public record Constraint(
      */
     public static Constraint.Builder lessThan(
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion max) {
+        Objects.requireNonNull(max, "Maximum Minecraft version cannot be null");
         return builder().max(max).maxInclusive(false);
     }
 
@@ -528,6 +578,7 @@ public record Constraint(
      *     specified maximum
      */
     public static Constraint.Builder noGreaterThan(final @NonNull MinecraftVersion max) {
+        Objects.requireNonNull(max, "Maximum Minecraft version cannot be null");
         return builder().max(max);
     }
 
@@ -540,6 +591,7 @@ public record Constraint(
      */
     public static Constraint.Builder noGreaterThan(
             final dev.neuralnexus.taterapi.meta.enums.@NonNull MinecraftVersion max) {
+        Objects.requireNonNull(max, "Maximum Minecraft version cannot be null");
         return builder().max(max);
     }
 
@@ -547,10 +599,10 @@ public record Constraint(
      * Evaluator class for evaluating {@link Constraint} instances against the current environment.
      */
     public static final class Evaluator {
-        private static final Map<@NonNull Constraint, @NonNull Boolean> CACHE = new WeakHashMap<>();
-        private static final @NonNull MetaAPI META = MetaAPI.instance();
-        private static final @NonNull Mappings MAPPINGS = META.mappings();
-        private static final @NonNull MinecraftVersion version = META.version();
+        private static final Map<Constraint, Boolean> CACHE = new WeakHashMap<>();
+        private static final MetaAPI META = MetaAPI.instance();
+        private static final Mappings MAPPINGS = META.mappings();
+        private static final MinecraftVersion version = META.version();
 
         public static boolean DEBUG = false;
         private static final Logger logger = Logger.create("taterliblite-meta-constraint");
@@ -564,6 +616,7 @@ public record Constraint(
          * @return true if the dependency constraints are satisfied, false otherwise
          */
         public static boolean evalDeps(final @NonNull Constraint constraint) {
+            Objects.requireNonNull(constraint, "Constraint cannot be null");
             if (constraint.deps().isEmpty()) {
                 return true;
             }
@@ -588,6 +641,7 @@ public record Constraint(
          * @return true if the mappings constraints are satisfied, false otherwise
          */
         public static boolean evalMappings(final @NonNull Constraint constraint) {
+            Objects.requireNonNull(constraint, "Constraint cannot be null");
             if (constraint.mappings().isEmpty() || constraint.mappings().contains(Mappings.NONE)) {
                 return true;
             }
@@ -618,6 +672,7 @@ public record Constraint(
          * @return true if the platform constraints are satisfied, false otherwise
          */
         public static boolean evalPlatform(final @NonNull Constraint constraint) {
+            Objects.requireNonNull(constraint, "Constraint cannot be null");
             if (constraint.platform().isEmpty()) {
                 return true;
             }
@@ -642,6 +697,7 @@ public record Constraint(
          * @return true if the side constraints are satisfied, false otherwise
          */
         public static boolean evalSide(final @NonNull Constraint constraint) {
+            Objects.requireNonNull(constraint, "Constraint cannot be null");
             if (constraint.side().isEmpty()) {
                 return true;
             }
@@ -670,6 +726,7 @@ public record Constraint(
          * @return true if the version constraints are satisfied, false otherwise
          */
         public static boolean evalVersion(final @NonNull Constraint constraint) {
+            Objects.requireNonNull(constraint, "Constraint cannot be null");
             if (constraint.version().isEmpty()
                     && constraint.min() == MinecraftVersions.UNKNOWN
                     && constraint.max() == MinecraftVersions.UNKNOWN) {
@@ -723,6 +780,7 @@ public record Constraint(
          * @return true if the constraint is satisfied, false otherwise
          */
         public static boolean evaluate(final @NonNull Constraint constraint) {
+            Objects.requireNonNull(constraint, "Constraint cannot be null");
             if (CACHE.containsKey(constraint)) {
                 return CACHE.get(constraint);
             }
@@ -740,6 +798,35 @@ public record Constraint(
             }
             CACHE.put(constraint, result);
             return result;
+        }
+
+        /**
+         * Evaluates the given {@link Constraint} against the current environment and if configured,
+         * throws if the exception evaluates to false.
+         *
+         * @param constraint the {@link Constraint} to evaluate
+         * @return true if the constraint is satisfied, false otherwise
+         * @throws ConstraintException if the constraint is not satisfied and configured to throw
+         */
+        public static boolean evaluateOrThrow(final @NonNull Constraint constraint)
+                throws ConstraintException {
+            Objects.requireNonNull(constraint, "Constraint cannot be null");
+            boolean result = evaluate(constraint);
+            if (!result && constraint.orElseThrow()) {
+                throw constraint.exceptionSupplier().apply(constraint);
+            }
+            return result;
+        }
+    }
+
+    public static final class ConstraintException extends RuntimeException {
+        public ConstraintException(final @NonNull Constraint constraint) {
+            super("Constraint not satisfied: " + constraint);
+        }
+
+        public ConstraintException(
+                final @NonNull Constraint constraint, final @NonNull Throwable cause) {
+            super("Constraint not satisfied: " + constraint, cause);
         }
     }
 }
