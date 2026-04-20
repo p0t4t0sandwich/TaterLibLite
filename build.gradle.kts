@@ -78,7 +78,7 @@ allprojects {
             importOrder()
             removeUnusedImports()
             cleanthat()
-            googleJavaFormat("1.24.0")
+            googleJavaFormat("1.35.0")
                 .aosp()
                 .formatJavadoc(true)
                 .reorderImports(true)
