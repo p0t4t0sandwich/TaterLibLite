@@ -12,9 +12,6 @@ import dev.neuralnexus.taterapi.network.protocol.Packet;
 import dev.neuralnexus.taterapi.network.protocol.PacketFlow;
 import dev.neuralnexus.taterapi.network.protocol.PacketType;
 
-import io.netty.util.collection.IntObjectHashMap;
-import io.netty.util.collection.IntObjectMap;
-
 import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
@@ -25,7 +22,9 @@ import java.util.stream.Stream;
 public final class PacketRegistry {
     public final @NonNull PacketFlow direction;
     public final @NonNull Protocol protocol;
-    final IntObjectMap<PacketType<Packet>> idToProtocolInfo = new IntObjectHashMap<>(16, 0.5f);
+    // TODO: Find a way to replace with IntObjectHashMap and similar,
+    //  as the Netty version 1.7 (and probably 1.12) uses doesn't have such classes
+    final Map<Integer, PacketType<Packet>> idToProtocolInfo = new HashMap<>(16, 0.5f);
     final Map<Class<Packet>, Integer> classToId = new HashMap<>(16, 0.5f);
 
     public PacketRegistry(final @NonNull PacketFlow direction, final @NonNull Protocol protocol) {
