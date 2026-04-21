@@ -15,7 +15,6 @@ import dev.neuralnexus.taterapi.network.protocol.PacketFlow;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.unix.DomainSocketAddress;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
@@ -87,10 +86,11 @@ public final class FriendlyByteBuf extends ByteBuf {
     public @NonNull SocketAddress readSocketAddress() {
         final String ip = this.readUtf();
         final int port = this.readUnsignedShort();
-        if (ip.startsWith("unix://")) {
-            // TODO: Consider UnixDomainSocketAddress (Java 16)
-            return new DomainSocketAddress(ip.substring(7));
-        }
+        // TODO: Re-add when UDS support is more widespread
+        // if (ip.startsWith("unix://")) {
+        //     // TODO: Consider UnixDomainSocketAddress (Java 16)
+        //     return new io.netty.channel.unix.DomainSocketAddress(ip.substring(7));
+        // }
         return new InetSocketAddress(InetAddresses.forString(ip), port);
     }
 
