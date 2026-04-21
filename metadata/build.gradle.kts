@@ -26,6 +26,8 @@ dependencies {
     testImplementation(project(":base"))
     testRuntimeOnly(project(":base"))
 
+    compileOnly(libs.mojang.authlib)
+
     compileOnly(libs.mixin)
     compileOnly(libs.asm.tree)
 
@@ -43,8 +45,7 @@ tasks.test {
 }
 
 tasks.jar {
-    from(sourceSets.main.get().output, forge26.output)
-    DuplicatesStrategy.EXCLUDE
+    from(forge26.output)
     manifest {
         attributes(
             mapOf(

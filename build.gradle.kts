@@ -1,10 +1,8 @@
 import java.time.Instant
 
 plugins {
-    id("java")
-    id("maven-publish")
-    id("idea")
-    id("eclipse")
+    java
+    `maven-publish`
     alias(libs.plugins.blossom)
     alias(libs.plugins.jvmdowngrader)
     alias(libs.plugins.spotless)
@@ -19,13 +17,11 @@ val mavenCredentials: PasswordCredentials.() -> Unit = {
     password = project.findProperty("neuralNexusPassword") as? String ?: System.getenv("NEURALNEXUS_PASSWORD") ?: ""
 }
 
-subprojects {
+allprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
-    apply(plugin = "maven-publish")
     apply(plugin = "idea")
     apply(plugin = "eclipse")
-    apply(plugin = rootProject.libs.plugins.jvmdowngrader.get().pluginId)
     apply(plugin = rootProject.libs.plugins.spotless.get().pluginId)
 
     base {
@@ -35,13 +31,26 @@ subprojects {
     java {
         withSourcesJar()
         withJavadocJar()
-        toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
-        //sourceCompatibility = JavaVersion.toVersion(javaVersion)
-        targetCompatibility = JavaVersion.toVersion(javaVersion)
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(javaVersion))
+        }
     }
 
     tasks.withType<JavaCompile> {
-        options.encoding = "UTF-8"
+        options.encoding = Charsets.UTF_8.name()
+        options.release.set(javaVersion)
+    }
+
+    tasks.withType<Javadoc> {
+        options.encoding = Charsets.UTF_8.name()
+    }
+
+    tasks.withType<ProcessResources> {
+        filteringCharset = Charsets.UTF_8.name()
+    }
+
+    tasks.withType<GenerateModuleMetadata> {
+        enabled = false
     }
 
     repositories {
@@ -69,7 +78,7 @@ subprojects {
             importOrder()
             removeUnusedImports()
             cleanthat()
-            googleJavaFormat("1.24.0")
+            googleJavaFormat("1.35.0")
                 .aosp()
                 .formatJavadoc(true)
                 .reorderImports(true)
@@ -78,11 +87,17 @@ subprojects {
             leadingTabsToSpaces()
             endWithNewline()
             licenseHeader("""/**
- * Copyright (c) 2025 $author
+ * Copyright (c) 2026 $author
  * This project is Licensed under <a href="$sourceUrl/blob/main/LICENSE">$license</a>
  */""")
         }
     }
+}
+
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "maven-publish")
+    apply(plugin = rootProject.libs.plugins.jvmdowngrader.get().pluginId)
 
     tasks.downgradeJar {
         downgradeTo = JavaVersion.VERSION_1_8
@@ -92,10 +107,6 @@ subprojects {
     tasks.shadeDowngradedApi {
         downgradeTo = JavaVersion.VERSION_1_8
         archiveClassifier.set("downgraded-8-shaded")
-    }
-
-    tasks.withType<GenerateModuleMetadata> {
-        enabled = false
     }
 
     tasks.downgradeJar.get().dependsOn(tasks.spotlessApply)
@@ -139,12 +150,6 @@ sourceSets.main {
     }
 }
 
-repositories {
-    maven("https://maven.neuralnexus.dev/releases")
-    maven("https://maven.neuralnexus.dev/snapshots")
-    maven("https://maven.neuralnexus.dev/mirror")
-}
-
 dependencies {
     compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.26")
 }
@@ -172,7 +177,8 @@ tasks.jar {
         project(":base").sourceSets.main.get().output,
         project(":core").sourceSets.main.get().output,
         project(":metadata").sourceSets.main.get().output,
-        project(":muxins").sourceSets.main.get().output
+        project(":muxins").sourceSets.main.get().output,
+        project(":network").sourceSets.main.get().output
     )
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {

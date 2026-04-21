@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Dylan Sperrer - dylan@neuralnexus.dev
+ * Copyright (c) 2026 Dylan Sperrer - dylan@neuralnexus.dev
  * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
  */
 package dev.neuralnexus.taterapi.muxins;
@@ -33,49 +33,55 @@ public final class Muxins {
     private static MethodHandle checkAnnotationsHandle;
 
     static {
-        try {
-            Class.forName("org.spongepowered.asm.mixin.transformer.IMixinTransformer");
-        } catch (final ClassNotFoundException e) {
-            mixinTransformerPresent = false;
-            // TODO: Learn alternate transformation methods
-            logger.warn(
-                    "Mixin transformer not found, field/method annotations will not function as expected");
-        }
-
-        if (MixinServiceUtil.checkForShadedASM()) {
+        //noinspection ConstantValue
+        if (!Muxins.class.getName().contains(".muxins.shaded.")) {
             try {
-                final Class<?> mixinHacks =
-                        Class.forName(
-                                MixinHacks.class.getName().replace(".muxins.", ".muxins.shaded."));
-                final Method registerMethod =
-                        mixinHacks.getDeclaredMethod("registerMixinExtension", IExtension.class);
-                registerMixinExtensionHandle =
-                        MethodHandles.publicLookup().unreflect(registerMethod);
+                Class.forName("org.spongepowered.asm.mixin.transformer.IMixinTransformer");
+            } catch (final ClassNotFoundException e) {
+                mixinTransformerPresent = false;
+                // TODO: Learn alternate transformation methods
+                logger.warn(
+                        "Mixin transformer not found, field/method annotations will not function as expected");
+            }
 
-                final Class<?> muxinExtension =
-                        Class.forName(
-                                MuxinExtension.class
-                                        .getName()
-                                        .replace(".muxins.", ".muxins.shaded."));
-                final Constructor<?> constructor =
-                        muxinExtension.getConstructor(String.class, boolean.class);
-                muxinExtensionConstructorHandle =
-                        MethodHandles.publicLookup().unreflectConstructor(constructor);
+            if (MixinServiceUtil.checkForShadedASM()) {
+                try {
+                    final Class<?> mixinHacks =
+                            Class.forName(
+                                    MixinHacks.class
+                                            .getName()
+                                            .replace(".muxins.", ".muxins.shaded."));
+                    final Method registerMethod =
+                            mixinHacks.getDeclaredMethod(
+                                    "registerMixinExtension", IExtension.class);
+                    registerMixinExtensionHandle =
+                            MethodHandles.publicLookup().unreflect(registerMethod);
 
-                final Class<?> annotationChecker =
-                        Class.forName(
-                                AnnotationChecker.class
-                                        .getName()
-                                        .replace(".muxins.", ".muxins.shaded."));
-                final Method checkAnnotationsMethod =
-                        annotationChecker.getDeclaredMethod(
-                                "checkAnnotations", String.class, boolean.class);
-                checkAnnotationsHandle =
-                        MethodHandles.publicLookup().unreflect(checkAnnotationsMethod);
-            } catch (final ClassNotFoundException
-                    | IllegalAccessException
-                    | NoSuchMethodException e) {
-                logger.error("Failed to load shaded muxin classes", e);
+                    final Class<?> muxinExtension =
+                            Class.forName(
+                                    MuxinExtension.class
+                                            .getName()
+                                            .replace(".muxins.", ".muxins.shaded."));
+                    final Constructor<?> constructor =
+                            muxinExtension.getConstructor(String.class, boolean.class);
+                    muxinExtensionConstructorHandle =
+                            MethodHandles.publicLookup().unreflectConstructor(constructor);
+
+                    final Class<?> annotationChecker =
+                            Class.forName(
+                                    AnnotationChecker.class
+                                            .getName()
+                                            .replace(".muxins.", ".muxins.shaded."));
+                    final Method checkAnnotationsMethod =
+                            annotationChecker.getDeclaredMethod(
+                                    "checkAnnotations", String.class, boolean.class);
+                    checkAnnotationsHandle =
+                            MethodHandles.publicLookup().unreflect(checkAnnotationsMethod);
+                } catch (final ClassNotFoundException
+                        | IllegalAccessException
+                        | NoSuchMethodException e) {
+                    logger.error("Failed to load shaded muxin classes", e);
+                }
             }
         }
     }

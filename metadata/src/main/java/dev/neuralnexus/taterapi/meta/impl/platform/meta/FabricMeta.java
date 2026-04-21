@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Dylan Sperrer - dylan@neuralnexus.dev
+ * Copyright (c) 2026 Dylan Sperrer - dylan@neuralnexus.dev
  * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
  */
 package dev.neuralnexus.taterapi.meta.impl.platform.meta;
@@ -7,13 +7,13 @@ package dev.neuralnexus.taterapi.meta.impl.platform.meta;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.logger.impl.ApacheLogger;
 import dev.neuralnexus.taterapi.logger.impl.Slf4jLogger;
+import dev.neuralnexus.taterapi.mc.client.Minecraft;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.Side;
-import dev.neuralnexus.taterapi.meta.impl.WMinecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -37,21 +37,21 @@ public final class FabricMeta implements Platform.Meta {
 
     @Override
     public @NonNull Object client() {
-        return WMinecraft.getInstance();
+        return Minecraft.getInstance();
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public @NonNull Object minecraft() {
-        if (this.side().isClient() && WMinecraft.hasServer()) {
-            return WMinecraft.getServer();
+        if (this.side().isClient() && Minecraft.hasServer()) {
+            return Minecraft.getServer();
         }
         return FabricLoader.getInstance().getGameInstance();
     }
 
     @Override
     public @NonNull Side side() {
-        return WMinecraft.determineSide(this.isClient());
+        return Minecraft.determineSide(this.isClient());
     }
 
     @Override

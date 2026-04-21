@@ -1,14 +1,11 @@
 /**
- * Copyright (c) 2025 Dylan Sperrer - dylan@neuralnexus.dev
+ * Copyright (c) 2026 Dylan Sperrer - dylan@neuralnexus.dev
  * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
  */
 package dev.neuralnexus.taterapi.meta.impl.platform.meta.forge;
 
 import static dev.neuralnexus.taterapi.util.ReflectionUtil.checkForClass;
 
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platform;
 
 import java.lang.reflect.InvocationTargetException;
@@ -17,21 +14,27 @@ import java.lang.reflect.InvocationTargetException;
 public final class ForgeData {
     public static Platform.Meta create() {
         if (checkForClass("net.minecraftforge.fml.loading.FMLLoader")) {
-            final MinecraftVersion version = MetaAPI.instance().version();
-            if (version.lessThan(MinecraftVersions.V26_1)) {
-                return new FMLLoaderMeta();
-            }
-            try { // TODO: Restructure project
-                final Class<?> clazz =
-                        Class.forName(
-                                "dev.neuralnexus.taterapi.meta.impl.platform.meta.forge.FMLLoaderMeta_26");
-                return (Platform.Meta) clazz.getDeclaredConstructor().newInstance();
-            } catch (final ClassNotFoundException
-                    | IllegalAccessException
-                    | InstantiationException
-                    | InvocationTargetException
-                    | NoSuchMethodException e) {
-                throw new RuntimeException(e);
+            try { // LoadingModList was changed to an interface in 26.1, use as version check
+                final Class<?> loadingModList =
+                        Class.forName("net.minecraftforge.fml.loading.LoadingModList");
+                if (loadingModList.isInterface()) {
+                    try { // TODO: Restructure project
+                        final Class<?> clazz =
+                                Class.forName(
+                                        "dev.neuralnexus.taterapi.meta.impl.platform.meta.forge.FMLLoaderMeta_26");
+                        return (Platform.Meta) clazz.getDeclaredConstructor().newInstance();
+                    } catch (final ClassNotFoundException
+                            | IllegalAccessException
+                            | InstantiationException
+                            | InvocationTargetException
+                            | NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    return new FMLLoaderMeta();
+                }
+            } catch (final ClassNotFoundException e) {
+                throw new RuntimeException(e); // Shouldn't actually happen
             }
         } else if (checkForClass("net.minecraftforge.fml.common.Loader")) {
             return new MCFLoaderMeta();
