@@ -45,6 +45,7 @@ tasks.test {
 }
 
 tasks.jar {
+    from(forge26.output)
     manifest {
         attributes(
             mapOf(
