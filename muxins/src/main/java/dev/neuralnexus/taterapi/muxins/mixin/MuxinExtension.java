@@ -4,6 +4,8 @@
  */
 package dev.neuralnexus.taterapi.muxins.mixin;
 
+import io.github.legacymoddingmc.unimixins.compat.api.RemapASMForMixin;
+
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -15,6 +17,7 @@ import org.spongepowered.asm.mixin.transformer.ext.ITargetClassContext;
  * href="https://github.com/Moulberry/MixinConstraints/blob/master/LICENSE">MixinConstraints</a> by
  * Moulberry.
  */
+@RemapASMForMixin
 public final class MuxinExtension implements IExtension {
     private final String mixinPackage;
     private final boolean verbose;

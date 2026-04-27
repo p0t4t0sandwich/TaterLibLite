@@ -4,6 +4,8 @@
  */
 package dev.neuralnexus.taterapi.muxins.mixin;
 
+import io.github.legacymoddingmc.unimixins.compat.api.RemapASMForMixin;
+
 import org.objectweb.asm.tree.*;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -32,6 +34,7 @@ import java.util.SortedSet;
  * href="https://github.com/LlamaLad7/MixinExtras/blob/master/LICENSE">here</a>.
  */
 @SuppressWarnings("unchecked")
+@RemapASMForMixin
 public final class MixinHacks {
     private static MethodHandle TARGET_CLASS_CONTEXT_MIXINS;
     private static MethodHandle MIXIN_INFO_GET_STATE;

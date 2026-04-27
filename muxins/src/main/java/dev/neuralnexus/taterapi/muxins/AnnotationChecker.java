@@ -19,6 +19,8 @@ import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.enums.Platform;
 
+import io.github.legacymoddingmc.unimixins.compat.api.RemapASMForMixin;
+
 import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.util.List;
 
 /** Checks annotations on mixins */
+@RemapASMForMixin
 public final class AnnotationChecker {
     private static final String CONSTRAINT_DESC = Type.getDescriptor(AConstraint.class);
     private static final String CONSTRAINTS_DESC = Type.getDescriptor(AConstraints.class);

@@ -1,10 +1,5 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 import java.time.Instant
-
-plugins {
-    alias(libs.plugins.shadow)
-}
 
 base {
     archivesName = "muxins"
@@ -21,22 +16,11 @@ dependencies {
 
     compileOnly(project(":base"))
     compileOnly(project(":metadata"))
-}
 
-var relocatedMixinJar = tasks.register<ShadowJar>("relocatedMixinJar") {
-    archiveClassifier.set("relocated")
-    from(sourceSets.main.get().output)
-    relocate("dev.neuralnexus.taterapi.muxins", "dev.neuralnexus.taterapi.muxins.shaded")
-    relocate("org.objectweb.asm", "org.spongepowered.asm.lib")
+    compileOnly("com.github.LegacyModdingMC.UniMixins:unimixins-all-1.7.10:0.3.0:dev")
 }
 
 tasks.jar {
-    dependsOn(relocatedMixinJar)
-    from(
-        sourceSets.main.get().output,
-        zipTree(relocatedMixinJar.get().archiveFile.get().asFile)
-    )
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(
             mapOf(
