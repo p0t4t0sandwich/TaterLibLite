@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Dylan Sperrer - dylan@sperrer.ca
  * The project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLib/blob/dev/LICENSE">MIT</a>
  */
-package dev.neuralnexus.taterapi.crossperms.provider;
+package dev.neuralnexus.taterapi.crossperms.providers;
 
 import dev.neuralnexus.taterapi.crossperms.HasPermission;
 import dev.neuralnexus.taterapi.crossperms.PermissionsProvider;

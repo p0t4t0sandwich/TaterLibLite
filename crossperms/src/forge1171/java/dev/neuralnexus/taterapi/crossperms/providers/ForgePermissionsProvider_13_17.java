@@ -6,13 +6,12 @@ package dev.neuralnexus.taterapi.crossperms.providers;
 
 import dev.neuralnexus.taterapi.crossperms.HasPermission;
 import dev.neuralnexus.taterapi.crossperms.PermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.PermsAPI;
 import dev.neuralnexus.taterapi.crossperms.TriState;
-import dev.neuralnexus.taterapi.crossperms.mc.WMinecraftServer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
 import net.minecraftforge.server.permission.PermissionAPI;
-import net.minecraftforge.server.permission.nodes.PermissionTypes;
 
 import org.jspecify.annotations.NonNull;
 
@@ -20,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 
 /** Forge permissions provider */
-public class ForgePermissionsProvider implements PermissionsProvider {
+public class ForgePermissionsProvider_13_17 implements PermissionsProvider {
     @Override
     public @NonNull String id() {
         return Platforms.FORGE.name();
@@ -37,25 +36,18 @@ public class ForgePermissionsProvider implements PermissionsProvider {
                 new HasPermission<String, Object>() {
                     @Override
                     public @NonNull TriState hasPermission(@NonNull Object subject, @NonNull String permission) {
-                        return playerHasPermission(subject, permission) ? TriState.TRUE : TriState.DEFAULT;
+                        return profileHasPermission(subject, permission) ? TriState.TRUE : TriState.DEFAULT;
                     }
                 });
     }
 
-    public boolean playerHasPermission(Object subject, String permission) {
-        return WMinecraftServer.getPlayer(subject)
+    private boolean profileHasPermission(Object subject, String permission) {
+        return PermsAPI.instance()
+                .getGameProfile(subject)
                 .filter(
-                        player ->
-                                PermissionAPI.getRegisteredNodes().stream()
-                                        .filter(node -> node.getType() == PermissionTypes.BOOLEAN)
-                                        .filter(node -> node.getNodeName().equals(permission))
-                                        .anyMatch(
-                                                node ->
-                                                        (boolean)
-                                                                node.getDefaultResolver()
-                                                                        .resolve(
-                                                                                player.unwrap(),
-                                                                                player.getUUID())))
+                        profile ->
+                                PermissionAPI.getPermissionHandler()
+                                        .hasPermission(profile, permission, null))
                 .isPresent();
     }
 }

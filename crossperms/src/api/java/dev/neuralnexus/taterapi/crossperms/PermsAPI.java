@@ -1,6 +1,7 @@
 package dev.neuralnexus.taterapi.crossperms;
 
 import com.mojang.authlib.GameProfile;
+
 import dev.neuralnexus.taterapi.Wrapped;
 
 import org.jspecify.annotations.NonNull;

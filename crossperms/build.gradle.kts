@@ -56,7 +56,7 @@ val spongeCompileOnly: Configuration by configurations.getting {
     extendsFrom(mainCompileOnly)
 }
 val velocityCompileOnly: Configuration by configurations.getting
-listOf(bungeecordCompileOnly, fabricCompileOnly, forgeCompileOnly, neoforgeCompileOnly,
+listOf(bungeecordCompileOnly, fabricCompileOnly, forgeCompileOnly, forge1171CompileOnly, neoforgeCompileOnly,
     paperCompileOnly, spigotCompileOnly, spongeCompileOnly, velocityCompileOnly).forEach {
     it.extendsFrom(apiCompileOnly)
     it.extendsFrom(commonCompileOnly)
@@ -73,7 +73,7 @@ unimined.minecraft(common) {
     if (sourceSet == common) {
         defaultRemapJar = false
     }
-    if (sourceSet == common || sourceSet == fabric || sourceSet == forge ||
+    if (sourceSet == common || sourceSet == fabric || sourceSet == forge || sourceSet == forge1171 ||
         sourceSet == neoforge || sourceSet == paper || sourceSet == sponge) {
         version(minecraftVersion)
         mappings {
@@ -85,6 +85,7 @@ unimined.minecraft(common) {
 }
 
 unimined.minecraft(fabric) {
+    combineWith(api)
     combineWith(common)
     fabric {
         loader(fabricLoaderVersion)
@@ -92,6 +93,7 @@ unimined.minecraft(fabric) {
 }
 
 unimined.minecraft(forge) {
+    combineWith(api)
     combineWith(common)
     minecraftForge {
         loader(forgeVersion)
@@ -99,6 +101,7 @@ unimined.minecraft(forge) {
 }
 
 unimined.minecraft(forge1171) {
+    combineWith(api)
     combineWith(common)
     version("1.17.1")
     mappings {
@@ -112,6 +115,7 @@ unimined.minecraft(forge1171) {
 }
 
 unimined.minecraft(neoforge) {
+    combineWith(api)
     combineWith(common)
     neoForge {
         loader(neoForgeVersion)
@@ -208,6 +212,7 @@ dependencies {
     listOf("api-base").forEach {
         fabricModImplementation(fabricApi.fabricModule("fabric-$it", fabricVersion))
     }
+    fabricCompileOnly("me.lucko:fabric-permissions-api:0.2-SNAPSHOT") // TODO: JiJ??
     paperCompileOnly("io.papermc.paper:paper-api:$minecraftVersion-$paperVersion")
     paperCompileOnly(libs.ignite.api)
 
