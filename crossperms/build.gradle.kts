@@ -25,6 +25,7 @@ val common: SourceSet by sourceSets.creating {
 }
 val bungeecord: SourceSet by sourceSets.creating
 val fabric: SourceSet by sourceSets.creating
+val fabricLegacy: SourceSet by sourceSets.creating
 val forge: SourceSet by sourceSets.creating
 val forge1171: SourceSet by sourceSets.creating
 val neoforge: SourceSet by sourceSets.creating
@@ -45,6 +46,7 @@ val apiCompileOnly: Configuration by configurations.getting
 val commonCompileOnly: Configuration by configurations.getting
 val bungeecordCompileOnly: Configuration by configurations.getting
 val fabricCompileOnly: Configuration by configurations.getting
+val fabricLegacyCompileOnly: Configuration by configurations.getting
 val forgeCompileOnly: Configuration by configurations.getting
 val forge1171CompileOnly: Configuration by configurations.getting
 val neoforgeCompileOnly: Configuration by configurations.getting
@@ -56,8 +58,8 @@ val spongeCompileOnly: Configuration by configurations.getting {
     extendsFrom(mainCompileOnly)
 }
 val velocityCompileOnly: Configuration by configurations.getting
-listOf(bungeecordCompileOnly, fabricCompileOnly, forgeCompileOnly, forge1171CompileOnly, neoforgeCompileOnly,
-    paperCompileOnly, spigotCompileOnly, spongeCompileOnly, velocityCompileOnly).forEach {
+listOf(bungeecordCompileOnly, fabricCompileOnly, fabricLegacyCompileOnly, forgeCompileOnly, forge1171CompileOnly,
+    neoforgeCompileOnly, paperCompileOnly, spigotCompileOnly, spongeCompileOnly, velocityCompileOnly).forEach {
     it.extendsFrom(apiCompileOnly)
     it.extendsFrom(commonCompileOnly)
 }
@@ -89,6 +91,16 @@ unimined.minecraft(fabric) {
     combineWith(common)
     fabric {
         loader(fabricLoaderVersion)
+    }
+}
+
+unimined.minecraft(fabricLegacy) {
+    combineWith(api)
+    combineWith(common)
+    version("1.12.2")
+    mappings {
+        calamus()
+        feather(31)
     }
 }
 
@@ -208,11 +220,20 @@ dependencies {
     mainCompileOnly(libs.jspecify)
     mainCompileOnly(libs.mixin)
     commonCompileOnly(libs.slf4j)
+    commonCompileOnly(libs.jspecify)
+    commonCompileOnly(files(api.output))
     bungeecordCompileOnly("net.md-5:bungeecord-api:$bungeecordVersion")
+
     listOf("api-base").forEach {
         fabricModImplementation(fabricApi.fabricModule("fabric-$it", fabricVersion))
     }
     fabricCompileOnly("me.lucko:fabric-permissions-api:0.2-SNAPSHOT") // TODO: JiJ??
+
+    listOf("api-base", "permissions-api-v1").forEach {
+        fabricLegacyCompileOnly(fabricApi.legacyFabricModule("legacy-fabric-$it", "1.9.0+1.12.2"))
+    }
+    fabricLegacyCompileOnly("dev.neuralnexus:entrypoint-spoof:0.1.28") // TODO: Reflect around this
+
     paperCompileOnly("io.papermc.paper:paper-api:$minecraftVersion-$paperVersion")
     paperCompileOnly(libs.ignite.api)
 

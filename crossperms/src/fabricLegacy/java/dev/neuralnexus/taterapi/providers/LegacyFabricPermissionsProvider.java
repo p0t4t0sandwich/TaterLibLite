@@ -2,47 +2,56 @@
  * Copyright (c) 2025 Dylan Sperrer - dylan@sperrer.ca
  * The project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLib/blob/dev/LICENSE">MIT</a>
  */
-package dev.neuralnexus.taterapi.crossperms.impl.providers;
+package dev.neuralnexus.taterapi.providers;
 
 import dev.neuralnexus.taterapi.crossperms.CrossPerms;
 import dev.neuralnexus.taterapi.crossperms.HasPermission;
 import dev.neuralnexus.taterapi.crossperms.PermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.TriState;
 import dev.neuralnexus.taterapi.crossperms.mc.WMinecraftServer;
 import dev.neuralnexus.taterapi.crossperms.mc.WServerPlayer;
+import dev.neuralnexus.taterapi.meta.Platform;
+import dev.neuralnexus.taterapi.meta.Platforms;
 
 import net.legacyfabric.fabric.api.permission.v1.PermissibleCommandSource;
 import net.legacyfabric.fabric.api.permission.v1.PermissionsApiHolder;
 import net.legacyfabric.fabric.api.permission.v1.PlayerPermissionsApi;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /** Legacy Fabric permissions provider */
-@SuppressWarnings({"Anonymous2MethodRef", "Convert2Lambda", "deprecation", "UnstableApiUsage"})
+@SuppressWarnings({"deprecation", "UnstableApiUsage"})
 public class LegacyFabricPermissionsProvider implements PermissionsProvider {
     @Override
-    public @NotNull Map<Class<?>, List<HasPermission<?, ?>>> getProviders() {
-        return Map.of(
-                PermissibleCommandSource.class,
-                List.of(
-                        new HasPermission<String, PermissibleCommandSource>() {
-                            @Override
-                            public boolean hasPermission(
-                                    PermissibleCommandSource subject, String permission) {
-                                return subject.hasPermission(permission);
-                            }
-                        }),
-                Object.class,
-                List.of(
-                        new HasPermission<String, Object>() {
-                            @Override
-                            public boolean hasPermission(Object subject, String permission) {
-                                return playerObjHasPermission(subject, permission);
-                            }
-                        }));
+    public @NonNull String id() {
+        return Platforms.FABRIC.name();
+    }
+
+    @Override
+    public @NonNull Platform platform() {
+        return Platforms.FABRIC;
+    }
+
+    @Override
+    public @NonNull Collection<HasPermission<?, ?>> providers() {
+        return List.of(
+                new HasPermission<String, PermissibleCommandSource>() {
+                    @Override
+                    public @NonNull TriState hasPermission(
+                            final @NonNull PermissibleCommandSource subject, final @NonNull String permission) {
+                        return subject.hasPermission(permission) ? TriState.TRUE : TriState.DEFAULT;
+                    }
+                },
+                new HasPermission<String, Object>() {
+                    @Override
+                    public @NonNull TriState hasPermission(final @NonNull Object subject, final @NonNull String permission) {
+                        return playerObjHasPermission(subject, permission) ? TriState.TRUE : TriState.DEFAULT;
+                    }
+                });
     }
 
     public boolean playerObjHasPermission(Object subject, String permission) {
