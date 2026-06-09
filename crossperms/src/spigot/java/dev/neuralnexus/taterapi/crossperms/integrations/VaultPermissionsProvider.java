@@ -42,7 +42,7 @@ public class VaultPermissionsProvider implements PermissionsProvider {
     }
 
     @Override
-    public @NonNull Collection<HasPermission<?, ?>> providers() {
+    public @NonNull Collection<HasPermission<?, ?>> handlers() {
         return List.of(new HasPermission<String, CommandSender>() {
             @Override
             public @NonNull TriState hasPermission(final @NonNull CommandSender subject, final @NonNull String permission) {

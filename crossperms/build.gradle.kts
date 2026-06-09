@@ -205,6 +205,7 @@ dependencies {
     compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.28")
 
     apiCompileOnly(libs.jspecify)
+    apiCompileOnly("com.mojang:authlib:3.13.56")
     apiCompileOnly(project(":base"))
     apiCompileOnly(project(":core"))
     apiCompileOnly(project(":metadata"))

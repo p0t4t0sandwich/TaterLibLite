@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /** Permissions API implementation */
 public final class PermsAPIImpl implements PermsAPI {
@@ -22,7 +22,7 @@ public final class PermsAPIImpl implements PermsAPI {
 
     private PermsAPIImpl() {}
 
-    private final Map<Class<?>, List<HasPermission<?, ?>>> providers = new ConcurrentHashMap<>();
+    private final Collection<PermissionsProvider> providers = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -31,14 +31,13 @@ public final class PermsAPIImpl implements PermsAPI {
         Objects.requireNonNull(pType, "Permission type cannot be null");
         Objects.requireNonNull(sType, "Subject type cannot be null");
 
-        // Get providers that extend from subjectType, and then line up with permissionType
+        // Get handlers that extend from subjectType, and then line up with permissionType
         List<HasPermission<P, S>> list = new ArrayList<>();
-        for (final Map.Entry<Class<?>, List<HasPermission<?, ?>>> entry : this.providers.entrySet()) {
-            if (sType.isAssignableFrom(entry.getKey())) {
-                for (final HasPermission<?, ?> hp : entry.getValue()) {
-                    if (pType.isAssignableFrom(hp.permissionType())) {
-                        list.add((HasPermission<P, S>) hp);
-                    }
+        for (final PermissionsProvider provider : this.providers) {
+            for (final HasPermission<?, ?> handler : provider.handlers()) {
+                if (sType.isAssignableFrom(handler.subjectType())
+                        && pType.isAssignableFrom(handler.permissionType())) {
+                    list.add((HasPermission<P, S>) handler);
                 }
             }
         }
@@ -46,12 +45,8 @@ public final class PermsAPIImpl implements PermsAPI {
     }
 
     @Override
-    public void registerProvider(final @NonNull PermissionsProvider provider) {
+    public void register(final @NonNull PermissionsProvider provider) {
         Objects.requireNonNull(provider, "Provider cannot be null");
-        final Map<Class<?>, List<HasPermission<?, ?>>> map = provider.getProviders();
-        Objects.requireNonNull(map, "Provider returned no providers");
-        map.forEach(
-                (key, value) ->
-                        this.providers.computeIfAbsent(key, k -> new ArrayList<>()).addAll(value));
+        this.providers.add(provider);
     }
 }

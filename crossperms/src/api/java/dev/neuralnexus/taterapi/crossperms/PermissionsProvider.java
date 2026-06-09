@@ -12,9 +12,9 @@ public interface PermissionsProvider {
     @NonNull Platform platform();
 
     /**
-     * Get the providers for the provider
+     * Get the handlers for the provider
      *
-     * @return The providers for the provider
+     * @return The handlers for the provider
      */
-    @NonNull Collection<HasPermission<?, ?>> providers();
+    @NonNull Collection<HasPermission<?, ?>> handlers();
 }

@@ -40,7 +40,7 @@ public class FabricPermissionsProvider implements PermissionsProvider {
     }
 
     @Override
-    public @NonNull Collection<HasPermission<?, ?>> providers() {
+    public @NonNull Collection<HasPermission<?, ?>> handlers() {
         return List.of(
                 new HasPermission<String, Object>() {
                     @Override

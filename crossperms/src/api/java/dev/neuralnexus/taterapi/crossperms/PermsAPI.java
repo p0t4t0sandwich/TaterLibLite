@@ -110,24 +110,35 @@ public interface PermsAPI {
     }
 
     /**
-     * Get the providers for a class and a specified permission type
+     * Get the handlers for a class and a specified permission type
      *
-     * @param providerType The provider type
+     * @param permissionType The provider type
      * @param subjectType The subject type
-     * @return A collection of providers that match the provider type and subject type
+     * @return A collection of handlers that match the provider type and subject type
      * @param <P> The type of the permission
      * @param <S> The type of the subject
      */
-    <P, S> Collection<HasPermission<P, S>> providers(final @NonNull Class<P> providerType, final @NonNull Class<S> subjectType);
+    <P, S> Collection<HasPermission<P, S>> providers(final @NonNull Class<P> permissionType, final @NonNull Class<S> subjectType);
 
     /**
      * Register a provider
      *
      * @param provider The provider to register
      */
-    void registerProvider(PermissionsProvider provider);
+    void register(PermissionsProvider provider);
 
-    default <P, S> CompletableFuture<TriState> hasPermissionAsync(@NonNull S subject, @NonNull P permission) {
+    /**
+     * Get if a subject has a permission <br>
+     * Can be a CommandSender, CommandSourceStack, Entity, GameProfile, String (name), UUID, Player,
+     * or any platform implementation of those objects
+     *
+     * @param subject The subject to check
+     * @param permission The permission to check
+     * @return TriState of if the subject has the permission, or DEFAULT if the permission is not defined
+     * @param <P> The type of the permission
+     * @param <S> The type of the subject
+     */
+    default <P, S> CompletableFuture<TriState> hasPermissionAsync(final @NonNull S subject, final @NonNull P permission) {
         Objects.requireNonNull(subject, "Subject cannot be null");
         Objects.requireNonNull(permission, "Permission cannot be null");
 
@@ -135,22 +146,27 @@ public interface PermsAPI {
             return this.hasPermissionAsync(wrapped.unwrap(), permission);
         }
 
+        TriState result = TriState.DEFAULT;
         Collection<HasPermission<P, S>> checks =
                 this.providers((Class<P>) permission.getClass(), (Class<S>) subject.getClass());
         for (final HasPermission<P, S> check : checks) {
-            if (check.hasPermissionNotAsync(subject, permission).get()) {
-                return TriState.TRUE;
+            TriState checkResult = check.hasPermission(subject, permission);
+            if (checkResult != TriState.DEFAULT) {
+                result = checkResult;
+                break;
             }
         }
         // Check Object.class to see if there is a generic provider
         Collection<HasPermission<P, Object>> objChecks =
                 this.providers((Class<P>) permission.getClass(), Object.class);
         for (final HasPermission<P, Object> check : objChecks) {
-            if (check.hasPermissionNotAsync(subject, permission).get()) {
-                return TriState.TRUE;
+            TriState checkResult = check.hasPermission(subject, permission);
+            if (checkResult != TriState.DEFAULT) {
+                result = checkResult;
+                break;
             }
         }
-        return TriState.FALSE;
+        return CompletableFuture.completedFuture(result);
     }
 
     /**
@@ -160,12 +176,12 @@ public interface PermsAPI {
      *
      * @param subject The subject to check
      * @param permission The permission to check
-     * @return If the subject has the permission
+     * @return TriState of if the subject has the permission, or DEFAULT if the permission is not defined
      * @param <P> The type of the permission
      * @param <S> The type of the subject
      */
     @SuppressWarnings("unchecked")
-    default <P, S> @NonNull TriState hasPermission(@NonNull S subject, @NonNull P permission) {
+    default <P, S> @NonNull TriState hasPermission(final @NonNull S subject, final @NonNull P permission) {
         Objects.requireNonNull(subject, "Subject cannot be null");
         Objects.requireNonNull(permission, "Permission cannot be null");
 
@@ -173,22 +189,27 @@ public interface PermsAPI {
             return this.hasPermission(wrapped.unwrap(), permission);
         }
 
+        TriState result = TriState.DEFAULT;
         Collection<HasPermission<P, S>> checks =
                 this.providers((Class<P>) permission.getClass(), (Class<S>) subject.getClass());
         for (final HasPermission<P, S> check : checks) {
-            if (check.hasPermissionNotAsync(subject, permission).get()) {
-                return TriState.TRUE;
+            TriState checkResult = check.hasPermission(subject, permission);
+            if (checkResult != TriState.DEFAULT) {
+                result = checkResult;
+                break;
             }
         }
         // Check Object.class to see if there is a generic provider
         Collection<HasPermission<P, Object>> objChecks =
                 this.providers((Class<P>) permission.getClass(), Object.class);
         for (final HasPermission<P, Object> check : objChecks) {
-            if (check.hasPermissionNotAsync(subject, permission).get()) {
-                return TriState.TRUE;
+            TriState checkResult = check.hasPermission(subject, permission);
+            if (checkResult != TriState.DEFAULT) {
+                result = checkResult;
+                break;
             }
         }
-        return TriState.FALSE;
+        return result;
     }
 
     /**
@@ -199,10 +220,10 @@ public interface PermsAPI {
      * @param subject The subject to check
      * @param permission The permission to check
      * @param defaultPermissionLevel The default permission level
-     * @return If the subject has the permission
+     * @return TriState of if the subject has the permission, falling back to the default permission level
      */
     default @NonNull TriState hasPermission(
-            @NonNull Object subject, @NonNull String permission, int defaultPermissionLevel) {
+            final @NonNull Object subject, final @NonNull String permission, final int defaultPermissionLevel) {
         return TriState.of(this.hasPermission(subject, permission).get() ||
                 this.hasPermission(subject, defaultPermissionLevel).get());
     }
