@@ -71,12 +71,12 @@ val fabricModImplementation: Configuration by configurations.creating {
 unimined.footgunChecks = false
 
 unimined.minecraft(common) {
-    combineWith(sourceSets.main.get())
     if (sourceSet == common) {
         defaultRemapJar = false
     }
-    if (sourceSet == common || sourceSet == fabric || sourceSet == forge || sourceSet == forge1171 ||
-        sourceSet == neoforge || sourceSet == paper || sourceSet == sponge) {
+    if (sourceSet == common || sourceSet == fabric
+        || sourceSet == forge || sourceSet == forge1171 || sourceSet == neoforge
+        || sourceSet == paper || sourceSet == sponge) {
         version(minecraftVersion)
         mappings {
             parchment(parchmentMinecraft, parchmentVersion)
@@ -220,6 +220,10 @@ dependencies {
     // -----
     mainCompileOnly(libs.jspecify)
     mainCompileOnly(libs.mixin)
+    mainCompileOnly(files(api.output, common.output, bungeecord.output,
+        fabric.output, fabricLegacy.output, forge.output, forge1171.output,
+        neoforge.output, paper.output, sponge.output, spigot.output, velocity.output))
+
     commonCompileOnly(libs.slf4j)
     commonCompileOnly(libs.jspecify)
     commonCompileOnly(files(api.output))

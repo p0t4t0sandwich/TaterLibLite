@@ -8,16 +8,16 @@ import com.mojang.authlib.GameProfile;
 
 import dev.neuralnexus.taterapi.crossperms.impl.integrations.LuckPermsPermissionsProvider;
 import dev.neuralnexus.taterapi.crossperms.impl.integrations.PermissionsExPermissionsProvider;
-import dev.neuralnexus.taterapi.crossperms.impl.integrations.VaultPermissionsProvider;
-import dev.neuralnexus.taterapi.crossperms.impl.providers.BukkitPermissionsProvider;
-import dev.neuralnexus.taterapi.crossperms.impl.providers.BungeeCordPermissionsProvider;
-import dev.neuralnexus.taterapi.crossperms.impl.providers.FabricPermissionsProvider;
-import dev.neuralnexus.taterapi.crossperms.impl.providers.ForgePermissionsProvider;
-import dev.neuralnexus.taterapi.crossperms.impl.providers.ForgePermissionsProvider_18_2;
-import dev.neuralnexus.taterapi.crossperms.impl.providers.LegacyFabricPermissionsProvider;
-import dev.neuralnexus.taterapi.crossperms.impl.providers.SpongePermissionsProvider;
-import dev.neuralnexus.taterapi.crossperms.impl.providers.VanillaPermissionsProvider;
-import dev.neuralnexus.taterapi.crossperms.impl.providers.VelocityPermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.integrations.VaultPermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.providers.BukkitPermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.providers.BungeeCordPermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.providers.FabricPermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.providers.ForgePermissionsProvider_13_17;
+import dev.neuralnexus.taterapi.crossperms.providers.ForgePermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.providers.LegacyFabricPermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.providers.SpongePermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.providers.VanillaPermissionsProvider;
+import dev.neuralnexus.taterapi.crossperms.providers.VelocityPermissionsProvider;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
@@ -60,9 +60,9 @@ public class CrossPerms {
         PermsAPI api = PermsAPI.instance();
         if (meta.isProxy()) {
             if (meta.isPlatformPresent(Platforms.BUNGEECORD)) {
-                api.registerProvider(new BungeeCordPermissionsProvider());
+                api.register(new BungeeCordPermissionsProvider());
             } else if (meta.isPlatformPresent(Platforms.VELOCITY)) {
-                api.registerProvider(new VelocityPermissionsProvider());
+                api.register(new VelocityPermissionsProvider());
             }
             return;
         }
@@ -73,28 +73,28 @@ public class CrossPerms {
         if (!meta.isPlatformPresent(Platforms.BUKKIT, Platforms.SPIGOT)
                 && !(meta.isPlatformPresent(Platforms.PAPER)
                         && meta.version().noGreaterThan(MinecraftVersions.V20_5))) {
-            api.registerProvider(new VanillaPermissionsProvider());
+            api.register(new VanillaPermissionsProvider());
         }
         if (meta.isPlatformPresent(Platforms.BUKKIT)) {
-            api.registerProvider(new BukkitPermissionsProvider());
+            api.register(new BukkitPermissionsProvider());
         }
         if (meta.isPlatformPresent(Platforms.FABRIC)) {
             if (meta.version().noLessThan(MinecraftVersions.V14)
                     && meta.isModLoaded("fabric-permissions-api-v0")) {
-                api.registerProvider(new FabricPermissionsProvider());
+                api.register(new FabricPermissionsProvider());
             } else if (meta.isModLoaded("legacy-fabric-permissions-api-v1")) {
-                api.registerProvider(new LegacyFabricPermissionsProvider());
+                api.register(new LegacyFabricPermissionsProvider());
             }
         }
         if (meta.isPlatformPresent(Platforms.FORGE)) {
             if (meta.version().noLessThan(MinecraftVersions.V18_2)) {
-                api.registerProvider(new ForgePermissionsProvider_18_2());
+                api.register(new ForgePermissionsProvider());
             } else {
-                api.registerProvider(new ForgePermissionsProvider());
+                api.register(new ForgePermissionsProvider_13_17());
             }
         }
         if (meta.isPlatformPresent(Platforms.SPONGE)) {
-            api.registerProvider(new SpongePermissionsProvider());
+            api.register(new SpongePermissionsProvider());
         }
     }
 
@@ -103,16 +103,16 @@ public class CrossPerms {
         PermsAPI api = PermsAPI.instance();
 
         if (meta.isModLoaded("luckperms")) {
-            api.registerProvider(new LuckPermsPermissionsProvider());
+            api.register(new LuckPermsPermissionsProvider());
         }
         if (meta.isModLoaded("Vault")) {
-            api.registerProvider(new VaultPermissionsProvider());
+            api.register(new VaultPermissionsProvider());
         }
         // TODO: Disabled on Bukkit and BungeeCord due to classloader issues, needs further
         // investigation
         if (meta.isModLoaded("PermissionsEx")
                 && !meta.isPlatformPresent(Platforms.BUKKIT, Platforms.BUNGEECORD)) {
-            api.registerProvider(new PermissionsExPermissionsProvider());
+            api.register(new PermissionsExPermissionsProvider());
         }
     }
 
@@ -123,8 +123,7 @@ public class CrossPerms {
 
         // Check if the mappings are Official, Spigot or LegacySpigot, and return early
         if (MetaAPI.instance().mappings().is(Mappings.OFFICIAL)
-                || MetaAPI.instance().mappings().is(Mappings.SPIGOT)
-                || MetaAPI.instance().mappings().is(Mappings.LEGACY_SPIGOT)) {
+                || MetaAPI.instance().mappings().is(Mappings.SPIGOT)) {
             return;
         }
 
