@@ -24,16 +24,12 @@ import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.reflecto.MappingEntry;
-import dev.neuralnexus.taterapi.reflecto.Reflecto;
-
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.UUID;
 
 public class CrossPerms {
     private static final Logger logger = Logger.create("CrossPerms");
     private static final CrossPerms INSTANCE = new CrossPerms();
-    private static Reflecto.MappingStore store;
 
     private CrossPerms() {}
 
@@ -45,17 +41,8 @@ public class CrossPerms {
         return logger;
     }
 
-    @ApiStatus.Internal
-    public Reflecto.MappingStore store() {
-        return store;
-    }
-
     /** Initialize CrossPerms <br> */
     public void onInit() {
-        if (null != store) {
-            return;
-        }
-
         MetaAPI meta = MetaAPI.instance();
         PermsAPI api = PermsAPI.instance();
         if (meta.isProxy()) {
@@ -119,192 +106,12 @@ public class CrossPerms {
     /** Register mappings */
     private void register() {
         logger.debug("Initializing CrossPerms mappings");
-        store = Reflecto.instance().getStore(this);
 
-        // Check if the mappings are Official, Spigot or LegacySpigot, and return early
+        // Check if the mappings are Official or Spigot, and return early
         if (MetaAPI.instance().mappings().is(Mappings.OFFICIAL)
                 || MetaAPI.instance().mappings().is(Mappings.SPIGOT)) {
             return;
         }
-
-        // MinecraftServer
-        var mcString = "net.minecraft.server.MinecraftServer";
-        var mcServer =
-                MappingEntry.builder("MinecraftServer")
-                        .official(mcString)
-                        .mojang(mcString)
-                        .spigot(mcString)
-                        .legacySpigot(mcString)
-                        .searge(mcString)
-                        .searge(mcString)
-                        .legacySearge(mcString)
-                        .mcp(mcString)
-                        .yarnIntermediary(mcString)
-                        .legacyIntermediary(mcString);
-
-        // MinecraftServer#getPlayerList() -> PlayerList
-        var minecraftServer_getPlayerList =
-                MappingEntry.builder("getPlayerList")
-                        .parentEntry(mcServer)
-                        .mojang("getPlayerList")
-                        .searge("m_6846_")
-                        .legacySearge(
-                                "func_184103_al", MinecraftVersions.V9, MinecraftVersions.V16_5)
-                        .mcp("getPlayerList", MinecraftVersions.V9, MinecraftVersions.V16_5)
-                        .legacySearge("func_71203_ab", MinecraftVersions.V7, MinecraftVersions.V8_9)
-                        .mcp(
-                                "getConfigurationManager",
-                                MinecraftVersions.V7,
-                                MinecraftVersions.V8_9)
-                        .yarnIntermediary("method_3760")
-                        .legacyIntermediary("method_3004");
-
-        store.registerClass(mcServer).registerMethod(minecraftServer_getPlayerList);
-        logger.debug("Registered MinecraftServer");
-        logger.debug("|-> getPlayerList");
-
-        // PlayerList
-        var playerList =
-                MappingEntry.builder("PlayerList")
-                        .mojang("net.minecraft.server.players.PlayerList")
-                        .searge("net.minecraft.server.players.PlayerList")
-                        .legacySearge("net.minecraft.server.management.PlayerList")
-                        .mcp("net.minecraft.server.management.PlayerList")
-                        .legacySearge(
-                                "net.minecraft.server.management.ServerConfigurationManager",
-                                MinecraftVersions.V7,
-                                MinecraftVersions.V8_9)
-                        .mcp(
-                                "net.minecraft.server.management.ServerConfigurationManager",
-                                MinecraftVersions.V7,
-                                MinecraftVersions.V8_9)
-                        .yarnIntermediary("net.minecraft.class_3324")
-                        .legacyIntermediary("net.minecraft.class_743");
-
-        // PlayerList#getPlayers() -> List<ServerPlayer>
-        var playerList_getPlayers =
-                MappingEntry.builder("getPlayers")
-                        .parentEntry(playerList)
-                        .versionRange(MinecraftVersions.V8, MinecraftVersions.UNKNOWN)
-                        .mojang("getPlayers")
-                        .searge("m_11314_")
-                        .legacySearge("func_181057_v")
-                        .mcp("getPlayers")
-                        .mcp("getPlayerList", MinecraftVersions.V8, MinecraftVersions.V9_4)
-                        .yarnIntermediary("method_14571")
-                        .legacyIntermediary("method_10783");
-
-        // PlayerList#playerEntityList -> List<ServerPlayer>
-        var playerList_playerEntityList =
-                MappingEntry.builder("players")
-                        .parentEntry(playerList)
-                        .versionRange(MinecraftVersions.V7, MinecraftVersions.V7_10)
-                        .mojang("")
-                        .searge("")
-                        .legacySearge("field_72404_b")
-                        .mcp("playerEntityList")
-                        .yarnIntermediary("")
-                        .legacyIntermediary("field_2708");
-
-        // PlayerList#getPlayer(UUID) -> ServerPlayer
-        var playerList_getPlayerByUUID =
-                MappingEntry.builder("getPlayerByUUID")
-                        .versionRange(MinecraftVersions.V8, MinecraftVersions.UNKNOWN)
-                        .parentEntry(playerList)
-                        .mojang("getPlayer")
-                        .searge("m_11259_")
-                        .legacySearge("func_177451_a")
-                        .mcp("getPlayerByUUID")
-                        .yarnIntermediary("method_14602")
-                        .legacyIntermediary("method_10779");
-
-        // PlayerList#getPlayerByName(String) -> ServerPlayer
-        var playerList_getPlayerByName =
-                MappingEntry.builder("getPlayerByName")
-                        .parentEntry(playerList)
-                        .mojang("getPlayerByName")
-                        .searge("m_11255_")
-                        .legacySearge("func_152612_a")
-                        .mcp("getPlayerByUsername")
-                        .yarnIntermediary("method_14566")
-                        .legacyIntermediary("method_2010");
-
-        // PlayerList#isOp(GameProfile) -> boolean
-        var playerList_isOp =
-                MappingEntry.builder("isOp")
-                        .parentEntry(playerList)
-                        .mojang("isOp")
-                        .searge("m_11303_")
-                        .legacySearge("func_152596_g")
-                        .mcp("canSendCommands")
-                        .yarnIntermediary("method_14569")
-                        .legacyIntermediary("method_8232");
-
-        // PlayerList#getOps() -> List<ServerOpListEntry>
-        var playerList_getOps =
-                MappingEntry.builder("getOps")
-                        .parentEntry(playerList)
-                        .mojang("getOps")
-                        .searge("m_11307_")
-                        .legacySearge("func_152603_m")
-                        .mcp("getOppedPlayers")
-                        .yarnIntermediary("method_14603")
-                        .legacyIntermediary("method_8236");
-
-        store.registerClass(playerList)
-                .registerMethod(playerList_getPlayers)
-                .registerField(playerList_playerEntityList)
-                .registerMethod(playerList_getPlayerByUUID, UUID.class)
-                .registerMethod(playerList_getPlayerByName, String.class)
-                .registerMethod(playerList_isOp, GameProfile.class)
-                .registerMethod(playerList_getOps);
-        logger.debug("Registered PlayerList");
-        logger.debug("|-> getPlayers");
-        logger.debug("|-> players");
-        logger.debug("|-> getPlayerByUUID");
-        logger.debug("|-> getPlayerByName");
-        logger.debug("|-> isOp");
-        logger.debug("|-> getOps");
-
-        // ServerOpListEntry (StoredUserEntry<GameProfile>)
-        var serverOpListEntry =
-                MappingEntry.builder("ServerOpListEntry")
-                        .mojang("net.minecraft.server.players.ServerOpListEntry")
-                        .searge("net.minecraft.server.players.ServerOpListEntry")
-                        .legacySearge("net.minecraft.server.management.OpEntry")
-                        .mcp("net.minecraft.server.management.OpEntry")
-                        .yarnIntermediary("net.minecraft.class_3327")
-                        .legacyIntermediary("net.minecraft.class_2132");
-
-        // ServerOpListEntry#getLevel -> int
-        var serverOpListEntry_getLevel =
-                MappingEntry.builder("getLevel")
-                        .parentEntry(serverOpListEntry)
-                        .mojang("getLevel")
-                        .searge("m_11363_")
-                        .legacySearge("func_152644_a")
-                        .mcp("getPermissionLevel")
-                        .mcp("func_152644_a", MinecraftVersions.V7, MinecraftVersions.V7_10)
-                        .yarnIntermediary("method_14623")
-                        .legacyIntermediary("method_8240");
-
-        // StoredUserEntry#getUser -> GameProfile
-        var storedUserEntry_getUser =
-                MappingEntry.builder("getUser")
-                        .parentEntry(serverOpListEntry)
-                        .mojang("getUser")
-                        .searge("m_11373_")
-                        .legacySearge("func_152640_f")
-                        .mcp("getValue")
-                        .yarnIntermediary("method_14626")
-                        .legacyIntermediary("method_8243");
-
-        store.registerClass(serverOpListEntry)
-                .registerMethod(serverOpListEntry_getLevel)
-                .registerMethod(storedUserEntry_getUser);
-        logger.debug("Registered ServerOpListEntry");
-        logger.debug("|-> getLevel");
-        logger.debug("|-> getUser"); // Inherited from StoredUserEntry
 
         // Entity
         var entity =
