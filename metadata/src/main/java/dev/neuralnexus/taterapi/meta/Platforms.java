@@ -169,18 +169,18 @@ public final class Platforms
         } else if (platforms.contains(VELOCITY)) {
             primary = dev.neuralnexus.taterapi.meta.enums.Platform.VELOCITY;
         } else if (platforms.contains(FORGE)
-                && platforms.contains(FABRIC)) { // Check for Connector and Kilt
+                && platforms.contains(FABRIC)) { // Check for FFAPI, Connector and Kilt
             if (new FabricMeta().isModLoaded("kilt")) {
                 primary = dev.neuralnexus.taterapi.meta.enums.Platform.FABRIC;
-            } else if (ForgeData.create().isModLoaded("connector", "connectormod")) {
+            } else if (ForgeData.create().isModLoaded("fabric_api", "connectormod")) {
                 primary = dev.neuralnexus.taterapi.meta.enums.Platform.FORGE;
             } else {
                 throw new IllegalArgumentException(
                         "Both Forge and Fabric platforms detected, but neither Connector nor Kilt found. Cannot determine primary platform.");
             }
         } else if (platforms.contains(NEOFORGE)
-                && platforms.contains(FABRIC)
-                && new NeoForgeMeta().isModLoaded("connector")) { // Check for Connector
+                && platforms.contains(FABRIC) // Check for FFAPI and Connector
+                && new NeoForgeMeta().isModLoaded("fabric_api", "connector")) {
             primary = dev.neuralnexus.taterapi.meta.enums.Platform.NEOFORGE;
         } else if (platforms.contains(FORGE)) {
             primary = dev.neuralnexus.taterapi.meta.enums.Platform.FORGE;

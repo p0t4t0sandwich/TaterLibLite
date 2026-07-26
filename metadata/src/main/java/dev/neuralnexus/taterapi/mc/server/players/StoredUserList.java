@@ -20,7 +20,7 @@ import java.lang.invoke.MethodType;
 import java.util.Collection;
 import java.util.Map;
 
-public sealed class StoredUserList implements Wrapped<Object> permits UserWhiteList {
+public sealed class StoredUserList implements Wrapped<Object> permits ServerOpList, UserWhiteList {
     public static final String STORED_USER_LIST = "StoredUserList";
     public static final String GET_ENTRIES = "getEntries";
 

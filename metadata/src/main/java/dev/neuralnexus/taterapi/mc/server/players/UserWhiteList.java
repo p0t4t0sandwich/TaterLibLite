@@ -28,14 +28,14 @@ public final class UserWhiteList extends StoredUserList {
         initialized = true;
 
         CLASS = builder(USER_WHITE_LIST,
-                entry(Mappings.MOJANG, "net.minecraft.server.players.PlayerList"),
-                entry(Mappings.SEARGE, "net.minecraft.server.players.PlayerList").min(MinecraftVersions.V17),
-                entry(Mappings.SEARGE, "net.minecraft.server.management.PlayerList")
-                        .range(MinecraftVersions.V9, MinecraftVersions.V16_5),
-                entry(Mappings.SEARGE, "net.minecraft.server.management.ServerConfigurationManager")
-                        .range(MinecraftVersions.V7, MinecraftVersions.V8_9),
-                entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3324"),
-                entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_29639016"))
+                entry(Mappings.MOJANG, "net.minecraft.server.players.UserWhiteList"),
+                entry(Mappings.SEARGE, "net.minecraft.server.players.UserWhiteList").min(MinecraftVersions.V17),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.WhiteList")
+                        .range(MinecraftVersions.V14, MinecraftVersions.V16_5),
+                entry(Mappings.SEARGE, "net.minecraft.server.management.UserListWhitelist")
+                        .range(MinecraftVersions.V7_6, MinecraftVersions.V13_2),
+                entry(Mappings.YARN_INTERMEDIARY, "net.minecraft.class_3337"),
+                entry(Mappings.CALAMUS, "net.minecraft.unmapped.C_28507727"))
                 .build().clazz();
     }
     // spotless:on

@@ -7,6 +7,8 @@ package dev.neuralnexus.taterapi.muxins.mixin;
 import dev.neuralnexus.taterapi.muxins.AnnotationChecker;
 import dev.neuralnexus.taterapi.muxins.Muxins;
 
+import io.github.legacymoddingmc.unimixins.compat.api.RemapASMForMixin;
+
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -19,6 +21,7 @@ import java.util.List;
  * href="https://github.com/Moulberry/MixinConstraints/blob/master/LICENSE">MixinConstraints</a> by
  * Moulberry.
  */
+@RemapASMForMixin
 public final class MixinTransformer {
     public static void transform(IMixinInfo info, ClassNode classNode, boolean verbose) {
         if (verbose) {
