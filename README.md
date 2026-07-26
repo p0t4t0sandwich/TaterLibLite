@@ -7,10 +7,15 @@ In other words, it's a collection of abstract modloader utilities to make cross-
 ## Dependency Graph
 
 Base
+
 Metadata -> Base
+
 Core -> Base, Metadata
+
 Muxins -> Metadata
+
 CrossPerms -> Core, Base, Metadata, Muxins
+
 BrigadierGeneral -> CrossPerms, Metadata, Muxins
 
 ## Modloader Metadata API
