@@ -13,7 +13,7 @@ rootProject.name = "taterlib_lite"
 include(
     ":base",
     ":core",
-    ":crossperms",
+    //":crossperms",
     ":metadata",
     ":muxins",
     ":network"
