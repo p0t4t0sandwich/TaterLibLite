@@ -4,19 +4,21 @@
  */
 package dev.neuralnexus.taterapi.mc.server.players;
 
+import static dev.neuralnexus.taterapi.reflecto.MappingClass.builder;
+import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
+import static dev.neuralnexus.taterapi.reflecto.MappingMember.member;
+
 import com.mojang.authlib.GameProfile;
+
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.reflecto.MappingMember;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
+
 import org.jspecify.annotations.NonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
-
-import static dev.neuralnexus.taterapi.reflecto.MappingClass.builder;
-import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
-import static dev.neuralnexus.taterapi.reflecto.MappingMember.member;
 
 public final class ServerOpListEntry extends StoredUserEntry {
     public static final String SERVER_OP_LIST_ENTRY = "ServerOpListEntry";

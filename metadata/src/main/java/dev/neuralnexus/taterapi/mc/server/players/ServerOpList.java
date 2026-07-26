@@ -4,16 +4,17 @@
  */
 package dev.neuralnexus.taterapi.mc.server.players;
 
+import static dev.neuralnexus.taterapi.reflecto.MappingClass.builder;
+import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
+
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.reflecto.Reflecto;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.Map;
-
-import static dev.neuralnexus.taterapi.reflecto.MappingClass.builder;
-import static dev.neuralnexus.taterapi.reflecto.MappingEntry.entry;
 
 public final class ServerOpList extends StoredUserList {
     public static final String SERVER_OP_LIST = "ServerOpList";

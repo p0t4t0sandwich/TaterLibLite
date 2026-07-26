@@ -18,7 +18,8 @@ import org.jspecify.annotations.NonNull;
 
 import java.lang.invoke.MethodType;
 
-public sealed class StoredUserEntry implements Wrapped<Object> permits ServerOpListEntry, UserWhiteListEntry {
+public sealed class StoredUserEntry implements Wrapped<Object>
+        permits ServerOpListEntry, UserWhiteListEntry {
     public static final String STORED_USER_ENTRY = "StoredUserEntry";
     public static final String GET_USER = "getUser";
 
