@@ -4,6 +4,9 @@
  */
 package dev.neuralnexus.taterapi.meta;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Dependency;
@@ -14,10 +17,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -599,7 +601,8 @@ public record Constraint(
      * Evaluator class for evaluating {@link Constraint} instances against the current environment.
      */
     public static final class Evaluator {
-        private static final Map<Constraint, Boolean> CACHE = new WeakHashMap<>();
+        private static final Cache<Constraint, Boolean> CACHE =
+                CacheBuilder.newBuilder().weakKeys().build();
         private static final MetaAPI META = MetaAPI.instance();
         private static final Mappings MAPPINGS = META.mappings();
         private static final MinecraftVersion version = META.version();
@@ -781,23 +784,27 @@ public record Constraint(
          */
         public static boolean evaluate(final @NonNull Constraint constraint) {
             Objects.requireNonNull(constraint, "Constraint cannot be null");
-            if (CACHE.containsKey(constraint)) {
-                return CACHE.get(constraint);
+            try {
+                return CACHE.get(
+                        constraint,
+                        () -> {
+                            if (DEBUG) {
+                                logger.debug("Evaluating constraint: " + constraint);
+                            }
+                            boolean result =
+                                    evalSide(constraint)
+                                            && evalPlatform(constraint)
+                                            && evalVersion(constraint)
+                                            && evalMappings(constraint)
+                                            && evalDeps(constraint);
+                            if (constraint.invert()) {
+                                result = !result;
+                            }
+                            return result;
+                        });
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
             }
-            if (DEBUG) {
-                logger.debug("Evaluating constraint: " + constraint);
-            }
-            boolean result =
-                    evalSide(constraint)
-                            && evalPlatform(constraint)
-                            && evalVersion(constraint)
-                            && evalMappings(constraint)
-                            && evalDeps(constraint);
-            if (constraint.invert()) {
-                result = !result;
-            }
-            CACHE.put(constraint, result);
-            return result;
         }
 
         /**

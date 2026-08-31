@@ -26,6 +26,7 @@ dependencies {
     testImplementation(project(":base"))
     testRuntimeOnly(project(":base"))
 
+    compileOnly(libs.guava)
     compileOnly(libs.mojang.authlib)
 
     compileOnly(libs.mixin)
