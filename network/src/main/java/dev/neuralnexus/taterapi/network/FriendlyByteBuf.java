@@ -4,13 +4,12 @@
  */
 package dev.neuralnexus.taterapi.network;
 
-import static dev.neuralnexus.taterapi.resources.Identifier.identifier;
-
 import com.google.common.net.InetAddresses;
 
 import dev.neuralnexus.taterapi.network.codec.StreamDecoder;
 import dev.neuralnexus.taterapi.network.codec.StreamEncoder;
 import dev.neuralnexus.taterapi.network.protocol.PacketFlow;
+import dev.neuralnexus.taterapi.resources.Identifier;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -232,10 +231,13 @@ public final class FriendlyByteBuf extends ByteBuf {
     }
 
     public <T> @NonNull T readIdentifier() {
-        return identifier(this.readUtf());
+        return Identifier.MC.of(this.readUtf());
     }
 
     public @NonNull FriendlyByteBuf writeIdentifier(final @NonNull Object identifier) {
+        if (identifier instanceof Identifier i) {
+            return this.writeUtf(i.asString());
+        }
         return this.writeUtf(identifier.toString());
     }
 
