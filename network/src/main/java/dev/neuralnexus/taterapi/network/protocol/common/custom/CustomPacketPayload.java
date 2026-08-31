@@ -11,6 +11,7 @@ import dev.neuralnexus.taterapi.network.codec.StreamDecoder;
 import dev.neuralnexus.taterapi.network.codec.StreamMemberEncoder;
 import dev.neuralnexus.taterapi.network.protocol.PacketFlow;
 import dev.neuralnexus.taterapi.network.protocol.PayloadType;
+import dev.neuralnexus.taterapi.resources.Identifier;
 
 import org.jspecify.annotations.NonNull;
 
@@ -30,11 +31,28 @@ public interface CustomPacketPayload {
     }
 
     static <B extends FriendlyByteBuf> StreamCodec<B, CustomPacketPayload> codec(
-            final @NonNull String identifier) {
+            final @NonNull Identifier identifier) {
         return new StreamCodec<>() {
             @Override
             public CustomPacketPayload decode(final @NonNull B input) {
                 return new Raw(identifier, input.readPayload());
+            }
+
+            @Override
+            public void encode(
+                    final @NonNull FriendlyByteBuf output,
+                    final @NonNull CustomPacketPayload value) {
+                output.writeBytes(((Raw) value).data().slice());
+            }
+        };
+    }
+
+    static <B extends FriendlyByteBuf> StreamCodec<B, CustomPacketPayload> codec(
+            final @NonNull String identifier) {
+        return new StreamCodec<>() {
+            @Override
+            public CustomPacketPayload decode(final @NonNull B input) {
+                return new Raw(Identifier.of(identifier), input.readPayload());
             }
 
             @Override
@@ -95,7 +113,12 @@ public interface CustomPacketPayload {
                 super(clazz);
             }
 
-            @SuppressWarnings("unchecked")
+            public Builder<T> id(final @NonNull Identifier identifier) {
+                this.id = identifier.asString();
+                return this;
+            }
+
+            @SuppressWarnings({"DuplicatedCode", "unchecked"})
             @Override
             public Type<T> build() {
                 if (super.id == null) {
@@ -119,7 +142,8 @@ public interface CustomPacketPayload {
                 final @NonNull String identifier);
     }
 
-    record Raw(@NonNull String id, @NonNull FriendlyByteBuf data) implements CustomPacketPayload {
+    record Raw(@NonNull Identifier id, @NonNull FriendlyByteBuf data)
+            implements CustomPacketPayload {
         @Override
         public @NonNull Type<CustomPacketPayload> type() {
             return PayloadType.custom(CustomPacketPayload.class, this.id)

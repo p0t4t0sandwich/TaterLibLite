@@ -9,6 +9,7 @@ import dev.neuralnexus.taterapi.network.codec.StreamCodec;
 import dev.neuralnexus.taterapi.network.protocol.common.custom.CustomPacketPayload;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
+import dev.neuralnexus.taterapi.resources.Identifier;
 
 import org.jspecify.annotations.NonNull;
 
@@ -67,8 +68,18 @@ public interface PayloadType<T, I> {
     }
 
     static <T extends CustomPacketPayload> CustomPacketPayload.Type.Builder<T> custom(
+            final @NonNull Class<T> clazz, final @NonNull Identifier id) {
+        return new CustomPacketPayload.Type.Builder<>(clazz).id(id);
+    }
+
+    static <T extends CustomPacketPayload> CustomPacketPayload.Type.Builder<T> custom(
             final @NonNull Class<T> clazz, final @NonNull String id) {
         return new CustomPacketPayload.Type.Builder<>(clazz).id(id);
+    }
+
+    static <T extends CustomQueryPayload> CustomQueryPayload.Type.Builder<T> query(
+            final @NonNull Class<T> clazz, final @NonNull Identifier id) {
+        return new CustomQueryPayload.Type.Builder<>(clazz).id(id).flow(PacketFlow.CLIENTBOUND);
     }
 
     static <T extends CustomQueryPayload> CustomQueryPayload.Type.Builder<T> query(

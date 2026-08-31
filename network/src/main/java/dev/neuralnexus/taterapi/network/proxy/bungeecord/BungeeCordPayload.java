@@ -22,6 +22,7 @@ import java.util.function.Consumer;
  * @param subchannel The subchannel
  * @param data The raw payload
  */
+@SuppressWarnings("unused")
 public record BungeeCordPayload(@NonNull SubChannel subchannel, @NonNull FriendlyByteBuf data)
         implements CustomPacketPayload {
     public static final StreamCodec<FriendlyByteBuf, BungeeCordPayload> STREAM_CODEC =

@@ -6,6 +6,7 @@ package dev.neuralnexus.taterapi.network.proxy.bungeecord;
 
 import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.protocol.common.custom.CustomPacketPayload;
+import dev.neuralnexus.taterapi.resources.Identifier;
 
 import org.jspecify.annotations.NonNull;
 
@@ -20,7 +21,7 @@ public enum SubChannel {
     Forward("Forward") {
         @Override
         public @NonNull CustomPacketPayload response(final @NonNull BungeeCordPayload payload) {
-            final String channel = payload.data().readUtf();
+            final Identifier channel = Identifier.of(payload.data().readUtf());
             final int length = payload.data().readUnsignedShort();
             final FriendlyByteBuf buf = payload.data().readPayload(length);
             return new CustomPacketPayload.Raw(channel, buf);
