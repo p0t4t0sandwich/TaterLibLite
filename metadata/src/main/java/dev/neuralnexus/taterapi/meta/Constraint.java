@@ -60,12 +60,12 @@ public record Constraint(
                 .deps(
                         Stream.of(constraint.deps())
                                 .map(Dependency::value)
-                                .collect(Collectors.toUnmodifiableSet()))
+                                .collect(Collectors.toSet()))
                 .deps(
                         Stream.of(constraint.deps())
                                 .map(Dependency::aliases)
                                 .flatMap(Stream::of)
-                                .collect(Collectors.toUnmodifiableSet()))
+                                .collect(Collectors.toSet()))
                 .mappings(constraint.mappings())
                 .platform(constraint.platform())
                 .side(constraint.side())
@@ -382,11 +382,11 @@ public record Constraint(
          */
         public Constraint build() {
             return new Constraint(
-                    Collections.unmodifiableCollection(deps),
+                    Set.of(deps.toArray(new String[0])),
                     mappings,
-                    Collections.unmodifiableCollection(platform),
-                    Collections.unmodifiableCollection(side),
-                    Collections.unmodifiableCollection(version),
+                    Set.of(platform.toArray(new Platform[0])),
+                    Set.of(side.toArray(new Side[0])),
+                    Set.of(version.toArray(new MinecraftVersion[0])),
                     minInclusive,
                     min,
                     maxInclusive,
