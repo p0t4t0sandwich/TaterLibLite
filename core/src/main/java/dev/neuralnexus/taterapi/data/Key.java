@@ -7,6 +7,7 @@ package dev.neuralnexus.taterapi.data;
 import dev.neuralnexus.taterapi.data.value.Value;
 import dev.neuralnexus.taterapi.registries.BuilderRegistry;
 import dev.neuralnexus.taterapi.resources.Identifier;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
@@ -18,14 +19,16 @@ public interface Key<V extends dev.neuralnexus.taterapi.data.value.Value<?>> ext
         return BuilderRegistry.get(Builder.class);
     }
 
-    static <E> Key<dev.neuralnexus.taterapi.data.value.Value<E>> from(final Identifier identifier, final Class<E> type) {
+    static <E> Key<dev.neuralnexus.taterapi.data.value.Value<E>> from(
+            final Identifier identifier, final Class<E> type) {
         return Key.builder()
                 .key(Objects.requireNonNull(identifier, "identifier"))
                 .type(Objects.requireNonNull(type, "type"))
                 .build();
     }
 
-    interface Builder<E, V extends dev.neuralnexus.taterapi.data.value.Value<E>> extends dev.neuralnexus.taterapi.util.Builder<Key<V>, Builder<E, V>> {
+    interface Builder<E, V extends dev.neuralnexus.taterapi.data.value.Value<E>>
+            extends dev.neuralnexus.taterapi.util.Builder<Key<V>, Builder<E, V>> {
         /**
          * The type for this key
          *

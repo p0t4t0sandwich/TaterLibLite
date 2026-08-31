@@ -2,7 +2,7 @@
  * Copyright (c) 2026 Dylan Sperrer - dylan@neuralnexus.dev
  * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
  */
- package dev.neuralnexus.taterapi.data;
+package dev.neuralnexus.taterapi.data;
 
 import dev.neuralnexus.taterapi.data.value.Value;
 
@@ -20,7 +20,8 @@ public interface DataHolder {
     <E> void offer(Key<? extends Value<E>> key, E value);
 
     /**
-     * Get a value from this holder. Returns {@link Optional#empty()} if the key is not registered to this holder.
+     * Get a value from this holder. Returns {@link Optional#empty()} if the key is not registered
+     * to this holder.
      *
      * @param key The key
      * @return The value
