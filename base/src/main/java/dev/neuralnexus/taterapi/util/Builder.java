@@ -4,4 +4,6 @@
  */
 package dev.neuralnexus.taterapi.util;
 
-public interface Builder<T, B extends Builder<T, B>> {}
+public interface Builder<T, B extends Builder<T, B>> {
+    T build();
+}
