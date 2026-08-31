@@ -60,6 +60,10 @@ public final class FriendlyByteBuf extends ByteBuf {
         this.source = Unpooled.buffer();
     }
 
+    public FriendlyByteBuf(final byte @NonNull [] bytes) {
+        this.source = Unpooled.copiedBuffer(bytes);
+    }
+
     @NullUnmarked // TODO: Further look into the nullability
     public static FriendlyByteBuf wrap(final @Nullable ByteBuf buf) {
         return switch (buf) {
