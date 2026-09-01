@@ -13,21 +13,22 @@ import org.jspecify.annotations.NonNull;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
-public interface Key<V extends dev.neuralnexus.taterapi.data.value.Value<?>> extends Identifier {
+public interface Key<V extends Value<?>> extends Identifier {
+    @NonNull Class<V> type();
+
     @SuppressWarnings("unchecked")
     static Builder<?, ?> builder() {
         return BuilderRegistry.get(Builder.class);
     }
 
-    static <E> Key<dev.neuralnexus.taterapi.data.value.Value<E>> from(
-            final Identifier identifier, final Class<E> type) {
+    static <E> Key<Value<E>> from(final Identifier identifier, final Class<E> type) {
         return Key.builder()
                 .key(Objects.requireNonNull(identifier, "identifier"))
                 .type(Objects.requireNonNull(type, "type"))
                 .build();
     }
 
-    interface Builder<E, V extends dev.neuralnexus.taterapi.data.value.Value<E>>
+    interface Builder<E, V extends Value<E>>
             extends dev.neuralnexus.taterapi.util.Builder<Key<V>, Builder<E, V>> {
         /**
          * The type for this key

@@ -5,14 +5,35 @@
 package dev.neuralnexus.taterapi.data.value;
 
 import dev.neuralnexus.taterapi.data.Key;
+import dev.neuralnexus.taterapi.registries.FactoryRegistry;
+
+import org.jspecify.annotations.NonNull;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public interface Value<E> {
+
     /**
-     * The value
+     * Get the underlying value
      *
-     * @return The value
+     * @return The underlying value
      */
     E get();
+
+    /**
+     * IF mutable, set the underlying value. If the value is NOT mutable, nothing will happen.
+     *
+     * @return The underlying value
+     */
+    Value<E> set(E newValue);
+
+    /**
+     * Whether the value is mutable
+     *
+     * @return True if the value is mutable
+     */
+    boolean isMutable();
 
     /**
      * The key for this value
@@ -20,4 +41,26 @@ public interface Value<E> {
      * @return The key
      */
     Key<? extends Value<E>> key();
+
+    static <V extends Value<T>, T> V mutableOf(
+            final @NonNull Key<V> key,
+            final @NonNull Supplier<T> GET,
+            final @NonNull Consumer<T> SET) {
+        return FactoryRegistry.get(Factory.class).mutableOf(key, GET, SET);
+    }
+
+    static <V extends Value<T>, T> V immutableOf(
+            final @NonNull Key<V> key, final @NonNull Supplier<T> GET) {
+        return FactoryRegistry.get(Factory.class).immutableOf(key, GET);
+    }
+
+    interface Factory {
+        <V extends Value<E>, E> V mutableOf(
+                final @NonNull Key<V> key,
+                final @NonNull Supplier<E> GET,
+                final @NonNull Consumer<E> SET);
+
+        <V extends Value<E>, E> V immutableOf(
+                final @NonNull Key<V> key, final @NonNull Supplier<E> GET);
+    }
 }

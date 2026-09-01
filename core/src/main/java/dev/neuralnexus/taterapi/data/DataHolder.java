@@ -6,8 +6,11 @@ package dev.neuralnexus.taterapi.data;
 
 import dev.neuralnexus.taterapi.data.value.Value;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 public interface DataHolder {
     /**
@@ -17,7 +20,7 @@ public interface DataHolder {
      * @param value The value
      * @param <E> The value's type
      */
-    <E> void offer(Key<? extends Value<E>> key, E value);
+    <E> Optional<E> offer(final @NonNull Key<? extends Value<E>> key, final E value);
 
     /**
      * Get a value from this holder. Returns {@link Optional#empty()} if the key is not registered
@@ -27,7 +30,15 @@ public interface DataHolder {
      * @return The value
      * @param <E> The value's type
      */
-    <E> Optional<E> get(Key<? extends Value<E>> key);
+    <E> Optional<E> get(final @NonNull Key<? extends Value<E>> key);
+
+    @SuppressWarnings("unchecked")
+    default <E> Optional<E> transform(Key<? extends Value<E>> key, Function<E, E> function) {
+        if (this.isRegistered(key)) {
+            return (Optional<E>) this.get(key).map(function).map(value -> this.offer(key, value));
+        }
+        return Optional.empty();
+    }
 
     /**
      * Get the set of keys supported by this holder
@@ -49,15 +60,5 @@ public interface DataHolder {
             }
         }
         return false;
-    }
-
-    /**
-     * Checks if they value's key is supported by this holder
-     *
-     * @param value The value
-     * @return Whether the key is supported
-     */
-    default boolean isRegistered(final Value<?> value) {
-        return this.isRegistered(value.key());
     }
 }
