@@ -7,11 +7,14 @@ package dev.neuralnexus.taterapi.data.value;
 import dev.neuralnexus.taterapi.data.Key;
 import dev.neuralnexus.taterapi.registries.FactoryRegistry;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@ApiStatus.Internal
 public interface Value<E> {
 
     /**
@@ -46,12 +49,34 @@ public interface Value<E> {
             final @NonNull Key<V> key,
             final @NonNull Supplier<T> GET,
             final @NonNull Consumer<T> SET) {
+        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(GET, "GET");
+        Objects.requireNonNull(SET, "SET");
         return FactoryRegistry.get(Factory.class).mutableOf(key, GET, SET);
     }
 
     static <V extends Value<T>, T> V immutableOf(
             final @NonNull Key<V> key, final @NonNull Supplier<T> GET) {
+        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(GET, "GET");
         return FactoryRegistry.get(Factory.class).immutableOf(key, GET);
+    }
+
+    static <V extends Value<T>, T, B> Initializer<B, T> mutableOf(
+            final @NonNull Key<V> key,
+            final @NonNull Getter<B, T> GET,
+            final @NonNull Setter<B, T> SET) {
+        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(GET, "GET");
+        Objects.requireNonNull(SET, "SET");
+        return (objRef) -> mutableOf(key, GET.init(objRef), SET.init(objRef));
+    }
+
+    static <V extends Value<T>, T, B> Initializer<B, T> immutableOf(
+            final @NonNull Key<V> key, final @NonNull Getter<B, T> GET) {
+        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(GET, "GET");
+        return (objRef) -> immutableOf(key, GET.init(objRef));
     }
 
     interface Factory {
@@ -62,5 +87,20 @@ public interface Value<E> {
 
         <V extends Value<E>, E> V immutableOf(
                 final @NonNull Key<V> key, final @NonNull Supplier<E> GET);
+    }
+
+    @FunctionalInterface
+    interface Getter<B, E> {
+        Supplier<E> init(B objRef);
+    }
+
+    @FunctionalInterface
+    interface Setter<B, E> {
+        Consumer<E> init(B objRef);
+    }
+
+    @FunctionalInterface
+    interface Initializer<B, E> {
+        Value<E> init(B objRef);
     }
 }

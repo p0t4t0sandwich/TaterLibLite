@@ -8,11 +8,13 @@ import dev.neuralnexus.taterapi.data.value.Value;
 import dev.neuralnexus.taterapi.registries.BuilderRegistry;
 import dev.neuralnexus.taterapi.resources.Identifier;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
 @SuppressWarnings("unused")
+@ApiStatus.Internal
 public interface Key<V extends Value<?>> extends Identifier {
     @NonNull Class<V> type();
 
@@ -21,7 +23,8 @@ public interface Key<V extends Value<?>> extends Identifier {
         return BuilderRegistry.get(Builder.class);
     }
 
-    static <E> Key<Value<E>> from(final Identifier identifier, final Class<E> type) {
+    static <E> Key<Value<E>> from(
+            final @NonNull Identifier identifier, final @NonNull Class<E> type) {
         return Key.builder()
                 .key(Objects.requireNonNull(identifier, "identifier"))
                 .type(Objects.requireNonNull(type, "type"))
@@ -51,6 +54,6 @@ public interface Key<V extends Value<?>> extends Identifier {
          *
          * @return The key
          */
-        Key<V> build();
+        @NonNull Key<V> build();
     }
 }

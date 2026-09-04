@@ -5,14 +5,24 @@
 package dev.neuralnexus.taterapi.data;
 
 import dev.neuralnexus.taterapi.data.value.Value;
+import dev.neuralnexus.taterapi.impl.data.DataHolderImpl;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 
+@ApiStatus.Internal
 public interface DataHolder {
+
+    @SafeVarargs
+    static <I, T> DataHolder create(final @NonNull T objRef, final @NonNull Class<I>... ifaces) {
+        return new DataHolderImpl(
+                Objects.requireNonNull(objRef, "objRef"), Objects.requireNonNull(ifaces, "ifaces"));
+    }
+
     /**
      * Offer a value to this holder
      *
@@ -20,7 +30,16 @@ public interface DataHolder {
      * @param value The value
      * @param <E> The value's type
      */
-    <E> Optional<E> offer(final @NonNull Key<? extends Value<E>> key, final E value);
+    default <E> Optional<E> offer(final @NonNull Key<? extends Value<E>> key, final E value) {
+        return this.value(Objects.requireNonNull(key, "key"))
+                .map(
+                        v -> {
+                            if (v.isMutable()) {
+                                v.set(value);
+                            }
+                            return v.get();
+                        });
+    }
 
     /**
      * Get a value from this holder. Returns {@link Optional#empty()} if the key is not registered
@@ -30,35 +49,22 @@ public interface DataHolder {
      * @return The value
      * @param <E> The value's type
      */
-    <E> Optional<E> get(final @NonNull Key<? extends Value<E>> key);
+    default <E> Optional<E> get(final @NonNull Key<? extends Value<E>> key) {
+        return this.value(Objects.requireNonNull(key, "key")).map(Value::get);
+    }
 
     @SuppressWarnings("unchecked")
-    default <E> Optional<E> transform(Key<? extends Value<E>> key, Function<E, E> function) {
-        if (this.isRegistered(key)) {
-            return (Optional<E>) this.get(key).map(function).map(value -> this.offer(key, value));
-        }
-        return Optional.empty();
+    default <E> Optional<E> transform(
+            final @NonNull Key<? extends Value<E>> key, final @NonNull Function<E, E> function) {
+        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(function, "function");
+        return (Optional<E>) this.get(key).map(function).map(value -> this.offer(key, value));
     }
 
     /**
-     * Get the set of keys supported by this holder
+     * Get the value for a key
      *
-     * @return The set of keys
+     * @return The value, empty if unsupported
      */
-    Set<Key<?>> getKeys();
-
-    /**
-     * Checks if they key is supported by this holder
-     *
-     * @param key The key
-     * @return Whether the key is supported
-     */
-    default boolean isRegistered(Key<?> key) {
-        for (Key<?> k : this.getKeys()) {
-            if (k == key) {
-                return true;
-            }
-        }
-        return false;
-    }
+    <E> Optional<Value<E>> value(final @NonNull Key<? extends Value<E>> key);
 }
