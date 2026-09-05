@@ -1,0 +1,29 @@
+/**
+ * Copyright (c) 2026 Dylan Sperrer - dylan@neuralnexus.dev
+ * This project is Licensed under <a href="https://github.com/p0t4t0sandwich/TaterLibLite/blob/main/LICENSE">MIT</a>
+ */
+package dev.neuralnexus.taterapi.impl.data.value;
+
+import dev.neuralnexus.taterapi.data.Key;
+import dev.neuralnexus.taterapi.data.value.Value;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+@SuppressWarnings("unchecked")
+@ApiStatus.Internal
+public class ValueFactoryImpl implements Value.Factory {
+    @Override
+    public <V extends Value<E>, E> V mutableOf(
+            @NonNull Key<V> key, @NonNull Supplier<E> GET, @NonNull Consumer<E> SET) {
+        return (V) new ValueImpl<>(key, GET, SET, true);
+    }
+
+    @Override
+    public <V extends Value<E>, E> V immutableOf(@NonNull Key<V> key, @NonNull Supplier<E> GET) {
+        return (V) new ValueImpl<>(key, GET, (_) -> {}, false);
+    }
+}

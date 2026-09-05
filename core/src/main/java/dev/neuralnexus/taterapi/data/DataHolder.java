@@ -17,8 +17,7 @@ import java.util.function.Function;
 @ApiStatus.Internal
 public interface DataHolder {
 
-    @SafeVarargs
-    static <I, T> DataHolder create(final @NonNull T objRef, final @NonNull Class<I>... ifaces) {
+    static <T> DataHolder create(final @NonNull T objRef, final @NonNull Class<?>... ifaces) {
         return new DataHolderImpl(
                 Objects.requireNonNull(objRef, "objRef"), Objects.requireNonNull(ifaces, "ifaces"));
     }
