@@ -6,6 +6,8 @@ package dev.neuralnexus.taterapi.registries;
 
 import dev.neuralnexus.taterapi.data.Key;
 import dev.neuralnexus.taterapi.data.value.Value;
+import dev.neuralnexus.taterapi.impl.data.KeyBuilderImpl;
+import dev.neuralnexus.taterapi.impl.data.value.ValueFactoryImpl;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
@@ -22,6 +24,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @ApiStatus.Internal
 public final class DataRegistry {
+    static {
+        BuilderRegistry.register(Key.Builder.class, KeyBuilderImpl::new);
+        FactoryRegistry.register(Value.Factory.class, ValueFactoryImpl::new);
+    }
+
     private static final Map<Class<?>, Set<Entry<?, ?>>> keyRegistry = new ConcurrentHashMap<>();
     private static final ClassValue<Class<?>[]> HIERARCHY_CACHE =
             new ClassValue<>() {
