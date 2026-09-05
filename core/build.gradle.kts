@@ -6,6 +6,7 @@ base {
 }
 
 dependencies {
+    compileOnly(libs.guava)
     compileOnly(libs.mojang.authlib)
     compileOnly(libs.mixin)
     compileOnly(libs.asm.tree)

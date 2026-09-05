@@ -4,22 +4,43 @@
  */
 package dev.neuralnexus.taterapi.data;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import dev.neuralnexus.taterapi.data.value.Value;
-import dev.neuralnexus.taterapi.impl.data.DataHolderImpl;
+import dev.neuralnexus.taterapi.registries.DataRegistry;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 @ApiStatus.Internal
 public interface DataHolder {
+    Cache<Object, Map<Key<?>, Value<?>>> INSTANCE_STORES =
+            CacheBuilder.newBuilder().weakKeys().build();
 
-    static <T> DataHolder create(final @NonNull T objRef, final @NonNull Class<?>... ifaces) {
-        return new DataHolderImpl(
-                Objects.requireNonNull(objRef, "objRef"), Objects.requireNonNull(ifaces, "ifaces"));
+    /**
+     * Get the value for a key
+     *
+     * @return The value, empty if unsupported
+     */
+    @SuppressWarnings("unchecked")
+    default <E> Optional<Value<E>> value(final @NonNull Key<? extends Value<E>> key) {
+        Objects.requireNonNull(key, "key");
+        final Map<Key<?>, Value<?>> store;
+        try {
+            store = INSTANCE_STORES.get(this, ConcurrentHashMap::new);
+        } catch (final ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        return Optional.ofNullable(
+                (Value<E>) store.computeIfAbsent(key, _ -> DataRegistry.query(key, this)));
     }
 
     /**
@@ -59,11 +80,4 @@ public interface DataHolder {
         Objects.requireNonNull(function, "function");
         return (Optional<E>) this.get(key).map(function).map(value -> this.offer(key, value));
     }
-
-    /**
-     * Get the value for a key
-     *
-     * @return The value, empty if unsupported
-     */
-    <E> Optional<Value<E>> value(final @NonNull Key<? extends Value<E>> key);
 }
