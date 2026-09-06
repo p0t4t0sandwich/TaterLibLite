@@ -29,7 +29,7 @@ public interface Value<E> {
      *
      * @return The underlying value
      */
-    Value<E> set(E newValue);
+    Value<E> set(final E newValue);
 
     /**
      * Whether the value is mutable
