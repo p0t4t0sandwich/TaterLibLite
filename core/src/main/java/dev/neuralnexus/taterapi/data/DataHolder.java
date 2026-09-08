@@ -7,6 +7,7 @@ package dev.neuralnexus.taterapi.data;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import dev.neuralnexus.taterapi.Wrapped;
 import dev.neuralnexus.taterapi.data.value.Value;
 import dev.neuralnexus.taterapi.registries.DataRegistry;
 
@@ -45,7 +46,13 @@ public interface DataHolder {
             throw new RuntimeException(e);
         }
         return Optional.ofNullable(
-                (V) store.computeIfAbsent(key, _ -> DataRegistry.query(key, this)));
+                (V) store.computeIfAbsent(key, _ -> {
+                    if (this instanceof Wrapped<?> wrapped) {
+                        return DataRegistry.query(key, wrapped.unwrap());
+                    } else {
+                        return DataRegistry.query(key, this);
+                    }
+                }));
     }
 
     /**
