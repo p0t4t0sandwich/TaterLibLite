@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
 @ApiStatus.Internal
@@ -64,7 +65,20 @@ public interface DataHolder {
      * @param <E> The value's inner type
      */
     default <V extends Value<E>, E> @NonNull V getOrThrow(final @NonNull Key<V> key) {
-        return this.get(key).orElseThrow();
+        return this.get(key).orElseThrow(() -> new MissingKeyException(key, this));
+    }
+
+    /**
+     * Get a value from this holder. Throws the supplied exception if the key is not registered to this holder.
+     *
+     * @param key The key
+     * @param exception The exception to throw
+     * @return The value
+     * @param <V> The value's type
+     * @param <E> The value's inner type
+     */
+    default <V extends Value<E>, E> @NonNull V getOrThrow(final @NonNull Key<V> key, final @NonNull Supplier<? extends RuntimeException> exception) {
+        return this.get(key).orElseThrow(exception);
     }
 
     /**
