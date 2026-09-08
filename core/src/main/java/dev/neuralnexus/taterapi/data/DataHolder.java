@@ -47,13 +47,16 @@ public interface DataHolder {
             throw new RuntimeException(e);
         }
         return Optional.ofNullable(
-                (V) store.computeIfAbsent(key, _ -> {
-                    if (this instanceof Wrapped<?> wrapped) {
-                        return DataRegistry.query(key, wrapped.unwrap());
-                    } else {
-                        return DataRegistry.query(key, this);
-                    }
-                }));
+                (V)
+                        store.computeIfAbsent(
+                                key,
+                                _ -> {
+                                    if (this instanceof Wrapped<?> wrapped) {
+                                        return DataRegistry.query(key, wrapped.unwrap());
+                                    } else {
+                                        return DataRegistry.query(key, this);
+                                    }
+                                }));
     }
 
     /**
@@ -69,7 +72,8 @@ public interface DataHolder {
     }
 
     /**
-     * Get a value from this holder. Throws the supplied exception if the key is not registered to this holder.
+     * Get a value from this holder. Throws the supplied exception if the key is not registered to
+     * this holder.
      *
      * @param key The key
      * @param exception The exception to throw
@@ -77,7 +81,9 @@ public interface DataHolder {
      * @param <V> The value's type
      * @param <E> The value's inner type
      */
-    default <V extends Value<E>, E> @NonNull V getOrThrow(final @NonNull Key<V> key, final @NonNull Supplier<? extends RuntimeException> exception) {
+    default <V extends Value<E>, E> @NonNull V getOrThrow(
+            final @NonNull Key<V> key,
+            final @NonNull Supplier<? extends RuntimeException> exception) {
         return this.get(key).orElseThrow(exception);
     }
 
