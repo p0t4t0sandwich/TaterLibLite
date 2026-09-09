@@ -4,6 +4,8 @@
  */
 package dev.neuralnexus.taterapi.serialization;
 
+import dev.neuralnexus.taterapi.Result;
+
 public interface Codec<A, B> extends Encoder<A, B>, Decoder<A, B> {
     static <A, B> Codec<A, B> of(Encoder<A, B> encoder, Decoder<A, B> decoder) {
         return new Codec<>() {

@@ -4,6 +4,8 @@
  */
 package dev.neuralnexus.taterapi.serialization;
 
+import dev.neuralnexus.taterapi.Result;
+
 @FunctionalInterface
 public interface Encoder<A, B> {
     Result<B> encode(final A input);

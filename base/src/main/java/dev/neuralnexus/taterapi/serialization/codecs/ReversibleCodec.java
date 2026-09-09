@@ -5,7 +5,7 @@
 package dev.neuralnexus.taterapi.serialization.codecs;
 
 import dev.neuralnexus.taterapi.serialization.Codec;
-import dev.neuralnexus.taterapi.serialization.Result;
+import dev.neuralnexus.taterapi.Result;
 
 import java.lang.reflect.ParameterizedType;
 

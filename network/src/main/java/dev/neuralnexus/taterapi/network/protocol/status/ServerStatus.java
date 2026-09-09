@@ -18,7 +18,7 @@ import dev.neuralnexus.taterapi.mc.server.players.NameAndId;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.serialization.Codec;
-import dev.neuralnexus.taterapi.serialization.Result;
+import dev.neuralnexus.taterapi.Result;
 
 import org.jspecify.annotations.NonNull;
 
