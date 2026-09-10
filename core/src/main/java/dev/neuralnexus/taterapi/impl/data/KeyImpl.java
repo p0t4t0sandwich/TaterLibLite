@@ -4,19 +4,19 @@
  */
 package dev.neuralnexus.taterapi.impl.data;
 
+import dev.neuralnexus.taterapi.data.Element;
 import dev.neuralnexus.taterapi.data.Key;
-import dev.neuralnexus.taterapi.data.value.Value;
 import dev.neuralnexus.taterapi.resources.Identifier;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 @ApiStatus.Internal
-public class KeyImpl<V extends Value<E>, E> implements Key<V> {
+public class KeyImpl<T, E extends Element<T>> implements Key<E> {
     private final Identifier id;
-    private final Class<V> type;
+    private final Class<E> type;
 
-    public KeyImpl(final @NonNull Identifier id, final @NonNull Class<V> type) {
+    public KeyImpl(final @NonNull Identifier id, final @NonNull Class<E> type) {
         this.id = id;
         this.type = type;
     }
@@ -32,7 +32,7 @@ public class KeyImpl<V extends Value<E>, E> implements Key<V> {
     }
 
     @Override
-    public @NonNull Class<V> type() {
+    public @NonNull Class<E> type() {
         return this.type;
     }
 }

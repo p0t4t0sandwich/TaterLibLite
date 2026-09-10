@@ -4,33 +4,37 @@
  */
 package dev.neuralnexus.taterapi.impl.data;
 
+import dev.neuralnexus.taterapi.data.Element;
 import dev.neuralnexus.taterapi.data.Key;
-import dev.neuralnexus.taterapi.data.value.Value;
 import dev.neuralnexus.taterapi.resources.Identifier;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Objects;
+
 @ApiStatus.Internal
-public class KeyBuilderImpl<E, V extends Value<E>> implements Key.Builder<E, V> {
+public class KeyBuilderImpl<T, E extends Element<T>> implements Key.Builder<T, E> {
     private Identifier identifier;
-    private Class<V> type;
+    private Class<E> type;
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T, B extends Value<T>> Key.Builder<T, B> type(@NonNull Class<T> type) {
-        this.type = (Class<V>) type;
-        return (Key.Builder<T, B>) this;
+    public <A, B extends Element<A>> Key.Builder<A, B> type(@NonNull Class<B> type) {
+        this.type = (Class<E>) type;
+        return (Key.Builder<A, B>) this;
     }
 
     @Override
-    public Key.Builder<E, V> key(@NonNull Identifier identifier) {
+    public Key.Builder<T, E> key(final @NonNull Identifier identifier) {
         this.identifier = identifier;
         return this;
     }
 
     @Override
-    public @NonNull Key<V> build() {
+    public @NonNull Key<E> build() {
+        Objects.requireNonNull(this.identifier, "identifier");
+        Objects.requireNonNull(this.type, "type");
         return new KeyImpl<>(this.identifier, this.type);
     }
 }

@@ -9,6 +9,11 @@ import com.google.common.cache.CacheBuilder;
 
 import dev.neuralnexus.taterapi.Result;
 import dev.neuralnexus.taterapi.Wrapped;
+import dev.neuralnexus.taterapi.data.action.Action;
+import dev.neuralnexus.taterapi.data.action.Action1;
+import dev.neuralnexus.taterapi.data.action.Action2;
+import dev.neuralnexus.taterapi.data.action.Action3;
+import dev.neuralnexus.taterapi.data.action.Action4;
 import dev.neuralnexus.taterapi.data.value.Value;
 import dev.neuralnexus.taterapi.registries.DataRegistry;
 
@@ -26,21 +31,13 @@ import java.util.function.Supplier;
 @SuppressWarnings("unchecked")
 @ApiStatus.Internal
 public interface DataHolder {
-    Cache<Object, Map<Key<?>, Value<?>>> INSTANCE_STORES =
+    Cache<Object, Map<Key<?>, Element<?>>> INSTANCE_STORES =
             CacheBuilder.newBuilder().weakKeys().build();
 
-    /**
-     * Get a value from this holder. Returns {@link Result#error()} if the key is not registered to
-     * this holder.
-     *
-     * @param key The key
-     * @return The value
-     * @param <V> The value's type
-     * @param <E> The value's inner type
-     */
-    default <V extends Value<E>, E> Result<V> get(final @NonNull Key<V> key) {
+    @ApiStatus.Internal
+    default <T, E extends Element<T>> Result<E> queryCache(final @NonNull Key<E> key) {
         Objects.requireNonNull(key, "key");
-        final Map<Key<?>, Value<?>> store;
+        final Map<Key<?>, Element<?>> store;
         try {
             store = INSTANCE_STORES.get(this, ConcurrentHashMap::new);
         } catch (final ExecutionException e) {
@@ -48,7 +45,7 @@ public interface DataHolder {
         }
         try {
             return Result.success(
-                    (V)
+                    (E)
                             store.computeIfAbsent(
                                     key,
                                     _ -> {
@@ -60,8 +57,21 @@ public interface DataHolder {
                                     }));
         } catch (final RuntimeException e) {
             return Result.error(
-                    "An exception occurred querying a value for Key " + key.asString(), e);
+                    "An exception occurred querying a result for Key " + key.asString(), e);
         }
+    }
+
+    /**
+     * Get a value from this holder. Returns {@link Result#error()} if the key is not registered to
+     * this holder.
+     *
+     * @param key The key
+     * @return The value
+     * @param <V> The value's type
+     * @param <E> The value's inner type
+     */
+    default <V extends Value<E>, E> Result<V> get(final @NonNull Key<V> key) {
+        return this.queryCache(key);
     }
 
     /**
@@ -174,5 +184,27 @@ public interface DataHolder {
         if (r.result().isEmpty()) return r;
         //noinspection OptionalGetWithoutIsPresent
         return r.result().map(Value::get).map(function).map(value -> this.offer(key, value)).get();
+    }
+
+    default <R, E extends Action<R>> Result<E> action(final @NonNull Key<E> key) {
+        return this.queryCache(key);
+    }
+
+    default <R, A, E extends Action1<R, A>> Result<E> action1(final @NonNull Key<E> key) {
+        return this.queryCache(key);
+    }
+
+    default <R, A, B, E extends Action2<R, A, B>> Result<E> action2(final @NonNull Key<E> key) {
+        return this.queryCache(key);
+    }
+
+    default <R, A, B, C, E extends Action3<R, A, B, C>> Result<E> action3(
+            final @NonNull Key<E> key) {
+        return this.queryCache(key);
+    }
+
+    default <R, A, B, C, D, E extends Action4<R, A, B, C, D>> Result<E> action4(
+            final @NonNull Key<E> key) {
+        return this.queryCache(key);
     }
 }

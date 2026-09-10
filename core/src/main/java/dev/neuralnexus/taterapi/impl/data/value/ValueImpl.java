@@ -15,30 +15,30 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @ApiStatus.Internal
-public class ValueImpl<E> implements Value<E> {
-    private final KeyImpl<? extends Value<E>, E> key;
-    private final Supplier<E> GET;
-    private final Consumer<E> SET;
+public class ValueImpl<T> implements Value<T> {
+    private final KeyImpl<T, ? extends Value<T>> key;
+    private final Supplier<T> GET;
+    private final Consumer<T> SET;
     private final boolean mutable;
 
     public ValueImpl(
-            final @NonNull Key<? extends Value<E>> key,
-            final @NonNull Supplier<E> GET,
-            final @NonNull Consumer<E> SET,
+            final @NonNull Key<? extends Value<T>> key,
+            final @NonNull Supplier<T> GET,
+            final @NonNull Consumer<T> SET,
             final boolean mutable) {
-        this.key = (KeyImpl<? extends Value<E>, E>) key;
+        this.key = (KeyImpl<T, ? extends Value<T>>) key;
         this.GET = GET;
         this.SET = SET;
         this.mutable = mutable;
     }
 
     @Override
-    public E get() {
+    public T get() {
         return this.GET.get();
     }
 
     @Override
-    public Value<E> set(final E value) {
+    public Value<T> set(final T value) {
         if (this.isMutable()) {
             this.SET.accept(value);
         }
@@ -51,7 +51,7 @@ public class ValueImpl<E> implements Value<E> {
     }
 
     @Override
-    public Key<? extends Value<E>> key() {
+    public Key<? extends Value<T>> key() {
         return this.key;
     }
 }

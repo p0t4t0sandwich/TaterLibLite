@@ -4,7 +4,9 @@
  */
 package dev.neuralnexus.taterapi.data.value;
 
+import dev.neuralnexus.taterapi.data.Element;
 import dev.neuralnexus.taterapi.data.Key;
+import dev.neuralnexus.taterapi.registries.DataRegistry;
 import dev.neuralnexus.taterapi.registries.FactoryRegistry;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -15,7 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @ApiStatus.Internal
-public interface Value<E> {
+public interface Value<E> extends Element<E> {
 
     /**
      * Get the underlying value
@@ -62,7 +64,7 @@ public interface Value<E> {
         return FactoryRegistry.get(Factory.class).immutableOf(key, GET);
     }
 
-    static <V extends Value<T>, T, B> Initializer<B, T> mutableOf(
+    static <V extends Value<T>, T, B> DataRegistry.Initializer<B, T> mutableOf(
             final @NonNull Key<V> key,
             final @NonNull Getter<B, T> GET,
             final @NonNull Setter<B, T> SET) {
@@ -72,7 +74,7 @@ public interface Value<E> {
         return (objRef) -> mutableOf(key, GET.init(objRef), SET.init(objRef));
     }
 
-    static <V extends Value<T>, T, B> Initializer<B, T> immutableOf(
+    static <V extends Value<T>, T, B> DataRegistry.Initializer<B, T> immutableOf(
             final @NonNull Key<V> key, final @NonNull Getter<B, T> GET) {
         Objects.requireNonNull(key, "key");
         Objects.requireNonNull(GET, "GET");
@@ -97,10 +99,5 @@ public interface Value<E> {
     @FunctionalInterface
     interface Setter<B, E> {
         Consumer<E> init(B objRef);
-    }
-
-    @FunctionalInterface
-    interface Initializer<B, E> {
-        Value<E> init(B objRef);
     }
 }

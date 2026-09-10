@@ -15,31 +15,33 @@ import java.util.Objects;
 
 @SuppressWarnings("unused")
 @ApiStatus.Internal
-public interface Key<V extends Value<?>> extends Identifier {
-    @NonNull Class<V> type();
+public interface Key<E extends Element<?>> extends Identifier {
+    @NonNull Class<E> type();
 
     @SuppressWarnings("unchecked")
     static Builder<?, ?> builder() {
         return BuilderRegistry.get(Builder.class);
     }
 
-    static <E> Key<Value<E>> from(
-            final @NonNull Identifier identifier, final @NonNull Class<E> type) {
+    static @NonNull <T, V extends Value<T>> Key<V> value(
+            final @NonNull Identifier identifier,
+            final @NonNull Class<V> type,
+            final @NonNull Class<T> innerType) {
         return Key.builder()
                 .key(Objects.requireNonNull(identifier, "identifier"))
                 .type(Objects.requireNonNull(type, "type"))
                 .build();
     }
 
-    interface Builder<E, V extends Value<E>>
-            extends dev.neuralnexus.taterapi.util.Builder<Key<V>, Builder<E, V>> {
+    interface Builder<T, E extends Element<T>>
+            extends dev.neuralnexus.taterapi.util.Builder<Key<E>, Builder<T, E>> {
         /**
-         * The type for this key
+         * The element holder type for this key
          *
-         * @param type The type (class)
+         * @param type The holder type (class)
          * @return The builder
          */
-        <T, B extends Value<T>> Builder<T, B> type(final @NonNull Class<T> type);
+        <A, B extends Element<A>> Builder<A, B> type(final @NonNull Class<B> type);
 
         /**
          * The identifier for this key
@@ -47,13 +49,13 @@ public interface Key<V extends Value<?>> extends Identifier {
          * @param identifier The identifier
          * @return The builder
          */
-        Builder<E, V> key(final @NonNull Identifier identifier);
+        Builder<T, E> key(final @NonNull Identifier identifier);
 
         /**
          * Build the key
          *
          * @return The key
          */
-        @NonNull Key<V> build();
+        @NonNull Key<E> build();
     }
 }
