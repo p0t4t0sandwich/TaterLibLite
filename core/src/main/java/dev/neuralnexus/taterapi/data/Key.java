@@ -4,7 +4,6 @@
  */
 package dev.neuralnexus.taterapi.data;
 
-import dev.neuralnexus.taterapi.data.value.Value;
 import dev.neuralnexus.taterapi.registries.BuilderRegistry;
 import dev.neuralnexus.taterapi.resources.Identifier;
 
@@ -23,7 +22,7 @@ public interface Key<E extends Element<?>> extends Identifier {
         return BuilderRegistry.get(Builder.class);
     }
 
-    static @NonNull <T, V extends Value<T>> Key<V> value(
+    static @NonNull <T, V extends Element<T>> Key<V> create(
             final @NonNull Identifier identifier,
             final @NonNull Class<V> type,
             final @NonNull Class<T> innerType) {
